@@ -1,0 +1,41 @@
+        <!--<div class="mobile fixed bottom-[60px] w-full">
+            <div class="justify-center flex">
+                <div class="flex bg-theme" style="color: rgb(255, 255, 255); position: absolute; bottom: 2rem; font-size: 0.9rem; padding: 0.4rem 1.5rem; border-radius: 1rem;">
+                    <div><img alt="icon" loading="lazy" width="22" height="22" src="/template/default/images/favicon.png">
+                    </div>
+                    <a href="#" target="_blank" class="pl-2 text-black">下载影视APP，看精彩流畅视频</a>
+                </div>
+            </div>
+        </div>--> 
+    <div class="w-full mobile" style="padding-bottom: 70px;">
+            <div class="fixed bottom-0 w-full">
+                <div class="w-full bg-[#161616eb] pt-2 pb-2" style="backdrop-filter: blur(3px);">
+                    <div class="flex">
+                        <a href="/" class="col flex-col d-flex justify-center align-center items-center">
+                            <div class="d-flex">
+                            <img alt="首页" width="22" height="23" src="/template/default/images/home.svg"></div>
+                            <div class="text-[14px] font-medium text-[#6A6A6A]">首页</div>
+                        </a>
+                        <a href="{$pku_url}" class="col flex-col d-flex justify-center align-center items-center">
+                            <div class="d-flex">
+                            <img alt="片库" width="22" height="23" src="/template/default/images/list.svg"></div>
+                            <div class="text-[14px] font-medium text-[#6A6A6A]">片库</div>
+                        </a> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-8 py-3 desktop" style="margin-top: 2rem; width: 100%; text-align: center; background-color: rgb(29, 32, 35); font-size: 14px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+            <div style="line-height: 24px;">
+                版权声明：{$nncms.site_name}内容均来自互联网，不提供存储/录制/上传。<br>
+                如果{$nncms.site_name}提供内容侵犯了您的版权，请发送电子邮件至<a href="mailto:{$nncms.site_email}">{$nncms.site_email}</a>进行说明，我们将立即删除内容，保护版权所有者的权益。<br>
+                Copyright © 2024 {$nncms.site_url}  All Rights Reserved
+                <p>{block:load}{/block}</p>
+                <p><a href="{$sitemap_url}" target="_blank" class="pl-2 text-black">网站地图</a></p>
+            </div>
+        </div>
+
+        <button id="backTop" class="d-none pointer-cursor fixed bottom-16 right-2 rounded-md z-20 bg-[#2c313ae6]  transition-opacity duration-500 opacity-100">
+            <img   width="50" height="50" src="/template/default/images/backtop.svg">
+        </button>
+        

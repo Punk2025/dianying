@@ -1,0 +1,154 @@
+ <?php include _include(APP_PATH.'admin/html/head.html');?>
+            <div class="main-content app-content mt-0">
+                <div class="side-app">
+                    <div class="main-container container-fluid">
+                        <div class="page-header">
+                            <h1 class="page-title"><?php echo $header['title'];?></h1>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="card-img-absolute circle-icon bg-primary text-center align-self-center box-primary-shadow bradius">
+                                                <img src="/static/images/svgs/circle.svg" alt="img" class="card-img-absolute">
+                                                <i class="lnr lnr-user fs-30  text-white mt-4"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body p-4">
+                                                <h2 class="mb-2 fw-normal mt-2"><?php echo $stat['users'];?></h2>
+                                                <h5 class="fw-normal mb-0">当前在线</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- COL END -->
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="card-img-absolute circle-icon bg-secondary align-items-center text-center box-secondary-shadow bradius">
+                                                <img src="/static/images/svgs/circle.svg" alt="img" class="card-img-absolute"> 
+                                                <i class="lnr lnr-camera-video fs-30 text-white mt-4"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body p-4">
+                                                <h2 class="mb-2 fw-normal mt-2"><?php echo $stat['vod'];?></h2>
+                                                <h5 class="fw-normal mb-0">视频</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="card-img-absolute  circle-icon bg-success align-items-center text-center box-success-shadow bradius">
+                                                <img src="/static/images/svgs/circle.svg" alt="img" class="card-img-absolute">
+                                                <i class="lnr lnr-list fs-30 text-white mt-4"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body p-4">
+                                                <h2 class="mb-2 fw-normal mt-2"><?php echo $stat['art'];?></h2>
+                                                <h5 class="fw-normal mb-0">文章</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="card-img-absolute circle-icon bg-danger align-items-center text-center box-danger-shadow bradius">
+                                                <img src="/static/images/svgs/circle.svg" alt="img" class="card-img-absolute">
+                                                <i class=" lnr lnr-tag fs-30 text-white mt-4"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body p-4">
+                                                <h2 class="mb-2 fw-normal mt-2"><?php echo $stat['tag'];?></h2>
+                                                <h5 class="fw-normal mb-0">标签</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">服务器信息</h3>
+                                    </div>
+                                    <div class="card-body pb-2">
+                                        <div class="row">
+                                        <div class="col-6">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('os');?>：</td>
+                                                        <td><?php echo PHP_OS; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold">Web Server：</td>
+                                                        <td><?php echo $info['SERVER_SOFTWARE']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold">PHP： </td>
+                                                        <td><?php echo PHP_VERSION; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('database');?>：</td>
+                                                        <td><?php echo $conf['db']['type']; ?><small> (<?php echo $info['dbversion']; ?>)</small></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('post_max_size');?>：</td>
+                                                        <td> <?php echo $info['post_max_size']; ?></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('upload_max_filesize');?>：</td>
+                                                        <td><?php echo $info['upload_max_filesize']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('allow_url_fopen');?>：</td>
+                                                        <td><?php echo $info['allow_url_fopen']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('safe_mode');?>： </td>
+                                                        <td><?php echo $info['safe_mode']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('max_execution_time');?>：</td>
+                                                        <td><?php echo $info['max_execution_time']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold"><?php echo lang('memory_limit');?>：</td>
+                                                        <td><?php echo $info['memory_limit']; ?></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

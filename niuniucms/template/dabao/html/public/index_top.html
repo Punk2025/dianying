@@ -1,0 +1,123 @@
+
+<div class="channel-focus">
+  <div class="channel-silder layout">
+    <ul class="channel-silder-cnt">
+        
+          {if:isset($stickylist)}
+                    {loop:$stickylist $v}
+                     <li class="channel-silder-panel"><a class="channel-silder-img" target="_blank" href="{$v.url}"><img src="{$v.pic}"  title="{$v.name}" /></a>
+        <div class="channel-silder-intro">
+          <div class="channel-silder-title">
+            <h2><a target="_blank" href="{$v.url}" title="{$v.name}">{$v.name}</a></h2>
+            <span> </span></div>
+          <ul class="channel-silder-info">
+            <li class="long">
+              <label>主演：</label>
+              <span>{$v.actor}</span></li>
+            <li>类型：<span>{$v.cate_name}</span></li>
+            <li>导演：<span>{$v.director}</span></li>
+            <li>年份：<span>{$v.year}</span></li>
+            <li>时间：<span>{$v.create_date_fmt_ymd}</span></li>
+          </ul>
+          <p class="channel-silder-desc"> 剧情：<span>{$v.blurb}..</span></p>
+          <a class="channel-silder-play" target="_blank" href="{$v.url}" title="观看《{$v.name}》">马上观看</a></div>
+      </li>
+      
+                  
+                    {/loop}
+                    {/if}
+    
+    </ul>
+    <ul class="channel-silder-nav">
+         {if:isset($stickylist)}
+                    {loop:$stickylist $v}
+      <li><a target="_blank" href="{$v.url}" ><img class="lazy" data-original="{$v.pic}" src="{$path_tpl}Images/load.gif" alt="{$v.name}"></a></li>
+       {/loop}
+                    {/if}
+      
+    </ul>
+  </div>
+</div>
+<script type="text/javascript">
+	jQuery(".channel-silder").slide({ 
+		titCell:".channel-silder-nav li",
+		mainCell:".channel-silder-cnt",
+		delayTime:800,
+		triggerTime:0,
+		interTime:5000,
+		pnLoop:false,
+		autoPage:false,
+		autoPlay:true
+	});
+</script>
+
+
+<div class="main">
+<!--首页推荐-->
+<div class="index-tj clearfix">
+<div class="index-tj-l">
+<h1 class="title index-color clearfix">
+<span class="hitkey">
+
+ </span>最新视频:</h1><ul>
+ 
+  {loop:$videolist $v}  
+    <li class="p2 m1  {if:($v['i']==6)} mmr0 pmr0 {/if}  {if:($v['i']==12)} mmr0 pmr0 {/if}"><a class="link-hover" href="{$v.url}" title="{$v.name}"><img class="lazy" data-original="{$v.pic}" src="{$maccms.path_tpl}Images/load.gif" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}</p><p class="actor">{$v.actor}</p><p class="actor">{$v.cate_name}</p><p class="actor">{$v.year}/{$v.area}</p></span><p class="other"><i>{$v.remarks}</i></p></a>
+    </li>
+     {/loop}
+</ul>
+ </div>
+  <div class="index-tj-r">
+ <h1 class="title index-color">随机推荐
+</h1><ul>
+  {block:vod_top cid="" n="10"} 
+                                                    {if:isset($data)}
+                                {loop:$data $v} 
+                                <li><a href="{$v.url}" title="{$v.name}"><span class="bz">{$v.remarks}</span>
+                                <gm {if:($v['n']<4)} class="gs" {/if} >{if:($v['n']<10)} 0{/if}{$v.n}</gm><span class="az">{$v.name}</span></a></li> 
+                          {/loop}
+                          {/if}
+                                                 
+                          {/block}   
+
+ </ul>
+ </div>
+</div>
+
+
+<!--获取所以顶级目录加内容-->
+{if:$cid_count!=0} 
+{block:vod_cate cid="1" n="12"}
+	<div class="index-area clearfix">
+    <h1 class="title index-color">
+       <span class="hitkey kp"> 
+       {loop:$data[cate][sonlist] $c} 
+        <li><a href="{$c.url}">{$c.name}</a></li>
+                {/loop} 
+  
+      <a href="{$data[cate]['url']}">更多</a>
+      </span>
+ <a href="{$data[cate]['url']}">{$data[cate]['name']}</a>
+	  </h1>
+    <ul> 
+   	{loop:$data['videolist'] $v}  
+    <li class="p1 m1"><a class="link-hover" href="{$v.url}" title="{$v.name}"><img class="lazy" data-original="{$v.pic}" src="{$maccms.path_tpl}Images/load.gif" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}</p><p class="actor">{$v.actor}</p><p class="actor">{$v.cate_name}</p><p class="actor">{$v.year}/{$v.area}</p></span><p class="other"><i>{$v.remarks}</i></p></a>
+    </li>
+     {/loop}
+	
+    </ul>
+    </div> 
+{/block} 
+{/if}
+
+
+</div>
+
+<div class="ylink clearfix">
+友情连接：
+    <a href="/" target="_blank">{$maccms.name}</a>
+    {loop:$linklist $v}  
+    <a href="{$v[url]}" target="_blank">{$v[name]} </a>	
+	{/loop}
+</div>
+<!--/底部-->

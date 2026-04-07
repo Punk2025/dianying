@@ -1,0 +1,150 @@
+<div class="header-all">
+
+  <div class="top clearfix">
+
+    <ul class="logo"><li><a href="{$nncms.site_url}"><img class="site-nav-logo" src="{$nncms.logo}" title="{$nncms.site_name}" alt="{$nncms.site_name}" style="max-width:119px;max-height:47px;width:auto;height:auto;object-fit:contain;vertical-align:middle"></a></li></ul>
+
+    <ul class="top-nav">
+
+      <li><a class="now" href="{$nncms.site_url}" {if:($cid==0)} class="on"{/if}>首页</a></li>
+
+      <!--导航-->
+        {if:isset($cate_nav)}
+
+{loop:$cate_nav $v} 
+
+{if:isset($v[sonlist])} 
+ <li class="" _t_nav="topnav-{$v.cid}"><a href="{$v.url}" {if:($cid==$v['cid'])} class="on"{/if}>{$v.name}<i class="sjbgs"></i><i class="sjbgx"></i></a></li> 
+{/loop} 
+{/if}
+{/if} 
+
+    </ul>
+
+	    <ul class="search so">
+
+<form id="search_form" onsubmit="return handleSearch()">
+
+        <input type="text" name="keyword" id='keyword' autocomplete="off"  class="input" onblur="if(this.value==''){ this.value='请输入影片或演员名';this.style.color='#cfcdcd';}" onfocus="if(this.value=='请输入影片或演员名'){this.value='';this.style.color='';}" value="请输入影片或演员名" />
+
+		  <div class="so-key">	
+
+		  <!--搜索显示推荐-->
+        {block:vod_top cid="" n="10"} 
+                                                    {if:isset($data)}
+													  		{loop:$data $v} 
+													  		 <a href='{$v.url}'>{$v.name}</a><!--排序 {$v.n}-->
+                                                            
+													{/loop}
+                                                    {/if}
+													{/block}   
+
+		  </div>
+
+        <input type="submit" class="imgbt" value="" />
+
+      </form>
+
+    </ul>
+
+    <ul class="nav-qt aa">
+
+     <!-- <li class="bb">
+
+	  <a href="#" onclick="window.external.AddFavorite(&quot;http://{$maccms.url}&quot;,&quot;{$maccms.name}电影网&quot;)"><i class="jl"></i>加入收藏</a>
+
+      </li>-->
+
+      <li class="bb"><strong class="ma"><i class="mabg"></i>手机观看</strong>
+
+      <div class="cc maw"><i class="ewmbg"></i><p>扫描二维码用手机观看</p></div>  
+
+<!--<li class="bb member"><strong class="ma"><i class="mbbg"></i></strong><div class="cc mbp"></div> </li>-->
+</ul>
+
+<ul class="sj-search"><li class="sbtn2"><i class="sjbg-search"></i></li></ul>
+
+<ul class="sj-nav"><li class="sbtn1"><i class="sjbg-nav"></i></li></ul>
+
+<ul class="sj-navhome"><li><a href="/"><i class="sjbg-home"></i></a></li></ul>  </div>
+
+  <!--分类子目录-->
+
+<div class="nav-down clearfix">
+ 
+{if:isset($cate_nav)} 
+ 
+{loop:$cate_nav $v}  
+{if:isset($v[sonlist])} 
+ <div id="topnav-{$v.cid}" class="nav-down-1" style="display:none;" _t_nav="topnav-{$v.cid}"> 
+<div class="nav-down-2 clearfix"><ul>
+{loop:$v[sonlist] $v2}   
+      <li><a href="{$v2[url]}">{$v2.name}</a></li> 
+{/loop} 
+        </ul> 
+      </div> 
+    </div> 
+{/loop}
+{/if}
+
+{/if}
+
+<!--手机版导航-->
+
+  <div id="sj-nav-1" class="nav-down-1 sy1 sj-noover" style="display:none;" _s_nav="sj-nav-1">
+
+    <div class="nav-down-2 sj-nav-down-2 clearfix">
+
+    <ul> 
+
+ <li><a href="{$maccms.path}"{if:($cid==0)} class="on"{/if}>首页</a></li> 
+	  {if:isset($catelist)} 
+{loop:$catelist $v} 
+<li><a href="{$v.url}"{if:($cid==$v['cid'])} class="on"{/if}>{$v.name}</a></li> 
+{/loop}
+
+{/if} 
+       
+    </ul>
+
+    </div>
+
+  </div>
+
+  <div id="sj-nav-search" class="nav-down-1 sy2 sj-noover" style="display:none;" _t_nav1="sj-nav-search">
+
+    <div class="nav-down-2 sj-nav-down-search clearfix">
+
+<form id="search_form" onsubmit="return handleSearch()">
+
+        <input type="text" name="keyword" id='keyword' autocomplete="off"  class="input" onblur="if(this.value==''){ this.value='输入关键词';this.style.color='#cfcdcd';}" onfocus="if(this.value=='输入关键词'){this.value='';this.style.color='';}" value="输入关键词" />
+
+        <input type="submit" class="imgbt" value="搜 索" />
+
+      </form> </div>
+      </div>
+      </div> 
+</div>
+<div class="leaveNavInfo">
+<div class="topone clearfix"></div>
+
+
+
+
+
+</div>
+<script>
+function handleSearch() {
+var keyword = document.getElementById('keyword').value;
+var url = '{$search_url}&keyword=' + encodeURIComponent(keyword);
+window.location.href = url;
+return false; 
+}
+</script>
+<div class="main">
+
+
+
+<!--/麒麟点击广告-->
+
+</div>

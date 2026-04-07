@@ -1,0 +1,25 @@
+<footer class="content-footer">
+    <div>© 2025
+        <?php echo APP_NAME;?>
+    </div>
+    <div>
+        <nav class="nav gap-4">
+            <!-- <a href="#" class="nav-link">自己发挥</a> -->
+        </nav>
+    </div>
+</footer>
+</div>
+<script src="/template/user/libs/bundle.js"></script>
+<script src="/template/user/dist/js/app.min.js"></script>
+<script src="/static/js/xiuno.js"></script>
+<script src="/static/js/bull.js"></script>
+<script>
+    var debug = DEBUG = 0;
+    var cid = <?php echo $cid;?>;
+    var url_rewrite_on = <?php echo $conf['url_rewrite_on'];?>;
+    var url_access = true;
+    var url_path = '<?php echo $conf['path'];?>'; 
+</script>
+</body>
+
+</html>

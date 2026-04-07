@@ -1,0 +1,375 @@
+
+
+
+<div class="action-buttons">
+  <!-- 点赞按钮 -->
+  <button class="action-btn like-btn" id="likeBtn"
+          data-aid="{$vid}{$aid}"
+          data-uid="{$uid}"
+          data-model="{$cate.model}"
+          data-state="{$like_state}like"
+          data-count="{$video.likes}{$art.likes}"
+          data-type="like"
+          data-api="{$user_like}"
+          aria-pressed="false">
+    <span class="action-icon like-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+        <path d="M12.1 21.35l-1.1-.99C5.14 15.36 2 12.28 2 8.5 
+               2 6.02 4.02 4 6.5 4c1.74 0 3.41.81 4.5 2.09
+               C12.09 4.81 13.76 4 15.5 4 
+               17.98 4 20 6.02 20 8.5
+               c0 3.78-3.14 6.86-8.9 11.86l-1 1z"/>
+      </svg>
+    </span>
+    <span class="action-text">喜欢</span>
+    <span class="action-count" aria-hidden="true">0</span>
+  </button>
+  <!-- 收藏按钮 -->
+  <button class="action-btn fav-btn" id="favBtn"
+          data-aid="{$vid}{$aid}"
+          data-uid="{$uid}"
+          data-model="{$cate.model}"
+          data-state="{$favorite_state}favorite"
+          data-count="{$video.favorites}{$art.favorites}"
+          data-type="favorite"
+          data-api="{$user_favorite}"
+          aria-pressed="false">
+    <span class="action-icon fav-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24
+               l-7.19-.61L12 2 9.19 8.63 2 9.24
+               l5.46 4.73L5.82 21z"/>
+      </svg>
+    </span>
+    <span class="action-text">收藏</span>
+    <span class="action-count" aria-hidden="true">0</span>
+  </button>
+</div>
+<div id="actionToast" class="action-toast" hidden>
+  <div class="msg" id="actionToastMsg"></div>
+  <button class="close" id="actionToastClose" aria-label="关闭提示">&times;</button>
+</div>
+<style>
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.action-btn:focus {
+  outline: 3px solid rgba(0,126,255,0.12);
+  outline-offset: 2px;
+}
+
+.action-btn.disabled {
+  opacity: 0.6;
+  cursor: progress;
+  pointer-events: none;
+}
+.action-icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s ease;
+}
+
+.action-count {
+  min-width: 20px;
+  text-align: left;
+  color: inherit;
+}
+.like-btn[data-state="unlike"] {
+  color: #e0245e; /* 已点赞：红色 */
+}
+
+.like-btn[data-state="like"] {
+  color: #8a8f96; /* 未点赞：灰色 */
+}
+
+.like-btn[data-state="unlike"] .action-icon {
+  transform: scale(1.08);
+}
+
+/* 收藏按钮特定样式 */
+.fav-btn[data-state="unfavorite"] {
+  color: #f6b300; /* 已收藏：金色 */
+}
+
+.fav-btn[data-state="favorite"] {
+  color: #8a8f96; /* 未收藏：灰色 */
+}
+
+.fav-btn[data-state="unfavorite"] .action-icon {
+  transform: scale(1.08);
+}
+
+/* 通用Toast样式 */
+.action-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  z-index: 99999;
+}
+
+.action-toast.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.action-toast .close {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 动画效果 */
+.pop {
+  animation: pop 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.25); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+</style>
+
+<script>
+(function() {
+  // 通用Toast管理器
+  const toastManager = {
+    toast: document.getElementById('actionToast'),
+    toastMsg: document.getElementById('actionToastMsg'),
+    toastClose: document.getElementById('actionToastClose'),
+    toastTimer: null,
+    
+    show: function(message, { duration = 2000, callback = null } = {}) {
+      this.toastMsg.textContent = message;
+      this.toast.hidden = false;
+      this.toast.classList.add('show');
+      
+      if (this.toastTimer) {
+        clearTimeout(this.toastTimer);
+        this.toastTimer = null;
+      }
+      
+      if (duration > 0) {
+        this.toastTimer = setTimeout(() => {
+          this.hide();
+          if (typeof callback === 'function') callback();
+        }, duration);
+      }
+    },
+    
+    hide: function() {
+      this.toast.classList.remove('show');
+      setTimeout(() => {
+        this.toast.hidden = true;
+      }, 240);
+    }
+  };
+  
+  toastManager.toastClose && toastManager.toastClose.addEventListener('click', () => toastManager.hide());
+
+  // 通用操作按钮类
+  class ActionButton {
+    constructor(btn) {
+      this.btn = btn;
+      this.countEl = btn.querySelector('.action-count');
+      this.aid = btn.dataset.aid || '';
+      this.uid = parseInt(btn.dataset.uid, 10) || 0;
+      this.model = btn.dataset.model || ''; 
+      this.type = btn.dataset.type || 'like'; // 'like' 或 'favorite'
+      this.api = btn.dataset.api || '';
+      this.state = (this.type === 'like') 
+        ? (btn.dataset.state === 'unlike' ? 'unlike' : 'like')
+        : (btn.dataset.state === 'unfavorite' ? 'unfavorite' : 'favorite');
+      this.count = parseInt(btn.dataset.count || '0', 10) || 0;
+      this.pending = false;
+      
+      this.init();
+    }
+    
+    init() {
+      this.initUI();
+      this.bindEvents();
+    }
+    
+    initUI() {
+      const isActive = (this.type === 'like' && this.state === 'unlike') || 
+                      (this.type === 'favorite' && this.state === 'unfavorite');
+      this.btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      this.btn.dataset.state = this.state;
+      this.countEl.textContent = String(this.count);
+    }
+    
+    bindEvents() {
+      this.btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await this.handleClick();
+      });
+      
+      this.btn.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          this.btn.click();
+        }
+      });
+    }
+    
+    async handleClick() {
+      if (this.uid === 0) {
+        toastManager.show('请先登录再操作', {
+          duration: 5000,
+          callback: () => { window.location.href = '{$user_login}'; }
+        });
+        return;
+      }
+      
+      const actionType = (this.type === 'like' && this.state === 'like') || 
+                        (this.type === 'favorite' && this.state === 'favorite') 
+                        ? this.type 
+                        : `un${this.type}`;
+      
+      const data = await this.postAction(actionType);
+      if (!data) return;
+      
+      const code = Number(data.code);
+      const msg = data.message || '';
+      
+      if (code === 0 && actionType === this.type) {
+        // 执行正向操作（点赞/收藏）
+        this.applyActive(true);
+        const successMsg = this.type === 'like' ? '点赞成功' : '收藏成功';
+        toastManager.show(msg || successMsg);
+      } else if (code === 3 && actionType === `un${this.type}`) {
+        // 执行反向操作（取消点赞/取消收藏）
+        this.applyInactive(true);
+        const successMsg = this.type === 'like' ? '已取消点赞' : '取消收藏';
+        toastManager.show(msg || successMsg);
+      } else if (code === 1) {
+        // 重复操作
+        const repeatMsg = this.type === 'like' ? '不要重复点赞' : '不要重复收藏';
+        toastManager.show(msg || repeatMsg);
+      } else {
+        // 其他错误
+        toastManager.show(msg || '操作失败');
+      }
+    }
+    
+    async postAction(type) {
+      if (this.pending) return null;
+      this.pending = true;
+      this.btn.classList.add('disabled');
+      this.btn.disabled = true;
+
+      const body = new URLSearchParams();
+      body.append('aid', this.aid);
+      body.append('uid', this.uid);
+      body.append('model', this.model);
+      body.append('type', type);
+      
+      let data = null;
+      
+      try {
+        const res = await fetch(this.api, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            'Accept': 'application/json'
+          },
+          body: body.toString(),
+          credentials: 'same-origin'
+        });
+        
+        const text = await res.text();
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (e) {
+          toastManager.show('服务器返回格式不正确', { duration: 2500 });
+        }
+      } catch (err) {
+        console.error('网络错误', err);
+        toastManager.show('网络错误，请稍后再试', { duration: 2500 });
+      } finally {
+        this.pending = false;
+        this.btn.classList.remove('disabled');
+        this.btn.disabled = false;
+      }
+      
+      return data;
+    }
+    
+    applyActive(animate = true) {
+      this.state = this.type === 'like' ? 'unlike' : 'unfavorite';
+      this.btn.dataset.state = this.state;
+      this.btn.setAttribute('aria-pressed', 'true');
+      this.count = Math.max(0, this.count) + 1;
+      this.countEl.textContent = String(this.count);
+      
+      if (animate) {
+        const icon = this.btn.querySelector('.action-icon');
+        if (icon) {
+          icon.classList.add('pop');
+          setTimeout(() => icon.classList.remove('pop'), 420);
+        }
+      }
+    }
+    
+    applyInactive(animate = false) {
+      this.state = this.type;
+      this.btn.dataset.state = this.state;
+      this.btn.setAttribute('aria-pressed', 'false');
+      this.count = Math.max(0, this.count - 1);
+      this.countEl.textContent = String(this.count);
+      
+      if (animate) {
+        const icon = this.btn.querySelector('.action-icon');
+        if (icon) {
+          icon.classList.add('pop');
+          setTimeout(() => icon.classList.remove('pop'), 420);
+        }
+      }
+    }
+  }
+  // 初始化按钮
+  document.addEventListener('DOMContentLoaded', () => {
+    const likeBtn = document.getElementById('likeBtn');
+    const favBtn = document.getElementById('favBtn');
+    if (likeBtn) new ActionButton(likeBtn);
+    if (favBtn) new ActionButton(favBtn);
+  });
+})();
+</script>

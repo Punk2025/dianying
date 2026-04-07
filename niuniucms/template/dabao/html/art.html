@@ -1,0 +1,44 @@
+
+{inc:public/head.html}
+<!--/头部-->
+{inc:public/nva.html}
+
+
+<div class="main">
+
+	<h1 class="title"><h1 class="title"><h1 class="title"><a href="/">首页</a>&nbsp;&nbsp;»&nbsp;&nbsp;<a href="{$cate.url}">{$cate.name}</a>&nbsp;&nbsp;»&nbsp;&nbsp;<a href="{$art.url}">{$art.name}</a> </h1>
+
+
+
+<div class="n-content xinwenneiye777">
+
+<h1><span style='color:'>{$art.name}</span></h1>
+
+<p class="info clearfix"><span class="time">发布于：{$art.create_date_fmt_ymd}</span><span class="qt">来源：</span></p>
+
+<p class="des">
+
+<!--/内容居中-->
+
+<div style="text-align:center;">
+
+	<b>
+
+{$art.content}
+
+</b>
+
+</div>
+
+<!--/内容居中-->
+
+</p>
+
+ 
+
+</div>
+
+</div>
+
+
+{inc:public/foot.html}

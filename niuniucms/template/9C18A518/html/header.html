@@ -1,0 +1,131 @@
+<div class="loading"><div class="circle"></div></div>
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container-fluid">
+<div class="logo"><a href="/"><img src="/template/9C18A518/img/logo-dark.png" alt="{$seo.t}" class="logo-dark">
+<img src="/template/9C18A518/img/logo-white.png" alt="{$seo.t}" class="logo-white"></a></div>
+<div class="collapse navbar-collapse" id="main_nav">
+<ul class="navbar-nav ml-auto mr-auto">
+<li class="nav-item"><a href="/" class="nav-link">首页</a></li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频一区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="1,2,3,4,5,6"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频二区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="7,8,9,10,11,12"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频三区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="13,14,15,16,17,18"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频四区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="31,32,33,34,35,36"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频五区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="25,26,27,28,29,30"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">视频六区</a>
+<ul class="dropdown-menu fade-up">
+{block:type_cid cid="19,20,21,22,23,24"}{loop:$data $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item">{$v.name}</a></li>
+{/loop}{/block}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">合作伙伴</a>
+<ul class="dropdown-menu fade-up">
+{loop:$linklist $v}
+<li><a href="{$v.url}" title="{$v.name}" class="dropdown-item" target="_blank">{$v.name}</a></li>
+{/loop}
+</ul>
+</li>
+<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">选择语言</a>
+<ul class="dropdown-menu fade-up gundong">
+<li><a href="#" onclick="googleTranslate('en|af');" class="dropdown-item">南非语</a></li>
+<li><a href="#" onclick="googleTranslate('en|sq');" class="dropdown-item">阿尔巴尼亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ar');" class="dropdown-item">阿拉伯</a></li>
+<li><a href="#" onclick="googleTranslate('en|hy');" class="dropdown-item">亚美尼亚人</a></li>
+<li><a href="#" onclick="googleTranslate('en|az');" class="dropdown-item">阿塞拜疆</a></li>
+<li><a href="#" onclick="googleTranslate('en|eu');" class="dropdown-item">巴斯克</a></li>
+<li><a href="#" onclick="googleTranslate('en|be');" class="dropdown-item">白俄罗斯语</a></li>
+<li><a href="#" onclick="googleTranslate('en|bg');" class="dropdown-item">保加利亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ca');" class="dropdown-item">加泰罗尼亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|zh-CN');" class="dropdown-item">简体中文</a></li>
+<li><a href="#" onclick="googleTranslate('en|zh-TW');" class="dropdown-item">繁体中文</a></li>
+<li><a href="#" onclick="googleTranslate('en|hr');" class="dropdown-item">克罗地亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|cs');" class="dropdown-item">捷克文</a></li>
+<li><a href="#" onclick="googleTranslate('en|da');" class="dropdown-item">丹麦文</a></li>
+<li><a href="#" onclick="googleTranslate('en|nl');" class="dropdown-item">荷兰语</a></li>
+<li><a href="#" onclick="googleTranslate('en|en');" class="dropdown-item">英语</a></li>
+<li><a href="#" onclick="googleTranslate('en|et');" class="dropdown-item">爱沙尼亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|tl');" class="dropdown-item">菲律宾语</a></li>
+<li><a href="#" onclick="googleTranslate('en|fi');" class="dropdown-item">芬兰</a></li>
+<li><a href="#" onclick="googleTranslate('en|fr');" class="dropdown-item">法文</a></li>
+<li><a href="#" onclick="googleTranslate('en|gl');" class="dropdown-item">加利西亚人</a></li>
+<li><a href="#" onclick="googleTranslate('en|ka');" class="dropdown-item">格鲁吉亚人</a></li>
+<li><a href="#" onclick="googleTranslate('en|de');" class="dropdown-item">德语</a></li>
+<li><a href="#" onclick="googleTranslate('en|el');" class="dropdown-item">希腊语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ht');" class="dropdown-item">海地克里奥尔语</a></li>
+<li><a href="#" onclick="googleTranslate('en|iw');" class="dropdown-item">希伯来语</a></li>
+<li><a href="#" onclick="googleTranslate('en|hi');" class="dropdown-item">印地语</a></li>
+<li><a href="#" onclick="googleTranslate('en|hu');" class="dropdown-item">匈牙利</a></li>
+<li><a href="#" onclick="googleTranslate('en|is');" class="dropdown-item">冰岛</a></li>
+<li><a href="#" onclick="googleTranslate('en|id');" class="dropdown-item">印度尼西亚</a></li>
+<li><a href="#" onclick="googleTranslate('en|ga');" class="dropdown-item">爱尔兰人</a></li>
+<li><a href="#" onclick="googleTranslate('en|it');" class="dropdown-item">意大利文</a></li>
+<li><a href="#" onclick="googleTranslate('en|ja');" class="dropdown-item">日本</a></li>
+<li><a href="#" onclick="googleTranslate('en|ko');" class="dropdown-item">韩语</a></li>
+<li><a href="#" onclick="googleTranslate('en|lv');" class="dropdown-item">拉脱维亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|lt');" class="dropdown-item">立陶宛语</a></li>
+<li><a href="#" onclick="googleTranslate('en|mk');" class="dropdown-item">马其顿语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ms');" class="dropdown-item">马来语</a></li>
+<li><a href="#" onclick="googleTranslate('en|mt');" class="dropdown-item">马耳他语</a></li>
+<li><a href="#" onclick="googleTranslate('en|no');" class="dropdown-item">挪威</a></li>
+<li><a href="#" onclick="googleTranslate('en|fa');" class="dropdown-item">波斯语</a></li>
+<li><a href="#" onclick="googleTranslate('en|pl');" class="dropdown-item">抛光</a></li>
+<li><a href="#" onclick="googleTranslate('en|pt');" class="dropdown-item">葡萄牙语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ro');" class="dropdown-item">罗马尼亚语</a></li>
+<li><a href="#" onclick="googleTranslate('en|ru');" class="dropdown-item">俄语</a></li>
+<li><a href="#" onclick="googleTranslate('en|sr');" class="dropdown-item">塞尔维亚</a></li>
+<li><a href="#" onclick="googleTranslate('en|sk');" class="dropdown-item">斯洛伐克文</a></li>
+<li><a href="#" onclick="googleTranslate('en|sl');" class="dropdown-item">斯洛文尼亚文</a></li>
+<li><a href="#" onclick="googleTranslate('en|es');" class="dropdown-item">西班牙文</a></li>
+<li><a href="#" onclick="googleTranslate('en|sw');" class="dropdown-item">斯瓦希里语</a></li>
+<li><a href="#" onclick="googleTranslate('en|sv');" class="dropdown-item">瑞典</a></li>
+<li><a href="#" onclick="googleTranslate('en|th');" class="dropdown-item">泰国</a></li>
+<li><a href="#" onclick="googleTranslate('en|tr');" class="dropdown-item">土耳其</a></li>
+<li><a href="#" onclick="googleTranslate('en|uk');" class="dropdown-item">乌克兰</a></li>
+<li><a href="#" onclick="googleTranslate('en|ur');" class="dropdown-item">乌尔都语</a></li>
+<li><a href="#" onclick="googleTranslate('en|vi');" class="dropdown-item">越南文</a></li>
+<li><a href="#" onclick="googleTranslate('en|cy');" class="dropdown-item">威尔士语</a></li>
+<li><a href="#" onclick="googleTranslate('en|yi');" class="dropdown-item">意第绪语</a></li>
+<div id="google_translate_element2"></div>
+</ul>
+</li>
+</ul>
+</div>
+<div class="navbar-right ml-auto">
+<div class="theme-switch-wrapper">
+<label class="theme-switch" for="checkbox"><input type="checkbox" id="checkbox"><div class="slider round"></div></label>
+</div>
+<div class="search-icon"><i class="icon_search"></i></div>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main_nav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+</div>
+</div>
+</nav>

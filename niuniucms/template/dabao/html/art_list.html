@@ -1,0 +1,29 @@
+
+{inc:public/head.html}
+<!--/头部-->
+{inc:public/nva.html}
+
+<div class="main"> 
+	<h1 class="title"><h1 class="title"><a href="/">首页</a>&nbsp;&nbsp;»&nbsp;&nbsp;<a href="{$cate.url}">{$cate.name}</a>&nbsp;&nbsp;»&nbsp;&nbsp; </h1> 
+	<div class="index-area clearfix"> 
+	<ul> 
+    {loop:$artlist $v}  
+     <li class="p1 m1"><a class="link-hover" href="{$v.url}" title="{$v.name}">
+
+              <img class="lazy"  src="{$v.pic}" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}
+
+</p><p class="actor">{$v.name}</p><p class="actor">{$v.cate_name}</p><p class="actor"></p></span><p class="other"><i>{$v.create_date_fmt_ymd}</i></p></a>
+
+    </li>
+     {/loop} 
+    </ul> 
+	</div>
+	<div class="page mb clearfix">
+
+{block:pager_page}{/block} 
+</div>  
+</div>
+
+
+
+{inc:public/foot.html}

@@ -1,0 +1,112 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5"> 
+                
+                <div class="col-lg-12 col-xl-12">
+                    
+                    <div class="card">
+                        <div class="card-header border-bottom-0">
+                            <h2 class="card-title">用户列表</h2> 
+                        </div>
+                        <div class="card-body">    
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table" style="min-width: 800px">
+							<thead>
+								<tr>
+									<th width="60" class="text-center"><?php echo lang('delete');?></th>
+									<th width="50">ID：</th>
+									<!--{hook admin_user_list_id_th_after.htm}-->
+									<th width="150"><?php echo lang('email');?></th>
+									<th width="150"><?php echo lang('username');?></th>
+									<th width="100"><?php echo lang('user_group');?></th>
+									<th width="100"><?php echo lang('create_date');?></th>
+									<th width="100"><?php echo lang('create_ip');?></th>
+									<th width="60"><?php echo lang('operation');?></th>
+								</tr>
+							</thead>
+							<tbody id="userlist">
+						<?php foreach($userlist as &$_user){ ?>
+							<tr uid="<?php echo $_user['uid']; ?>">
+								<td class="text-center">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="delete-<?php echo $_user['uid']; ?>" name="delete" value="1" />
+                                        <label class="custom-control-label custom-checkbox" for="delete-<?php echo $_user['uid']; ?>">
+
+                                        </label>
+                                    </div>
+								</td>
+								<td><?php echo $_user['uid']; ?></td>
+								<td><?php echo $_user['email']; ?></td>
+								<td><?php echo $_user['username']; ?></td>
+								<td><?php echo $_user['groupname']; ?></td>
+								<td><?php echo date('Y-n-j H:i:s', $_user['create_date']); ?></td>
+								<td><?php echo $_user['create_ip_fmt']; ?></td>
+								<td><a href="<?php echo url('user-update', array('uid'=>$_user['uid']), TRUE); ?>"><?php echo lang('edit');?></a></td>
+							</tr>
+						<?php } ?>
+							</tbody>
+						</table>
+					</div>
+					<hr class="mt-0" />
+					<p><button class="btn btn-danger btn-sm ml-3" id="confirm"><?php echo lang('delete');?></button></p>
+				</div>
+			</div>
+			<nav><ul class="pagination justify-content-center"><?php echo $pagination; ?></ul></nav>
+		</div>
+	</div>
+                        </div> 
+                </div> 
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+
+
+<script>
+var jconfirm = $("#confirm");
+var jsearch = $("#search");
+var jsrchtype = $("#srchtype");
+var jkeyword = $('#keyword');
+var juserlist = $('#userlist');
+jsrchtype.val(jsrchtype.attr('value'));
+
+jsearch.on('click', function(){
+	var srchtype = jsrchtype.val();
+	srchtype = srchtype ? srchtype : 'uid';
+	var keyword = $("#keyword").val();
+	window.location = xn.url('user-list', {srchtype:srchtype,keyword:xn.urlencode(keyword)}, true);
+});
+jkeyword.on('keydown', function(e) {
+	if(e.keyCode == 13) jsearch.trigger('click');
+});
+
+/*删除选中的用户*/
+jconfirm.on('click', function(){
+	var jchecked = juserlist.find('input[name="delete"]').filter(function(){ return this.checked; });
+	if(jchecked.length < 1) return alert("<?php echo lang('please_check_delete_user');?>");
+	if(!window.confirm("<?php echo lang('user_delete_confirm');?>")) return false;
+    var safe_token = '<?php echo $safe_token;?>';
+	jchecked.each(function() {
+        var jtr = $(this).parents('tr');
+		var uid = jtr.attr('uid');
+		if(uid == 1) return alert('<?php echo lang('user_admin_cant_be_deleted');?>');
+        $.xpost(xn.url('user-delete', '', true), {uid: uid, safe_token: safe_token}, function (code, message) {
+            if (code == 0) {
+                /*jtr.remove();*/
+                window.location.reload();
+            } else {
+                $.alert(message);
+            }
+        });
+	});
+});
+</script>

@@ -1,0 +1,241 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row mt-5"> 
+                <div class="card">
+                    <form action="<?php echo url('set-set', '', TRUE);?>" method="post" id="form">
+                    <div class="card-header">
+                        <h3 class="card-title">网站设置</h3>
+                    </div>
+                   
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-lg-4 col-md-12">
+                                <div class="form-group">
+                                    <label >网站名称</label>
+                                    <?php echo $input['sitename'];?>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">网站 LOGO（电脑端）</label>
+                            <?php echo $input['logo_pc'];?>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                <input type="file" id="logo_pc_file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control form-control-sm" style="max-width:280px;">
+                                <span class="small text-muted">选择本地图片后自动上传并填入上方地址（≤2MB）</span>
+                            </div>
+                            <p class="small text-muted mb-0 mt-1">也可手动填写地址，如 <code>/upload/...</code> 或完整 URL；留空则使用当前模板默认 <code>Images/logo.png</code></p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">网站 LOGO（手机端，可选）</label>
+                            <?php echo $input['logo_m'];?>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                <input type="file" id="logo_m_file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control form-control-sm" style="max-width:280px;">
+                                <span class="small text-muted">本地上传（≤2MB）</span>
+                            </div>
+                            <p class="small text-muted mb-0 mt-1">留空则与电脑端相同</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">显示设置</label>
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">每页显示 :</label>
+                                  <?php echo $input['pagesize'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">列表显示 :</label>
+                                    <?php echo $input['postlist_pagesize'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">显示多少页 :</label>
+                                    <?php echo $input['listsize'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">友链数量 :</label>
+                                    <?php echo $input['linksize'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">tag数量 :</label>
+                                    <?php echo $input['tagsize'];?>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label class="form-label">采集设置</label>
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">分词数量 :</label>
+                                  <?php echo $input['tag_num'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">下载图片 :</label>
+                                    <?php echo $input['down_pic'];?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">其他设置：</label>
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">开启CDN :</label>
+                                    <?php echo $input['cdn_on'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">API接口 :</label>
+                                    <?php echo $input['api_on'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">搜索开关 :</label>
+                                    <?php echo $input['search_on'];?>
+                                </div>
+                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">网站地图：</label>
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">地图TAG :</label>
+                                    <?php echo $input['sitemap_tag'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">播放页:</label>
+                                    <?php echo $input['sitemap_play'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">每页显示 :</label>
+                                    <?php echo $input['sitemap_num'];?>
+                                </div> 
+                               
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">联系方式：</label>
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">email :</label>
+                                    <?php echo $input['email'];?>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">TG :</label>
+                                    <?php echo $input['tg'];?>
+                                </div>  
+                            </div>
+                        </div>
+
+                        <label class="form-label">筛选设置</label>
+                         
+                        <div class="form-group">
+                            <label class="form-label">地区 :</label>
+                            <?php echo $input['area'];?>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">语言 :</label>
+                            <?php echo $input['lang'];?>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">年份 :</label>
+                            <?php echo $input['year'];?>
+                        </div> 
+                        <div class="form-group">
+                            <label>统计代码：</label>
+                            <?php echo $input['agg'];?> 
+                        </div>
+                        <div class="form-group ">
+                        <label class="col-3 col-sm-2 form-control-label"><?php echo lang('template');?></label>
+                        <div class="col-9 col-sm-10">
+                            <?php echo $input['tpl_mode']; ?>
+                            <p class="small text-muted">
+                                <?php echo lang('mode_tips');?>
+                            </p>
+                        </div>
+                    </div>
+                        
+                    </div>
+                    <div class="card-footer text-start">
+                        <button type="submit" class="btn btn-success my-1" id="submit" data-loading-text="<?php echo lang('submiting');?>..."><?php echo lang('confirm');?></button>
+                        
+                    </div>
+                </div>
+            </form>
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+    (function () {
+        var logoUploadUrl = <?php echo xn_json_encode(url('set-logo_upload', array('json' => 1), TRUE)); ?>;
+        function nnUploadLogo(fileInput, targetId) {
+            if (!fileInput.files || !fileInput.files.length) {
+                return;
+            }
+            var fd = new FormData();
+            fd.append('logo', fileInput.files[0]);
+            $.ajax({
+                url: logoUploadUrl,
+                type: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (res) {
+                    if (res && res.code === 0 && res.url) {
+                        $('#' + targetId).val(res.url);
+                        if (typeof $.alert === 'function') {
+                            $.alert(res.message || '上传成功');
+                        } else {
+                            alert(res.message || '上传成功');
+                        }
+                    } else {
+                        alert((res && res.message) ? res.message : '上传失败');
+                    }
+                },
+                error: function (xhr) {
+                    var msg = '上传失败';
+                    try {
+                        var r = JSON.parse(xhr.responseText);
+                        if (r && r.message) {
+                            msg = r.message;
+                        }
+                    } catch (e) {}
+                    alert(msg);
+                }
+            });
+            fileInput.value = '';
+        }
+        $('#logo_pc_file').on('change', function () {
+            nnUploadLogo(this, 'logo_pc');
+        });
+        $('#logo_m_file').on('change', function () {
+            nnUploadLogo(this, 'logo_m');
+        });
+    })();
+    var jform = $('#form');
+    jform.on('submit', function() {
+        jform.reset();
+        var jthis = $(this);
+        var jsubmit = jthis.find('#submit');
+        jsubmit.button('loading');
+        var postdata = jform.serialize();
+        $.xpost(jform.attr('action'), postdata, function(code, message) {
+            if(code == 0) {
+                $.alert(message);
+                jsubmit.text(message).delay(1000).location();
+            } else if(xn.is_number(code)) {
+                alert(message);
+                jsubmit.button('reset');
+            } else {
+                jform.find('[name="'+code+'"]').alert(message).focus();
+                jsubmit.button('reset');
+            }
+        });
+        return false;
+    }); 
+    </script>

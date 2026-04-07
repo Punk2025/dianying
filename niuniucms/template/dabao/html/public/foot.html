@@ -1,0 +1,62 @@
+<div class="footer clearfix">
+
+免责声明:本站所有视频均来自互联网收集而来，版权归原创者所有，如果侵犯了你的权益，请通知我们，我们会及时删除侵权内容，谢谢合作。</p>  
+
+Copyright © 2025 《{$nncms.site_name}》鲁ICP备13031244号-2
+
+<p><a>版权投诉邮箱:26995787@qq.com&nbsp;&nbsp;&nbsp;</a></p>
+
+</div>
+
+<div class="gotop"><a class="gotopbg" href="javascript:;" title="返回顶部"></a></div>
+</body>
+</html>
+<script>
+// 选项卡切换
+function setTab(tabGroup, stabGroup, activeIndex) {
+  // 获取所有 tab li（通过 tabGroup 参数）
+  var tabs = document.querySelectorAll("." + tabGroup + " li");
+  // 获取所有内容块（通过 stabGroup 参数前缀）
+  var stabs = document.querySelectorAll("[id^='" + stabGroup + "']");
+
+  tabs.forEach(function(tab, index) {
+    if (index + 1 === activeIndex) {
+      tab.classList.add("on");
+      stabs[index].style.display = "block";
+    } else {
+      tab.classList.remove("on");
+      stabs[index].style.display = "none";
+    }
+  });
+}
+
+// 顺序/倒序切换
+function Order(orderType, vlinkId, num) {
+  var list = document.getElementById(vlinkId);
+  if (!list) return;
+
+  var items = Array.from(list.querySelectorAll("li"));
+
+  if (orderType === 1) {
+    items.reverse();
+    document.getElementById(vlinkId + "_s1").querySelector("em").classList.add("over");
+    document.getElementById(vlinkId + "_s2").querySelector("em").classList.remove("over");
+  } else {
+    items.sort((a, b) => a.dataset.index - b.dataset.index);
+    document.getElementById(vlinkId + "_s2").querySelector("em").classList.add("over");
+    document.getElementById(vlinkId + "_s1").querySelector("em").classList.remove("over");
+  }
+
+  list.querySelector("ul").innerHTML = "";
+  items.forEach(item => list.querySelector("ul").appendChild(item));
+}
+
+// 初始化 data-index
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".videourl").forEach(function(list) {
+    list.querySelectorAll("li").forEach(function(li, index) {
+      li.dataset.index = index;
+    });
+  });
+});
+</script>

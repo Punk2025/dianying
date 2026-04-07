@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+{inc:public/include.html}
+	</head>
+	<body>
+		<div id="__nuxt">
+			<div id="__layout">
+				<div class="app-container">
+					<div class="page-play">
+						<div class="van-header">
+	<div class="van-sticky">
+		<div class="aspect-ratio" style="padding-top: 56.25%; border-radius: 0px;">
+			<div class="overlay">
+				<div class="video-plyaer-container video-player" style="background-size: 100% 100%; background-image: url({$video.pic}); background-color: rgb(0, 0, 0);">
+								<div class="MacPlayer">
+	   <iframe
+    src="{$player}"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; display: block;"
+    allowfullscreen
+    scrolling="no"
+    marginwidth="0"
+    marginheight="0"
+  ></iframe>
+</div>			</div>
+				<div onclick="javascript:history.back(-1);" class="back">
+					<i class="van-icon van-icon-arrow-left"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+						<div class="video-info">
+	<div class="video-tips"></div>
+	<div class="play-title">{$video.name}</div>
+	<div class="des">{$video.name},每一个都让人好心动!</div>
+	<div class="props flex-between">
+		<div><span class="mac_hits hits" data-mid="1" data-id="1" data-type="hits">{$video.views}</span>次播放·{$video.create_date_fmt_ymd}发布</div>
+	</div>
+	<div class="controls">
+
+		<div id="share" data-clipboard-text="{$nncms.site_url}/{$video.url}?invite= 我正在看《{$video.name}》，你也快来一起看吧！">
+			<i class="van-icon" style="font-size: 20px;">
+				<img src="{$path_tpl}static/images/share.png" class="van-icon__image">
+			</i>
+		</div>
+	</div>
+	</div>
+						<div class="section-frame">
+	<div class="section-frame-header">
+		<div class="title">猜你喜欢</div>
+		
+	</div>
+	<div class="video-item-combination">
+		<div class="row-2 van-row" id="playvod" ids="1">
+{block:vod_top cid="" n="8"} 
+{loop:$data $v} 
+
+						<div class="van-col van-col--12 madou_item">
+	<div class="video-item">
+		<a href="{$v.play_data.0.url}" class="block" title="{$v.name}">
+			<div class="aspect-ratio" >
+				<div class="aspect-ratio-content">
+					<div class="easy-image">
+						<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="{$v.name}">
+					</div>
+				</div>
+				<div class="overlay">
+										<div class="flag">{$v.remarks}</div>
+										<div class="times">{$v.views}次播放</div>
+										<div class="duration">{$v.create_date_fmt_ymd}</div>
+									</div>
+			</div>
+		</a>
+		<a href="{$v.play_data.0.url}" class="block title van-ellipsis" title="{$v.name}">{$v.name}</a>
+	</div>
+</div>
+{/loop}    
+{/block}
+					</div>
+	</div>
+</div>
+
+
+{inc:public/foot.html}
+		</div>
+
+
+	</body>
+</html>

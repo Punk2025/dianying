@@ -1,0 +1,49 @@
+<form class="search_form" onsubmit="return handleSearch(this)">
+  <input type="text" name="keyword" autocomplete="off" class="input" placeholder="输入关键词" />
+  <input type="submit" class="imgbt" value="搜 索" />
+</form>
+
+<script>
+function handleSearch(form) {
+  if (!form || !form.querySelector) return false;
+  var input = form.querySelector('input[name=\"keyword\"]');
+  var keyword = input && input.value ? input.value.replace(/^\\s+|\\s+$/g, '') : '';
+  if (!keyword) {
+    input && input.focus && input.focus();
+    return false;
+  }
+  var rw = parseInt('{$conf.url_rewrite_on}', 10) || 0;
+  var base = '{$search_url}';
+  var enc = encodeURIComponent(keyword);
+  base = base || '';
+  if (rw === 0) {
+    var sep = base.indexOf('?') === -1 ? '?' : '&';
+    window.location.href = base + sep + 'keyword=' + enc;
+    return false;
+  } else if (rw === 1) {
+    var b1 = base.replace(/^\\/\\?/, '/').replace(/\\.html$/i, '');
+    window.location.href = b1.replace(/\\/$/, '') + '-1-' + enc + '.html';
+    return false;
+  } else if (rw === 2) {
+    var b2 = base.replace(/\\.html$/i, '').replace(/\\/$/, '');
+    window.location.href = b2 + '/1/' + enc + '.html';
+    return false;
+  } else if (rw === 3) {
+    var b3 = base.replace(/\\.html$/i, '').replace(/\\/$/, '');
+    window.location.href = b3 + '/1/' + enc;
+    return false;
+  }
+  return false;
+}
+</script>
+
+说明：
+1) name=\"keyword\" 必须（用于取值与后端接参）
+2) 不再强制要求 id=\"keyword\" / id=\"search_form\"，避免一个页面多个搜索框时 id 重复导致“输入了但无法搜索”
+3) 一个页面可以放多个搜索表单，每个表单都用 onsubmit=\"return handleSearch(this)\" 即可
+
+伪静态说明：
+- url_rewrite_on = 0：/?search.html&keyword=xxx
+- url_rewrite_on = 1：/search-1-xxx.html
+- url_rewrite_on = 2：/search/1/xxx.html
+- url_rewrite_on = 3：/search/1/xxx

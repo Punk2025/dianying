@@ -1,0 +1,92 @@
+<div class="login-overlay">
+  <div class="login-dialog">
+    <h2>请先登录</h2>
+    <p>登录后即可进行操作</p>
+    <div class="login-buttons">
+      <a href="{$user_login}" class="login-btn">立即登录</a>
+      <a href="{$user_create}" class="register-btn">注册会员</a>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.login-dialog {
+  background: #1c1c1c;
+  padding: 40px 30px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+  animation: zoomIn 0.35s ease;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.login-dialog h2 {
+  color: #fff;
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.login-dialog p {
+  color: #ccc;
+  margin: 0 0 24px;
+  font-size: 15px;
+}
+
+.login-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.login-btn,
+.register-btn {
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  min-width: 120px;
+  text-align: center;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+.login-btn {
+  background: #2196f3;
+}
+.login-btn:hover {
+  background: #1976d2;
+  transform: scale(1.05);
+}
+.register-btn {
+  background: #e91e63;
+}
+.register-btn:hover {
+  background: #c2185b;
+  transform: scale(1.05);
+}
+@media (max-width: 480px) {
+  .login-dialog {
+    padding: 30px 20px;
+  }
+  .login-btn,
+  .register-btn {
+    width: 100%;
+  }
+}
+</style>

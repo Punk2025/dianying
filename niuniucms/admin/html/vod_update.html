@@ -1,0 +1,196 @@
+
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">  
+             <!-- ROW-1 OPEN -->
+                        <div class="row">
+                            <div class="col-lg-12 mt-5">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title"><?php echo lang('edit');?>-<?php echo $video['name'];?></div>
+                                    </div>
+                                    <div class="card-body">
+                                        <form action="<?php echo url('vod-update', '', TRUE); ?>" method="POST">
+                                        <!-- 基本信息 -->
+                                        <h5 class="card-title mb-4">基本信息</h5>
+                                        <div class="row g-3">
+                                            <!-- 视频标题信息 -->
+                                             <input type="hidden" name="vid" value="<?php echo $video['vid'];?>">
+                                            <div class="col-md-4">
+                                                <label class="form-label">名称</label>
+                                                <input type="text" name="name" class="form-control" placeholder="视频名称" value="<?php echo $video['name'];?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">副标</label>
+                                                <input type="text" name="sub" class="form-control" placeholder="副标" value="<?php echo $video['sub'];?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">URL别名</label>
+                                                <input type="text" name="alias" class="form-control" placeholder="URL别名" value="<?php echo $video['alias'];?>">
+                                            </div>
+                                             
+                                            <div class="col-md-3">
+                                                <label class="form-label">分类</label>
+                                                <select name="cid" class="form-control form-select">
+                                                    <?php foreach($columnlist as $category): ?>
+                                                        <option value="<?php echo $category['cid'];?>" <?php if($video['cid'] == $category['cid']) echo 'selected';?>><?php echo $category['name'];?></option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">置顶</label>
+                                                <select name="sticky" class="form-control form-select">
+                                                    <option value="0" <?php if($video['sticky'] == 0) echo 'selected';?>>否</option>
+                                                    <option value="1" <?php if($video['sticky'] == 1) echo 'selected';?>>是</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">状态</label>
+                                                <select name="status" class="form-control form-select">
+                                                    <option value="0" <?php if($video['status'] == 0) echo 'selected';?>>通过</option>
+                                                    <option value="1" <?php if($video['status'] == 1) echo 'selected';?>>待审核</option>
+                                                    <option value="2" <?php if($video['status'] == 2) echo 'selected';?>>草稿</option>
+                                                </select>
+                                            </div> 
+                                            <!-- 视频信息 -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">地区</label>
+                                                <input type="text" name="area" class="form-control" placeholder="地区" value="<?php echo $video['area'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">语言</label>
+                                                <input type="text" name="lang" class="form-control" placeholder="语言" value="<?php echo $video['lang'];?>">
+                                            </div>
+                                            
+                                            <!-- 辅助信息 -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">年份</label>
+                                                <input type="text" name="year" class="form-control" placeholder="年份" value="<?php echo $video['year'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">版本</label>
+                                                <input type="text" name="version" class="form-control" placeholder="版本" value="<?php echo $video['version'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">拼音</label>
+                                                <input type="text" name="en" class="form-control" placeholder="拼音" value="<?php echo $video['en'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">首字母</label>
+                                                <input type="text" name="letter" class="form-control" placeholder="首字母" value="<?php echo $video['letter'];?>">
+                                            </div>
+                                            
+                                            <!-- 统计信息 -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">查看次数</label>
+                                                <input type="number" name="views" class="form-control" placeholder="查看次数" value="<?php echo $video['views'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">收藏数</label>
+                                                <input type="number" name="favorites" class="form-control" placeholder="收藏数" value="<?php echo $video['favorites'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">点赞数</label>
+                                                <input type="number" name="likes" class="form-control" placeholder="点赞数" value="<?php echo $video['likes'];?>">
+                                            </div>
+                                            
+                                            
+                                            <div class="col-md-3">
+                                                <label class="form-label">豆瓣ID</label>
+                                                <input type="number" name="douban_id" class="form-control" placeholder="豆瓣ID" value="<?php echo $video['douban_id'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">豆瓣评分</label>
+                                                <input type="number" step="0.1" name="douban_score" class="form-control" placeholder="豆瓣评分" value="<?php echo $video['douban_score'];?>">
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4"> 
+                                        <h5 class="card-title mb-4">剧组信息</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <label class="form-label">演员</label>
+                                                <input type="text" name="actor" class="form-control" placeholder="演员" value="<?php echo $video['actor'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">导演</label>
+                                                <input type="text" name="director" class="form-control" placeholder="导演" value="<?php echo $video['director'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">编剧</label>
+                                                <input type="text" name="writer" class="form-control" placeholder="编剧" value="<?php echo $video['writer'];?>">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">幕后</label>
+                                                <input type="text" name="behind" class="form-control" placeholder="幕后" value="<?php echo $video['behind'];?>">
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <!-- 媒体信息 -->
+                                        <h5 class="card-title mb-4">媒体信息</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">图片</label>
+                                                <input type="text" name="pic" class="form-control" placeholder="图片URL" value="<?php echo $video['pic'];?>">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">海报</label>
+                                                <input type="text" name="pic_slide" class="form-control" placeholder="海报URL" value="<?php echo $video['pic_slide'];?>">
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <!-- 播放信息 -->
+                                        <h5 class="card-title mb-4">播放信息</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label">播放器来源</label>
+                                                <input type="text" name="play_from" class="form-control" placeholder="播放器来源" value="<?php echo $video['play_from'];?>">
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <!-- 文本信息 -->
+                                        <h5 class="card-title mb-4">文本信息</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label">简介</label>
+                                                <textarea name="blurb" class="form-control" rows="3" placeholder="简介"><?php echo $video['blurb'];?></textarea>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">备注</label>
+                                                <textarea name="remarks" class="form-control" rows="2" placeholder="备注"><?php echo $video['remarks'];?></textarea>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">内容</label>
+                                                <textarea class="form-control" name="content"><?php echo $video['content'];?></textarea>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">播放地址</label>
+                                                <textarea readonly class="form-control" name="play_url" rows="5" placeholder="播放地址"><?php echo $video['play_url'];?></textarea>
+                                            </div>
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="card-footer"> 
+                                        <div class="row">
+                                            <div class="col-md-12 text-start">
+                                                <a href="javascript:void(0)" class="btn btn-default me-2">取消</a>
+                                                <button type="submit" class="btn btn-primary">保存修改</button>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                     </form>
+                                </div>
+                            </div>
+                        </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

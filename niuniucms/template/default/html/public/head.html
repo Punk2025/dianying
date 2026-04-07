@@ -1,0 +1,105 @@
+ <div id="header" class="transition duration-500 w-screen z-30 bg-blur-header md:bg-transparent bg-black ">
+                <div class="flex pb-2.5 md:pb-4 pt-3 justify-center container md:pl-0">
+                    <div class="gap-y-2 flex-col w-full md:flex-row flex">
+                        <div class="flex-1 flex gap-x-2 md:justify-between ">
+                            <a  href="{$maccms.path}" class="flex justify-between w-24 md:w-28 " id="logo"><img alt="{$maccms.site_name}" width="141" height="39"   src="/template/default/images/logo.png"></a>
+                            <div class="items-center flex flex-1 md:flex-none">
+                                <div class="flex-1 md:flex-none">
+                                    <div class="relative flex flex-1 md:flex-none">
+                                        <div id="back" class="flex justify-between pr-4 pl-2 self-center hidden">
+                                            <img  width="9" height="16" src="/template/default/images/back.svg">
+                                        </div>
+                                        <form method="get" name="search" id="search"  class="w-full"  action="{$search_url}">
+                                        <div class="relative flex-1">
+                                            <input id="searchInput" placeholder="请输入要搜索的关键词" maxlength="20" class="border-0 border-gray-300 text-white rounded-full pl-10 md:pl-4 md:pr-10 pr-4 py-2 focus:outline-none w-full md:w-60 header-search-input-desktop text-[14px] search-field" name="keyword" autocomplete="off"  type="text" value="{if:empty($keyword)}{$keyword}{/if}">
+                                            <button type="submit" class="absolute inset-y-0 left-3 flex items-center justify-center md:hidden">
+                                                <img alt="search" loading="lazy" width="20" height="20" class="text-gray-400"
+                                                    src="/template/default/images/search.png">
+                                            </button>
+                                            <button type="submit"  class="absolute inset-y-0 right-3 items-center justify-center hidden md:flex">
+                                                <img alt="search" loading="lazy" width="20" height="20"  class="text-gray-400"
+                                                    src="/template/default/images/search.png">
+                                            </button>
+                                        </div>
+                                        </form>
+                                    </div>
+                                    <div id="searchWrap" class="hidden absolute flex flex-col items-center pt-1 w-full h-[calc(100dvh-52px)] md:h-auto z-20 left-0 md:left-auto md:w-96">
+                                        <div class="py-3 px-4 bg-[#1d2023] md:rounded-md w-full h-full md:bg-[#18191ef5] md:w-96">
+                                            <div class="no-scrollbar overflow-y-scroll w-full h-full overflow-scroll overscroll-none">
+                                                <div class="w-full h-[calc(100%+1px)]"> 
+                                                    <div class="flex flex-row justify-between">
+                                                        <div class="text-sm">热搜总榜</div>
+                                                    </div> 
+                                                    {block:vod_top cid="" n="15"} 
+                                                    {if:isset($data)}
+													  		{loop:$data $v} 
+                                                            <div class="flex flex-row justify-between py-2.5 cursor-pointer search-hot-item">
+                                                        <div class="flex flex-row">
+                                                            <div class="text-sm w-8 text-center font-bold {if:($v['n']<4)}text-hot-{$v[n]} {else}text-hot-4{/if}">{$v[n]}
+                                                            </div>
+                                                            <a  href="{$v.url}" title="{$v.name}" class="text-sm">{$v.name}</a>
+                                                        </div>
+                                                    </div> 
+													{/loop}
+                                                    {/if}
+													{/block}   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                             
+                        </div>
+                        <div class="flex gap-4 overflow-scroll md:hidden no-scrollbar">
+                            <div class="flex flex-1 flex-col items-center cursor-pointer header-tab">
+                                <a href="/" title="推荐" class="truncate text-white">首页</a>
+                            </div>
+							{if:isset($cate_nav)}
+							{loop:$cate_nav $v}
+							<div class="flex flex-1 flex-col items-center cursor-pointer header-tab">
+                                <a href="{$v.url}" title="{$v.name}" class="truncate text-white">{$v.name}</a>
+                            </div> 
+							{/loop} 
+							{/if}
+                        </div>
+                        <div id="menu" class="grow md:flex items-center justify-end hidden pcnav" style="max-width: 616px;">
+                            <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="/" title="首页">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">首页</span>
+                            </a>
+                            {loop:$cate_nav $v}
+                            <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="{$v.url}" title="{$v.name}">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">{$v.name}</span>
+                            </a>
+                            {/loop}  
+
+                            <div id="moreMenu" class="hidden w-14 flex flex-col items-center cursor-pointer">
+                                <div class="relative">
+                                    <button class="flex text-white flex-row items-center text-yellow-hover"><span>更多</span>
+                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-down" class="svg-inline--fa fa-chevron-down mx-1" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 14px;">
+                                        <path fill="currentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                                        </svg>
+                                   </button>
+                                    <div id="moreDropdown" class="hidden absolute flex flex-col md:items-center items-end md:-left-2 pt-1 right-0 z-20">
+                                        <div style="width: 0px; height: 0px; top: -10px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 10px solid rgba(24, 25, 30, 0.96);"></div>
+                                        <div id="moreDropdownWrap" class="py-3 flex flex-col md:rounded-md rounded-b-lg rounded-tl-lg" style="background-color: rgba(24, 25, 30, 0.96);"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                          
+                        {if:(group_access($gid, 'intoadmin'))}
+                        <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="/admin" title="">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">{$lang.admin_page}</span>
+                        </a>
+                        
+                        <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="{$user_logout}" title="">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">{$lang.logout}</span>
+                        </a> 
+                        {/if}
+                            
+                        </div> 
+                    </div>
+                </div>
+            </div>  

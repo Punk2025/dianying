@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+{inc:public/include.html}
+	</head>
+	<body>
+		<div id="__nuxt">
+			<div id="__layout">
+				<div class="app-container">
+					<div class="page-index">
+						<div class="van-nav-bar van-nav-bar--fixed">
+							<div class="van-nav-bar__content">
+								<div class="van-nav-bar__title van-ellipsis">片库</div>
+							</div>
+						</div>
+						<div class="nav-bar-space" style="width: 100%; height: 46px;"></div>
+						<div class="filters" style="padding: 15px 10px 10px;">
+							<div class="filter-row">
+								<div class="filter-row-content">
+{if:isset($cate_nav)}
+{loop:$cate_nav $v} 
+{if:isset($v[sonlist])} 
+
+																		<a href="{$v.url}" class="filter-item {if:($cid==$v['cid'])}active{/if}">{$v.name}</a>
+{/loop} 
+{/if}
+{/if}
+																	</div>
+							</div>
+							<div class="filter-row">
+																<a href="/index.php/vod/show/id/1.html" class="filter-row-title filter-item active">分类</a>
+																<div class="filter-row-content">
+{loop:$sonlist $s}
+																		<a href="{$s.url}" class="filter-item {if:($cid==$s['cid'])}active{/if}">{$s.name}</a>
+{/loop} 
+
+																	</div>
+							</div>
+
+							<div class="filter-row">
+								<a href="/index.php/vod/show/id/1.html" class="filter-row-title filter-item active">排序</a>
+								<div class="filter-row-content">
+								    {loop:$hits_url $h}
+									<a href="{$h.url}" class="filter-item ">{$h.name}</a>
+									{/loop}
+								</div>
+							</div>
+						</div>
+						<div class="water-fall-container van-pull-refresh">
+							<div class="van-pull-refresh__track">
+								<div class="van-list">
+									<div class="row-2 van-row" id="content">
+{loop:$videolist $v}
+																				<div class="van-col van-col--12 madou_item">
+	<div class="video-item">
+		<a href="{$v.play_data.0.url}" class="block" title="{$v.name}">
+			<div class="aspect-ratio" >
+				<div class="aspect-ratio-content">
+					<div class="easy-image">
+						<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="{$v.name}">
+					</div>
+				</div>
+				<div class="overlay">
+										<div class="flag">{$v.remarks}</div>
+										<div class="times">{$v.views}次播放</div>
+										<div class="duration">{$v.create_date_fmt_ymd}</div>
+									</div>
+			</div>
+		</a>
+		<a href="{$v.play_data.0.url}" class="block title van-ellipsis" title="{$v.name}">{$v.name}</a>
+	</div>
+</div>
+{/loop}
+																			</div>
+											<style>
+.module-footer{text-align:center}#page{padding-top:10px}.page-current{font-weight:700}.page-number{padding:0 15px;line-height:40px;font-size:14px;display:inline-block;border-radius:50px;background:#000;color:#fff;margin:0 2px}.page-current,.page-number:hover{background:#fac33d;color:#fff}
+</style>
+<div id="page"> 
+{block:default_page} {/block}
+          </div>
+
+								</div>
+							</div>
+						</div>
+{inc:public/foot.html}
+	</body>
+</html>

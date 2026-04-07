@@ -1,0 +1,16 @@
+伪静态站群单独使用 
+支持格式 4种格式 /?vod-1.html /vod-1.html /vod/1.htm /vod/1
+ location / {
+        if (!-e $request_filename) {
+        rewrite ^/(.*)\.html$ /index.php last; 
+        rewrite ^/(.*)/?$ /index.php last;
+        }
+        }
+        
+批量添加
+格式：site_domain|site_name|path|site_rewrite
+- 空行自动忽略
+- 少于 3 个|的行将被丢弃
+- 伪静态 ≥4 或为空时自动随机设为 0-3
+- 若域名不存在或已存在，则自动忽略 
+- 若模板路径不存在或为空，则随机选择模板目录

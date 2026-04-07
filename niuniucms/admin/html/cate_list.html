@@ -1,0 +1,285 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5">
+	<div class="col-12">  
+		<div class="card">
+            <div class="card-header">
+                <h3 class="card-title">分类管理</h3>
+                <span class="ms-auto flex-wrap gap-2 "> 
+                    <a type="button" class="btn btn-green" data-bs-toggle="modal" data-bs-target="#cate-post" data-bs-whatever="@mdo">添加分类</a>
+                <div class="modal fade" id="cate-post">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content modal-content-demo">
+                            <div class="modal-header">
+                                <h6 class="modal-title">添加分类</h6>
+                                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="<?php echo url('cate-create');?>" method="post" id="formp">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">分类名称 <span class="text-red">*</span></label>
+                                                <input type="text" name="name" class="form-control" placeholder="分类名称">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">URL别名 <span class="text-red">*</span></label>
+                                                <input type="text" name="alias" class="form-control" placeholder="URL别名">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">类型</label>
+                                                 <select name="model" class="form-control form-select" data-bs-placeholder="选择类型">
+                                                    <option value="0" selected>视频</option>
+                                                    <option value="1">文章</option> 
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">上级分类 </label> 
+                                                    <select name="category" class="form-control form-select" data-bs-placeholder="选择父级类型">
+                                                    <option value="0" selected>顶级分类</option>
+                                                    <?php if ($arrlist) { foreach($arrlist as $_cid=>$_cate) { ?>
+                                                        <option value="<?php echo $_cid;?>" ><?php echo $_cate['name'];?></option> 
+                                                      <?php }}  ?> 
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">导航显示：</label>
+                                            <div class="d-flex flex-wrap">
+                                                <div class="custom-control custom-radio">
+                                                <input type="radio" class="custom-control-input" id="nav_display-是" name="nav_display" value="1" checked="checked"><label class="custom-control-label mr-2" for="nav_display-是">是</label>
+                                            </div>
+                                            <div class="custom-control custom-radio ml-2">
+                                                <input type="radio" class="custom-control-input" id="nav_display-否" name="nav_display" value="0"><label class="custom-control-label mr-2" for="nav_display-否">否</label> 
+                                            </div></div>
+                                        </div>
+                                        
+                                    </div>
+                                    <button type="submit" class="btn ripple btn-success mt-2"  id="submitp" type="button">提交</button>
+                                </form>
+                              </div>
+                            <div class="modal-footer">
+                                
+                                <button class="btn ripple btn-danger" data-bs-dismiss="modal" type="button">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <a href="<?php echo url('api-del', '', TRUE); ?>" class="btn btn-danger">清空现有分类</a>
+                    <a href="<?php echo url('api-intov', '', TRUE); ?>" class="btn btn-info">导入影视分类</a>
+                    <a href="<?php echo url('api-intox', '', TRUE); ?>" class="btn btn-warning">导入X分类</a> 
+                    <a data-bs-toggle="modal" href="#exampleModalToggle" role="button" class="btn btn-light"><i class="ti ti-help align-middle me-1 fs-18"></i>使用帮助</a>
+                     <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">分类管理</h5>
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                 分类导入说明：<br>1、清空现有分类 会清空目前站点的所有分类<br>
+                 2、导入影视【x】分类 不会覆盖掉现有的分类 只会增加没有的 
+                <div class="d-flex flex-wrap gap-2 mt-2"> 
+                  <a href="<?php echo url('api-del', '', TRUE); ?>" class="btn btn-danger">清空现有分类</a>
+                  <a href="<?php echo url('api-intov', '', TRUE); ?>" class="btn btn-info">导入影视分类</a>
+                  <a href="<?php echo url('api-intox', '', TRUE); ?>" class="btn btn-warning">导入X分类</a> 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">下一步【如何采集】</button>
+            </div>
+        </div> 
+    </div> 
+</div>  
+<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel2">采集管理</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                一键采集说明：<br>1、选择你想采集的资源站点击 一键采集 <br>
+                2、一键采集会自动添加 播放器、采集接口、自动绑定现有分类、自动添加定时任务 <br>
+                3、定时任务无需设置时间，系统自动运行。<br>
+                4、如果你想手动采集可以点击 采集今日、采集本周、采集全部 <br>
+                5、如果你想自定义采集其他资源 暂不支持 <br> 
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">上一步【分类导入】</button>
+            </div>
+        </div> 
+    </div> 
+</div> 
+                </span>
+            </div>     
+			<div class="card-body"> 
+				<form action="<?php echo url('cate-rank', '', TRUE);?>" method="post" id="form"> 
+                    <table class="table border text-nowrap text-md-nowrap table-bordered mb-0 table-hover text-center">
+                        <tbody> 
+                        <tr>
+                            <td>
+                                <?php echo lang('cate_rank');?>
+                            </td>
+                            <td>
+                                <?php echo lang('cate_name');?>
+                            </td>
+                            <td class="hidden-sm">
+                                <?php echo lang('nav');?>
+                            </td> 
+                            
+                            <td>
+                                <?php echo lang('update');?>
+                            </td>
+
+                            <td>
+                                <?php echo lang('delete');?>
+                            </td>
+                        </tr>
+
+                        <?php if ($arrlist) { foreach($arrlist as $_cid=>$_cate) { ?>
+                        <input type="hidden" class="form-control" name="cid[<?php echo $_cid;?>]" value="<?php echo $_cate['cid']; ?>" placeholder="<?php echo lang('cate_id');?>" />
+                        <!--频道-->
+                        <?php if (1 == $_cate['category']) { ?>
+
+                        <tr cid="<?php echo $_cate['cid']; ?>">
+                            <td class="align-middle text-center">
+                                <input type="text" class="form-control" name="rank[<?php echo $_cid;?>]" value="<?php echo $_cate['rank']; ?>" placeholder="<?php echo lang('cate_rank');?>" style="width:60px;display: inherit;" />
+                            </td>
+                            <td class="text-left font-weight-bold">
+                                <?php echo $_cate['name'].' <span class="font-weight-bold text-danger small hidden-sm">('.lang('channel').')</span>'; ?>
+                            </td>
+                            <td class="hidden-sm">
+
+                                <?php if ($_cate['nav_display']) {echo lang('yes');} else {echo lang('no');} ?>
+                            </td>
+                             
+                            <td> 
+                                <?php if (isset($_cate['sonlist'])) {?>
+                                <?php if(count($_cate['sonlist'])==0) {?>
+                                <a href="<?php echo url('cate-update', array('cid' => $_cate['cid']), TRUE);?>"><?php echo lang('edit'); ?></a>
+                                <?php } } ?>
+                            </td>
+                            <td>
+                                <a data-href="<?php echo url('cate-del', array('cid' => $_cate['cid']), TRUE);?>" href="javascript:void(0);" class="delete"><?php echo lang('delete'); ?></a>
+                            </td>
+                        </tr>
+                        <!--子栏目-->
+                        <?php if (isset($_cate['sonlist'])) { foreach($_cate['sonlist'] as $son_cid=>$_son) { ?>
+                        <input type="hidden" class="form-control" name="cid[<?php echo $son_cid;?>]" value="<?php echo $_son['cid']; ?>" placeholder="<?php echo lang('cate_id');?>" />
+                        <tr cid="<?php echo $_son['cid']; ?>">
+                            <td>
+                                <input type="text" class="form-control" name="rank[<?php echo $son_cid;?>]" value="<?php echo $_son['rank']; ?>" placeholder="<?php echo lang('cate_rank');?>" style="width:60px;display:inherit;" />
+                            </td>
+                            <td class="text-left pl-4">
+                                <i class="icon-angle-double-right ml-2 mr-1"></i><?php echo $_son['name']; ?>
+                            </td>
+                            <td class="hidden-sm">
+                                <?php if ($_son['nav_display']) {echo lang('yes');} else {echo lang('no');} ?>
+                            </td> 
+                             
+                            <td> 
+                                <a href="<?php echo url('cate-update', array('cid' => $_son['cid']), TRUE);?>"><?php echo lang('edit'); ?></a> 
+                            </td>
+                            <td>
+                                <a data-href="<?php echo url('cate-del', array('cid' => $_son['cid']), TRUE);?>" href="javascript:void(0);" class="delete" data-bs-placement="top" data-bs-toggle="tooltip" data-bs-original-title="清空当前分类已经采集数据已绑定分类" class="mr-2 btn btn-sm btn-danger" ><?php echo lang('delete'); ?></a>
+                            </td>
+                        </tr>
+
+                        <?php }} ?>
+                        <?php } else { ?>
+
+                        <!--顶级栏目-->
+                        <tr cid="<?php echo $_cate['cid']; ?>">
+                            <td>
+                                <input type="text" class="form-control" name="rank[<?php echo $_cid;?>]" value="<?php echo $_cate['rank']; ?>" placeholder="<?php echo lang('cate_rank');?>" style="width:60px;display:inherit;" />
+                            </td>
+                            <td class="text-left font-weight-bold">
+                                <?php echo $_cate['name']; ?>
+                            </td>
+                            <td class="hidden-sm">
+                                <?php if ($_cate['nav_display']) {echo lang('yes');} else {echo lang('no');} ?>
+                            </td> 
+                             
+                            <td>
+                                <a href="<?php echo url('cate-update', array('cid' => $_cate['cid']), TRUE);?>"><?php echo lang('edit'); ?></a>
+                            </td>
+                            <td>
+                                <a data-href="<?php echo url('cate-del', array('cid' => $_cate['cid']), TRUE);?>" href="javascript:void(0);" class="delete"><?php echo lang('delete'); ?></a>
+                            </td>
+                        </tr>
+
+                        <?php } ?>
+                        <?php }} else { ?>
+
+                        <tr>
+                            <td colspan="7"><?php echo lang('none');?></td>
+                        </tr>
+
+                        <?php } ?>
+
+                        </tbody>
+                    </table>
+
+					<p class="text-center">
+						<button type="submit" class="btn btn-danger btn-lock col-md-3 mx-auto" id="submit" data-loading-text="<?php echo lang('submiting');?>..."><?php echo lang('confirm');?></button>
+					</p>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+
+var jform = $("#form");
+jform.on('submit', function(){
+	jform.reset();
+	var postdata = jform.serialize();
+    var jthis = $(this);
+    var jsubmit = jthis.find('#submit');
+	jsubmit.button('loading');
+	$.xpost(jform.attr('action'), postdata, function(code, message) {
+		if(code == 0) {
+			$.alert(message);
+			jsubmit.text(message).delay(1000).location();
+		} else {
+			alert(message);
+			jsubmit.button('reset');
+		}
+	});
+	return false;
+});
+/*删除*/
+$('table').on('click', 'a.delete', function() {
+    var jthis = $(this);
+    var href = $(this).data('href');
+    var jtr = jthis.parents('tr');
+    $.xpost(href, {}, function (code, message) {
+        if (code == 0) {
+            jtr.remove();
+        } else {
+            $.alert(message);
+        }
+    });
+    return false;
+});
+
+ 
+    </script>

@@ -1,0 +1,670 @@
+模板---说明  可复制一份 default目录
+template/default
+default/js 
+default/css 
+default/html		---模板主目录 
+index.html			---首页 
+category.html 		---一级分类
+list.html			---二级分类
+video.html			---视频详情 
+player.html			---视频播放详情
+search.html			---搜索
+tag_list.html		---标签聚合
+tag.html			---标签详情
+type.html			---筛选
+message.html		--通知
+404.html			--404显示
+art_category.html	--一级文章分类
+art_list.html		--二级列表
+art.html			--文章详情 
+
+手机模板说明			---手机模板m 前面增加m.如果不设置
+m.index.html			---首页 
+m.category.html 		---一级分类
+m.list.html			---二级分类
+m.video.html			---视频详情 
+m.player.html			---视频播放详情
+m.search.html			---搜索
+m.tag_list.html		---标签聚合
+m.tag.html			---标签详情
+m.type.html			---筛选
+
+
+
+模板架构说明
+
+{$path_tpl}模板路径template/default  也可以直接使用 /template/模板目录/css|js
+
+css文件夹		css文件
+img文件夹		图片文件
+js文件夹			js文件 
+
+css/js说明
+<link rel="stylesheet" type="text/css" href="{$path_tpl}css/style.css"/>
+<link rel="stylesheet" type="text/css" href="{$path_tpl}js/style.js"/>
+
+<link rel="stylesheet" type="text/css" href="/template/模板目录/css/style.css"/>
+<link rel="stylesheet" type="text/css" href="/template/模板目录/js/style.js"/>
+
+模板说明 
+注意 inc引入的文件，文件名不能用 - ， 用 _ 
+
+正确：{inc:include_css.html}
+
+错误：{inc:include-css.html}
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{inc:public/include.html}
+</head>
+<body>
+{inc:public/head.html}
+{inc:public/vod_cate.html} 
+{inc:public/foot.html}
+{loop:$linklist $v}
+<a href="{$v.url}" target="_blank" title="{$v.name}">{$v.name}</a>
+{/loop}	 
+</body>
+</html>
+
+你要建立一套主题，文件夹名abc，名字“abc主题”。
+
+在 template 建立 abc目录
+在 abc目录下 建立 html css js img 目录
+建立 conf.json 文件 内容如下 
+{
+    "name": "abc黑色模板",
+    "brief": "abc黑色模板",
+    "version": "1.0.0",
+    "software_version": "1.0.0",
+    "mode": 0,
+    "type": 1,
+    "installed": 0,
+    "author": "",
+    "domain": "http://www.niuniubbs.com",
+    "qq": ""
+}
+
+模板缩略图使用 icon.png 
+ 
+
+常用变量
+{$seo.t}			----seo标题
+{$seo.d}			----seo标题
+{$seo.k}			----seo标题
+{$nncms.site_name}	----网站标题
+{$nncms.email}		----邮件
+{$nncms.tg}			----tg
+{$nncms.tj}			----统计代码
+{$nncms.logo}		----logo 
+
+{$search_url}		----搜索提交地址
+{$sitemap_url}		----网站地图
+
+用户登录 
+ {if:(empty($uid))}
+                            <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="{$user_login}" title="">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">{$lang.login}</span>
+                            </a> 
+				        {else}
+                        <a class="flex flex-1 flex-col items-center cursor-pointer header-tab" href="{$user_index}" title="">
+                                <span class="text-yellow-hover transition-colors duration-300 truncate text-white">{$lang.user_index}</span>
+                        </a>
+
+//判断说明 
+
+{if:变量 == 'index'}
+
+{elseif:变量 == 'index2'}
+
+{else}
+ 
+{/if}
+
+{if:变量 == 'index'}
+
+{else}
+ 
+{/if}
+
+{if:变量 == 'index'}
+
+{/if}
+
+循环 
+
+{loop:$cate_nav $v}
+{$v.字段} 或者 {$v[字段]}
+{/loop} 
+
+模板block 说明
+可以调用多个 block  返回的$data只能在block标签内调用 
+{block:vod_cate cid="1" n="24"}
+
+{loop:$data[cate][sonlist] $c} 循环$date下的数组   也可以直接使用 {loop:$data $c} 前提是 $date直接是可循环的数据    
+{$c.字段}
+{/loop}
+{/block}
+ 
+导航   
+$cate_nav  一级导航 
+ $v[url]    	----分类链接
+ $v[name]		----名称
+ $v[cid]		----分类cid
+ $v[sonlist]	----二级分类
+ $v2[cid]		----二级分类cid
+ $v2[url]		----二级链接
+ $v2[name]		----二级名称  
+
+$cate_list  全部显示的导航 【不推荐使用】
+
+
+1、二级导航
+ {if:isset($cate_nav)}
+{loop:$cate_nav $v}
+{$v[cid]}			--同时支持 {$v.cid}
+{$v[url]}			--同时支持 {$v.url}
+{$v[name]}			--同时支持 {$v.name}
+ 
+{loop:$v[sonlist] $v2}
+ {$v2[cid]}			--同时支持 {$v2.cid}
+ {$v2[url]}			--同时支持 {$v2.url}
+ {$v2[name]}		--同时支持 {$v2.name}
+{/loop} 
+{/loop}
+{/if}
+2、一级导航
+
+{if:isset($cate_nav)}
+{loop:$cate_nav $v}
+{$v.cid}
+{$v.url}
+{$v.name}
+{/loop} 
+{/if}
+
+3、全部显示
+{if:isset($cate_list)}
+{loop:$cate_list $v}
+{$v[url]}
+{$v[name]}
+{/loop}
+{/if}
+ 
+
+视频	字段说明 --仔细阅读 后续的部分调用 只写 loop 不再赘述 {$v.字段}
+name        			--视频名称
+sub         			--副标
+en          			--拼音
+pic         			--图片
+pic_slide   			--海报
+actor       			--演员
+director    			--导演
+writer      			--编剧
+behind      			--幕后
+blurb       			--简介
+remarks     			--备注 
+serial      			--连载数
+area        			--地区
+lang        			--语言
+year        			--年份
+version     			--版本
+cate_name				--分类名称
+cate_url				--分类url
+create_date_fmt_ymd     ---6小时前
+create_date_fmt     	---2025-06-10
+
+
+视频调用示例
+
+首页最新	  
+{loop:$videolist $v}
+{$v.pic}
+{$v.name}
+{$v.blurb}
+{$v.url}
+{$v.create_date_fmt}	
+{$v.create_date_fmt_ymd}	
+{$v.cate_name}	
+{$v.cate_url}
+
+{loop:$v['tag_url'] $t} 
+{$t.name}	--标签名称
+{$t.url}	--标签链接
+{/loop}
+
+{/loop}
+
+//推荐调用 
+  {if:isset($stickylist)}
+  {loop:$stickylist $v}
+  {$v.pic_slide} --海报
+  字段参考 上方视频字段调用 
+  {/loop}
+  {/if}
+
+
+根据一级分类调用数据   cid="1"  表示 顶级分类 为1的数据  n="24" 调用 24条最新的数据 
+
+{if:$cid_count!=0}  
+{block:vod_cate cid="1" n="24"}
+
+{$data[cate]['name']}	一级分类名称
+
+循环输出 分类下的所有子分类 
+{loop:$data[cate][sonlist] $c} 
+{$c.url}    子分类地址
+{$c.name}	子分类名称
+{/loop} 
+
+视频数据 
+{loop:$data['videolist'] $v} 
+字段参考 上方视频字段调用 
+
+{/loop}
+
+{/block}
+
+{/if}
+ 
+根据分类id调用  cid="2"  表示 分类为2的数据  n="12" 调用12条最新的数据 
+{block:vod_cid cid="2" n="12"}
+		{$data[cate_name]}	---分类名称
+		{$data[cate_url]}	---分类URL
+		{$data[cid]}		---分类id
+        {loop:$data['videolist'] $v} 
+        字段参考 上方视频字段调用 
+        {/loop}
+ {/block}
+
+
+ 调用排名数据 最高浏览的数据   n="15" 调用15条最新的数据   主要用于搜索下拉 不使用搜索 提高效率 缓存1小时 
+
+{block:vod_top cid="" n="15"} 
+{if:isset($data)}
+{loop:$data $v} 
+{$v[n]}  如果需要判断 使用 {$v[n]} 排名  示例 {if:($v['n']<4)}text-hot-{$v[n]} {else} text-hot-4 {/if} 
+{$v.url}  视频地址
+{$v.name} 视频名称 
+{/loop}
+{/if}
+{/block}
+
+
+友情链接数据
+$linklist 
+ {$v[url]}  链接地址
+ {$v[name]} 友链名称
+
+示例代码
+{loop:$linklist $v}
+{$v[url]}
+{$v[name]} 
+{/loop}
+
+category.html    一级列表 
+
+特有
+{$cate.name} 当前分类名称
+{$cate.url}  当前分类url
+{$cate.cid}   当前分类cid
+所有的子分类 
+{loop:$sonlist $s}
+{$s.url}
+{$s.name} 
+{/loop}  
+
+调用当前一级分类下的所有分类下的数据
+{loop:$arrlistall['list'] $t}
+
+{if:isset($t[news])} ----此处是判断如果没有数据 则不显示 
+{$t.name}	--子类名称
+{$t.url}  	--子类URL
+{loop:$t[news] $v} 
+
+ 字段参考 上方视频字段调用 
+{/loop}
+{/if}
+{/loop}
+
+
+
+list.html    二级列表 
+
+
+
+//引入筛选 根据需求修改样式和调用  
+
+{$pageurl}  筛选页url
+{loop:$sonlist $s} 
+{$s.type_url}  
+{$s.name}
+判断使用 
+{if:$cid==$s[cid]}判断输出的css或者内容 {/if}
+{if:$cid==''}全部分类{/if}
+
+{/loop} 
+
+{loop:$type_urls[area] $v}
+{$v.url}
+{$v.name}
+判断使用
+{if:$req_area==$v[name]} 你的内容 {else}你的内容{/if}
+{/loop} 
+
+{loop:$type_urls[lang] $v}
+{$v.url}
+{$v.name}
+判断使用
+{if:$req_lang==$v[name]} 你的内容 {else}你的内容{/if}
+{/loop} 
+
+{loop:$type_urls[year] $v}
+{$v.url}
+{$v.name}
+判断使用
+{if:$req_year==$v[name]} 你的内容 {else}你的内容{/if}
+{/loop} 
+
+
+示例 
+<div class="bg-[#1D2023] pt-2 screen-list"> 
+    <div class="transition-all duration-500 md:h-fit md:visible md:py-2 ease-out h-[280px] py-2  flex flex-col divide-y divide-gray-800 container md:flex md:opacity-100">  
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+                 <a href="" class="flex flex-col items-center cursor-pointer {if:$cid==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$cid==''}text-yellow-500{else}text-white{/if}">全部分类</span>
+            </a> 
+                {loop:$sonlist $s} 
+                <a href="{$s.type_url}" class="flex flex-col items-center cursor-pointer {if:$cid==$s[cid]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$cid==$s[cid]}text-yellow-500{else}text-white{/if}">{$s.name}</span>
+                </a>
+                {/loop} 
+        </div> 
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="{$pageurl}" class="flex flex-col items-center cursor-pointer {if:$req_area==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_area==''}text-yellow-500{else}text-white{/if}">地区</span>
+            </a> 
+            {loop:$type_urls[area] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_area==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_area==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div>
+
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="#" class="flex flex-col items-center cursor-pointer {if:$req_year==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_year==''}text-yellow-500{else}text-white{/if}">年份</span>
+            </a> 
+            {loop:$type_urls[year] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_year==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_year==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div>
+
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="#" class="flex flex-col items-center cursor-pointer {if:$req_lang==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_lang==''}text-yellow-500{else}text-white{/if}">语言</span>
+            </a> 
+            {loop:$type_urls[lang] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_lang==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_lang==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div> 
+    </div> 
+</div>
+
+
+{$cate.name} 当前分类名称
+{$cate.url}  当前分类url
+{$cate.cid}   当前分类cid
+
+
+最新视频
+{loop:$videolist $v}
+ 
+{/loop} 
+{/loop}
+
+
+tag.html  标签页
+
+{$tag.name} 标签名
+{loop:$videolist $v}
+字段参考 上方视频字段调用 
+{/loop} 
+
+tag_list.html  标签列表 
+
+ {loop:$taglist $t}
+ {$t.url}
+ {$t.name}
+ {$t.count}  数量
+{/loop}   
+
+
+
+
+search.html 
+
+{$keyword} ---当前搜索词 
+{loop:$videolist $v}
+字段参考 上方视频字段调用 
+{/loop} 
+
+
+video.html
+
+{$video.name}
+{$video.pic}
+.........
+{$video.content} 简介 
+
+视频详情不再赘述
+
+资源来源 
+
+{loop:$video[play_data] $p} 
+{$p.url}   	第一个资源的名称 
+{$p.name}	播放器名称 
+{loop:$p[info] $i}  播放器地址输出          
+{$i.url}	播放 网址  
+{$i.name}   第几集 
+{/loop}
+{/loop} 
+
+{loop:$video[tag_url] $t} 
+{$t.name}	--标签名称
+{$t.url}	--标签链接
+{/loop}
+
+猜你喜欢调用 视频和播放页特有
+{loop:$likelist $v}  
+字段参考 上方视频字段调用 
+{/loop}
+
+
+
+player.html
+
+{$video.name}
+{$video.pic}
+.........
+{$video.content} 简介 
+
+视频详情不再赘述
+
+播放页特有标签 
+{$play_url}  	--当前集数的m3u8  https://v10.tlkqc.com/wjv10/202505/12/9X71e2hDmn82/video/index.m3u8
+{$play_name}	--第几集      第1集
+{$player_url}	--播放器地址 https://jx.wujinkk.com/dplayer/?url=
+{$player}		--https://jx.wujinkk.com/dplayer/?url=https://v10.tlkqc.com/wjv10/202505/12/9X71e2hDmn82/video/index.m3u8
+
+{loop:$video[tag_url] $t} 
+{$t.name}	--标签名称
+{$t.url}	--标签链接
+{/loop}
+资源来源  
+{loop:$video[play_data] $p} 
+{$p.url}   	第一个资源的名称 
+{$p.name}	播放器名称 
+{loop:$p[info] $i}  播放器地址输出          
+{$i.url}	播放 网址  
+{$i.name}   第几集 
+{/loop}
+{/loop} 
+
+猜你喜欢调用 视频和播放页特有
+{loop:$likelist $v}  
+字段参考 上方视频字段调用 
+{/loop}
+ 
+ 支持翻页的页面  index list category.php  tag_list .html  
+
+{$index_page} 暂时使用 后续延申使用自定义 翻页   
+
+翻页   说明 $index_page 继续保留使用 新增 
+
+// 上 下页  
+{block:pager_page}{/block}
+//默认模板输出调用 
+
+{block:default_page} {/block}
+
+bootstrap 翻页样式 
+{block:bootstrap_page}{/block} 
+ 
+6月12日新增  海报 自定义调用
+ 
+根据分类id调用  cid="" 全局调用 cid="28" 调用28分类的推荐数据   n="12" 调用12条数据  p=1 第一页
+{block:poster_rand cid="" n="12" p="1"} 
+        {loop:$data $v} 
+         {$v.vid}
+        {/loop}
+ {/block}
+
+
+分页 调用 
+
+//默认模板输出调用 
+{block:default_page} {/block}
+
+输出效果 自行设置css 
+ <a href="/dongzuo/list_1.html" class="page-number page-previous" title="首页">首页</a><a href="/dongzuo/list_201.html" class="page-number page-previous" title="上一页">上一页</a><a href="/dongzuo/list_198.html" class="page-number desktop" title="第198页">198</a><a href="/dongzuo/list_199.html" class="page-number desktop" title="第199页">199</a><a href="/dongzuo/list_200.html" class="page-number desktop" title="第200页">200</a><a href="/dongzuo/list_201.html" class="page-number desktop" title="第201页">201</a><span class="page-number page-current desktop">202</span><a href="/dongzuo/list_203.html" class="page-number desktop" title="第203页">203</a><a href="/dongzuo/list_204.html" class="page-number desktop" title="第204页">204</a><a href="/dongzuo/list_203.html" class="page-number page-next" title="下一页">下一页</a><a href="/dongzuo/list_204.html" class="page-number page-next" title="尾页">尾页</a> 
+
+ 或者使用  css 
+ .module-footer {
+  text-align:center
+}
+#page {
+  padding-top:10px
+}
+.page-current {
+  font-weight:700
+}
+.page-number {
+  padding:0 15px;
+  line-height:40px;
+  font-size:14px;
+  display:inline-block;
+  border-radius:50px;
+  background:#2c313a;
+  color:#fff;
+  margin:0 2px
+}
+.page-current,
+.page-number:hover {
+  background:#fac33d;
+  color:#fff
+}
+ html代码 ：
+<div class="module-footer">
+      <div id="page">
+       {block:default_page}{/block}
+      </div>
+    </div>
+
+
+
+
+
+// 上 下页  
+{block:pager_page}{/block}
+
+上一页    1/233  下一页  
+   <li class="page-item"><a class="page-link" href="/dongzuo/list_196.html">上一页</a></li>
+   <li class="page-item page-link">197 / 204</li>
+   <li class="page-item"><a class="page-link" href="/dongzuo/list_198.html">下一页</a></li>  
+
+自行设置css  css   ul样式 
+
+bootstrap 翻页样式  
+
+自行设置 css   ul
+
+{block:bootstrap_page}{/block} 
+
+    <li class="page-item"><a href="/dongzuo/list_200.html" class="page-link">«</a></li><li class="page-item"><a href="/dongzuo/list_1.html" class="page-link">1 ...</a></li><li class="page-item"><a href="/dongzuo/list_198.html" class="page-link">198</a></li><li class="page-item"><a href="/dongzuo/list_199.html" class="page-link">199</a></li><li class="page-item"><a href="/dongzuo/list_200.html" class="page-link">200</a></li><li class="page-item active"><a href="/dongzuo/list_201.html" class="page-link">201</a></li><li class="page-item"><a href="/dongzuo/list_202.html" class="page-link">202</a></li><li class="page-item"><a href="/dongzuo/list_203.html" class="page-link">203</a></li><li class="page-item"><a href="/dongzuo/list_204.html" class="page-link">204</a></li><li class="page-item"><a href="/dongzuo/list_202.html" class="page-link">»</a></li>                        
+
+
+//mui移动端风格
+
+{block:mui_page}{/block}  
+ 
+
+文章字段说明 
+            [aid] =>  文章id
+            [cid] =>  分类id
+            [name] => 文章名称
+            [tag] => tag——json格式 
+            [pic] => 图片
+            [content] =>  内容
+            [views] =>  浏览 
+            [i] => 1    顺序 
+            [create_date_fmt] => 13天前
+            [create_date_fmt_ymd] => 2025-06-01
+            [cate_name] =>   分类名称
+            [cate_url] => 	 分类地址 
+            [url] =>      文章地址 
+            [tag_url]   标签地址
+ 
+art_category.html	--一级文章分类
+
+分类下的所有 子分类
+ {loop:$sonlist $s}
+    {$s.url} 
+    {$s.name} 
+{/loop}  
+
+{loop:$artlist $v}
+{$v.name}
+.....
+调用上方字段  
+tag_url需要再次使用 
+{loop:$v[tag_url] $t}
+{$t.name}
+{$t.url}
+{/loop} 
+
+{/loop}  
+分页使用  分页调用 
+art_list.html   
+
+{$cate[name]}    当前分类名称  也支持 {$cate.name}
+{$cate[url]}	分类url 				{$cate.url}
+
+{loop:$artlist $v}
+{$v.name}
+.....
+调用上方字段  
+tag_url需要再次使用 
+{loop:$v[tag_url] $t}
+{$t.name}
+{$t.url}
+{/loop} 
+
+{/loop} 
+

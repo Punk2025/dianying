@@ -1,0 +1,146 @@
+
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">  
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12 col-xl-12">
+                    <div class="input-group mb-5"> 
+                            <input type="text" id="keyword" class="form-control" placeholder="搜索" name="keyword" value="<?php if(!empty($keyword)) { ?><?php echo $keyword;?> <?php } ?>">
+                            <div class="input-group-text btn btn-primary"> <i class="fa fa-search" aria-hidden="true" id="search"></i> </div> 
+                    </div>
+                    <div class="card">
+                        <div class="card-header border-bottom-0"> 
+                            <h2 class="card-title"> 
+                                <div class="row mb-4">
+                                    <label class="col-md-6 col-12 form-label"><?php if ($cid) { ?>分类：<?php echo $cate['name'];?><?php }else{ echo "请选择分类";} ?></label>
+                                    <div class="page-options col-12 col-md-6">
+                                        <select class="form-control select2 w-100" name="cid"> 
+                                            <option value="0"><?php echo 'sticky'==$route?lang('top_3'):lang('select'); ?></option> 
+                                            <?php if(!empty($columnlist)){foreach ($columnlist as $v) { ?>
+                                            <option value="<?php echo $v['cid']; ?>"><?php echo $v['name']; ?></option>
+                                            <?php }} ?> 
+                                        </select> 
+                                    </div>
+                                </div> 
+                               </h2>
+                            
+                        </div>
+                        <div class="e-table px-5 pb-5">
+                            <div class="table-responsive table-lg">
+                                <table class="table border-top table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center">aid</th>
+                                            <th class="text-center">名称</th>
+                                            <th class="text-center">分类</th> 
+                                            <th class="text-center">标签</th> 
+                                            <th class="text-center">添加时间</th>
+                                            <th class="text-center">管理</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="artlist">
+                                        <?php if($artlist) { foreach($artlist as &$_art) { ?>
+                                        <tr aid="<?php echo $_art['aid']; ?>">
+                                            <td class="align-middle text-center">
+                                                <div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top"> 
+                                                    <input class="custom-control-input" type="checkbox" id="<?php echo $_art['aid']; ?>" name="delete" value="<?php echo $_art['aid']; ?>" />
+                                                    <label class="custom-control-label custom-checkbox" for="<?php echo $_art['aid']; ?>"> </label>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                 <?php echo $_art['aid'];?>
+                                            </td>
+                                            <td class="align-middle text-start"> <a target="_blank" href="<?php echo ($conf['url_rewrite_on'] < 2 ? '../' : ''),$_art['url']; ?>"><?php echo $_art['name'];?></a>
+                                           </td>
+                                           <td class="align-middle text-center">
+                                            <?php echo $_art['cate_name'];?>
+                                            </td> 
+                                            <td class="text-nowrap align-middle">
+                                                <?php if($_art['tag']){?>
+                                                    <div class="tags text-wrap">
+                                                        <?php foreach($_art['tag_fmt'] as $key => $_tag) {?>
+                                                                <span class="tag"><a target="_blank"  href="<?php echo ($conf['url_rewrite_on'] < 2 ? '../' : ''),url($conf['route']['tag'].'-' .$key, '', 2);?>">
+                                                                    <?php echo $_tag;?>
+                                                                </a></span> 
+                                                        <?php }?> 
+                                                    </div> 
+                                                    <?php }?> 
+
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <span><?php echo $_art['create_date_fmt_ymd'];?></span>
+                                                </td>  
+                                            <td class="text-center align-middle">
+                                                <div class="btn-group align-top">
+                                                    <a class="btn btn-sm btn-danger badge mr-2" href="<?php echo url('art-del',array('aid'=>$_art['aid']),true);?>">删除</a> 
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php }} else { ?>
+                                            <li class="list-group-item">
+                                                <div><?php echo lang('none');?></div>
+                                            </li>
+                                            <?php } ?>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="mt-3">
+                                <label class="mr-1">
+                                    <input type="checkbox" data-target='input[name="delete"]' class="checkall mt-2 mr-2" value="" aria-label="<?php echo lang('checkall');?>" />
+                                    <?php echo lang('checkall');?>
+                                </label>
+                                <button class="btn btn-danger btn-sm ml-3" id="confirm" style="margin-left: 15px;"><?php echo lang('delete');?></button></p>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <?php if ($pagination) { ?>
+                            <nav class="my-1"><ul class="pagination justify-content-center flex-wrap"><?php echo $pagination; ?></ul></nav>
+                            <?php } ?>
+                    </div>
+                </div> 
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+
+<script>
+  $('.mod-button button').each(function () {
+        var modal_url = $(this).attr('data-modal-url');
+        if (url_rewrite_on < 2) $(this).attr('data-modal-url', '../' + modal_url);
+    }); 
+    var select = $('select[name="cid"]');
+    select.val(<?php echo $cid;?>);
+    select.change(function () {
+        var cid = $(this).val();
+        <?php if ('art' == $route) { ?>
+            window.location = xn.url('art-list', {cid:cid}, true);
+        <?php }?> 
+    });
+</script> 
+ <script>
+    var jconfirm = $("#confirm");
+    var jartlist = $('#artlist');
+    /*删除选中的内容*/
+jconfirm.on('click', function(){
+	var jchecked = jartlist.find('input[name="delete"]').filter(function(){ return this.checked; });
+	if(jchecked.length < 1) return alert("<?php echo lang('please_check_delete_art');?>");
+	if(!window.confirm("<?php echo lang('art_delete_confirm');?>")) return false; 
+	jchecked.each(function() {
+        var jtr = $(this).parents('tr');
+		var aid = jtr.attr('aid'); 
+        $.xpost(xn.url('art-del', '', true), {aid: aid,}, function (code, message) {
+            if (code == 0) { 
+                window.location.reload();
+            } else {
+                $.alert(message);
+            }
+        });
+	});
+});
+ 
+</script>

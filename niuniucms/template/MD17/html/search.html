@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+{inc:public/include.html}
+	</head>
+	<body>
+		<div id="__nuxt">
+			<div id="__layout">
+				<div class="app-container">
+					<div class="page-search">
+						<div class="navbar van-tabs">
+							<div class="van-header">
+								<div class="van-sticky">
+									<div class="search-input van-search van-search--show-action">
+										<div onclick="javascript:MAC.GoBack();" class="search-nav-lef"><i class="van-icon van-icon-arrow-left" style="font-size: 26px;"></i></div>
+										<form id="search" name="search" method="get" action="{$search_url}" onSubmit="return qrsearch();" class="van-search__content van-search__content--round">
+											<div class="van-cell van-cell--borderless van-field">
+												<div class="van-cell__value van-cell__value--alone van-field__value">
+													<div class="van-field__body">
+														<input type="text" name="wd" placeholder="{$keyword}" autocomplete="off" class="van-field__control">
+														<button style="border:none;background-color: transparent;" type="submit" class="van-field__right-icon">
+															<img class="block" src="{$path_tpl}static/images/search-btn.png" height="35">
+														</button>
+													</div>
+												</div>
+											</div>
+										</form>
+										<div onclick="javascript:history.back(-1);" role="button" tabindex="0" class="van-search__action">取消</div>
+									</div>
+								</div>
+							</div>
+							<div class="van-tabs__content">
+								<div class="van-tab__pane">
+									<div class="video-list-container van-pull-refresh">
+										<div class="van-pull-refresh__track">
+											<div class="van-list">
+												<div class="video-item-combination">
+													<div class="row-2 van-row" id="content">
+{loop:$videolist $v}
+																												<div class="van-col van-col--12 madou_item">
+	<div class="video-item">
+		<a href="{$v.play_data.0.url}" class="block" title="{$v.name}">
+			<div class="aspect-ratio" >
+				<div class="aspect-ratio-content">
+					<div class="easy-image">
+						<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="{$v.name}">
+					</div>
+				</div>
+				<div class="overlay">
+										<div class="flag">{$v.remarks}</div>
+										<div class="times">{$v.views}次播放</div>
+										<div class="duration">{$v.create_date_fmt_ymd}</div>
+									</div>
+			</div>
+		</a>
+		<a href="{$v.play_data.0.url}" class="block title van-ellipsis" title="{$v.name}">{$v.name}</a>
+	</div>
+</div>
+{/loop}
+																											</div>
+												</div>
+
+<div class="van-list__finished-text" style="display: none;">没有更多了</div>
+											</div>
+										</div>
+									</div>
+								
+								</div>
+							</div>
+						</div>
+{inc:public/foot.html}
+	</body>
+</html>

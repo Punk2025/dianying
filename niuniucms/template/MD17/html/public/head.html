@@ -1,0 +1,13 @@
+			<div class="van-tabs__nav van-tabs__nav--line van-tabs__nav--complete">
+				<a href="/" class="van-tab van-tab--active">
+					<span class="van-tab__text active">推荐</span>
+				</a>
+{if:isset($cate_nav)}
+{loop:$cate_nav $v} 
+{if:isset($v[sonlist])} 
+				<a href="{$v.url}" class="van-tab ">
+					<span class="van-tab__text ">{$v.name}</span>
+				</a>
+{/loop} 
+{/if}
+{/if}							</div>

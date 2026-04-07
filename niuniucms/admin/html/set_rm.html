@@ -1,0 +1,58 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5"> 
+                <div class="card">
+                    <div class="card-body">
+                        <form action="<?php echo url('set-rm', '', TRUE);?>" method="post" id="form">
+                            <div class="row">
+                                <div class="col-6 col-md-3 mx-auto">
+                                    <div class="form-group d-flex justify-content-between">
+                                        <label class="form-control-label">清空所有数据：</label>
+                                        <div>
+                                            <?php echo $input['clear_data'];?>
+                                        </div>
+                                    </div>
+                                    <div class="form-group d-flex d-flex justify-content-between">
+                                        <label class="form-control-label">谨慎操作-数据无价</label> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <button type="submit" class="btn btn-danger btn-block col-md-3 mx-auto" id="submit" data-loading-text="<?php echo lang('submiting');?>..."><?php echo lang('confirm');?></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?> 
+<script>
+  var jform = $('#form');
+jform.on('submit', function() {
+	jform.reset();
+    var jthis = $(this);
+    var jsubmit = jthis.find('#submit');
+	jsubmit.button('loading');
+	var postdata = jform.serialize();
+	$.xpost(jform.attr('action'), postdata, function(code, message) {
+		if(code == 0) {
+			$.alert(message);
+			jsubmit.text(message).delay(1000).location();
+		} else if(xn.is_number(code)) {
+			alert(message);
+			jsubmit.button('reset');
+		} else {
+			jform.find('[name="'+code+'"]').alert(message).focus();
+			jsubmit.button('reset');
+		}
+	});
+	return false;
+});
+    </script>

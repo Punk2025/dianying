@@ -1,0 +1,96 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+  <div class="side-app">
+    <div class="main-container container-fluid">
+      <div class="row mt-5">
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <?php echo lang('zz');?> 快速采集
+              </h3>
+              <span class="ms-auto flex-wrap gap-2 ">
+                <a data-bs-toggle="modal" href="#exampleModalToggle" role="button" class="btn btn-light"><i
+                    class="ti ti-help align-middle me-1 fs-18"></i>使用帮助</a>
+
+                <div class="modal fade" id="exampleModalToggle" aria-hidden="true"
+                  aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalToggleLabel">使用说明</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        使用说明：<br>
+                        1、仅支持首次使用，不支持重复导入。<br>
+                        2、先下载json文件到本地 runtime目录<br>
+                        3、填写json文件名（不含.json后缀）<br>
+                        4、选择每页条数（根据服务器性能选择条数 默认5000）<br>
+                        5、点击导入按钮开始导入数据<br>
+                        6、导入完成后，点击返回按钮返回列表页<br>
+                        7、导入完成后，建议清理缓存，避免出现问题。<br>
+                        8、注意使用快速导入 ，标签不会自动生成。<br>
+                        支持的资源：<br>
+                         可提前下载文件上传到 runtime目录下<br>
+                         <div class="d-flex flex-wrap gap-2 mt-2"> 
+                            <?php foreach($arrlist as $key => $val){?> 
+                        <?php if(!empty($val['fast_type'])) { ?>
+                          <a href="<?php echo $val['fast_down'];?>" target="_blank" class="btn btn-danger"><?php echo $val['name'];?></a> 
+                        <?php }?>
+                      <?php }?>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </div>
+            <div class="card-body"> 
+              <form action="<?php echo url('api-fastdb', '', TRUE); ?>" method="post" id="form" class="form-horizontal">
+                <div class="form-group row">
+                  <label class="col-sm-2 control-label">选择资源</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="code">
+                      <?php foreach($arrlist as $key => $val){?> 
+                        <?php if(!empty($val['fast_type'])) { ?>
+                      <option value="<?php echo $val['code'];?>">
+                        <?php echo $val['name'];?>-
+                        <?php echo $val['type'];?>
+                      </option>
+
+                      <?php }?>
+                      <?php }?>
+                    </select>
+                  </div>
+                </div> 
+                <div class="form-group row">
+                  <label   class="col-sm-2 control-label">每页条数</label>
+                  <div class="col-sm-10">
+                    <select class="form-control"  name="limit">
+                      <option value="1000">1000</option>
+                      <option value="5000" selected>5000</option>
+                      <option value="10000">10000</option>
+                      <option value="20000">20000</option>
+                      <option value="30000">30000</option>
+                      <option value="50000">50000</option>
+                    </select>
+                  </div>
+                  <span class="text-danger mt-2">（根据服务器性能选择条数 默认5000）</span>
+                </div>
+                <div class="form-group row">
+                  <label class="col-sm-2 control-label"></label>
+                  <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

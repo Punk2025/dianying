@@ -1,0 +1,19 @@
+{inc:public/head.html}
+<!--/头部-->
+{inc:public/nva.html}
+
+<div class="main"> 
+	<h1 class="title">搜索"{$keyword}"  相关影视作品 </h1> 
+	<div class="index-area clearfix"> 
+	<ul> 
+    {loop:$videolist $v}  
+    <li class="p1 m1"><a class="link-hover" href="{$v.url}" title="{$v.name}"><img class="lazy" data-original="{$v.pic}" src="{$path_tpl}Images/load.gif" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}</p><p class="actor">{$v.actor}</p><p class="actor">{$v.cate_name}</p><p class="actor">{$v.year}/{$v.area}</p></span><p class="other"><i>{$v.remarks}</i></p></a>
+    </li>
+     {/loop} 
+    </ul> 
+	</div> 
+</div>
+
+
+
+{inc:public/foot.html}

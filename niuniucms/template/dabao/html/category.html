@@ -1,0 +1,27 @@
+{inc:public/head.html}
+<!--/头部-->
+{inc:public/nva.html}
+
+ 
+ <div class="main">
+     
+     {loop:$arrlistall['list'] $t} 
+{if:isset($t[news])} 
+	<div class="index-area clearfix">
+    <h1 class="title index-color">
+        
+ <a href="{$t.url}">{$t.name}</a>
+	  </h1>
+    <ul> 
+   {loop:$t[news] $v}
+    <li class="p1 m1"><a class="link-hover" href="{$v.url}" title="{$v.name}"><img class="lazy" data-original="{$v.pic}" src="{$maccms.path_tpl}Images/load.gif" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}</p><p class="actor">{$v.actor}</p><p class="actor">{$v.cate_name}</p><p class="actor">{$v.year}/{$v.area}</p></span><p class="other"><i>{$v.remarks}</i></p></a>
+    </li>
+     {/loop}
+	
+    </ul>
+    </div> 
+{/if}
+ {/loop}
+     
+    </div>
+{inc:public/foot.html}

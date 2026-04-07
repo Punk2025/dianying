@@ -1,0 +1,64 @@
+{inc:public/head.html}
+<!--/头部-->
+{inc:public/nva.html}
+
+<div class="main">
+
+<h1 class="title"><a href="/">首页</a> > <a href="{$cate.url}">{$cate.name}</a></h1>
+ 
+{loop:$arrlistall['list'] $t} 
+{if:isset($t[news])} 
+      <div class="row-l">
+
+        <div class="channelall">
+
+          <div class="channeltab clearfix">
+
+            <div class="px"><a class="on" href="{$t.url}">{$t.name}</a></div>
+
+            <div class="sx"><a href="{$t.url}">更多</a></div>
+
+          </div>
+
+        </div>
+<div class="index-area clearfix">
+
+	<ul>
+
+          {loop:$t[news] $v}
+
+            <li class="p1 m1"><a class="link-hover" href="{$v.url}" title="{$v.name}">
+
+              <img class="lazy"  src="{$v.pic}" alt="{$v.name}"><span class="video-bg"></span><span class="lzbz"><p class="name">{$v.name}
+
+</p><p class="actor">{$v.name}</p><p class="actor">{$v.cate_name}</p><p class="actor"></p></span><p class="other"><i>{$v.create_date_fmt_ymd}</i></p></a>
+
+    </li>
+
+           {/loop}
+          </ul>
+
+        </div>
+
+      </div>
+{/if}
+ {/loop}
+
+
+
+
+
+
+
+<div class="select">
+
+<div class="selectlist clearfix"></div>
+
+</div>
+
+</div>
+
+
+
+
+{inc:public/foot.html}

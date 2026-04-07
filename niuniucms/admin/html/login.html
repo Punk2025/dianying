@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head> 
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <title>用户登录</title> 
+    <link id="style" href="/static/css/bootstrap.min.css" rel="stylesheet">  
+     <link href="/static/css/style.css" rel="stylesheet"> 
+    <link href="/static/css/icons.css" rel="stylesheet"> 
+</head>
+
+<body class="app sidebar-mini ltr login-img">
+
+    <!-- BACKGROUND-IMAGE -->
+    <div class="">
+        <!-- PAGE -->
+        <div class="page">
+            <div class="">
+                <!-- Theme-Layout -->
+
+                <!-- CONTAINER OPEN -->
+                <div class="col col-login mx-auto">
+                    <div class="text-center">
+                        <a href="/"><img src="/static/logo.png" class="header-brand-img m-0" alt=""></a>
+                    </div>
+                </div>
+
+                <!-- CONTAINER OPEN -->
+                <div class="container-login100">
+                    <div class="wrap-login100 p-6">
+
+                        <form action="<?php echo $form_action;?>" method="post" id="form"  class="login100-form validate-form">
+                            <span class="login100-form-title pb-5">
+                                用户登录
+                            </span>
+                            <div id="root-data" safe_token="<?php echo $safe_token; ?>"></div>
+                            <div class="wrap-input100 validate-input input-group my-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                </div>
+                                <input type="text" class="input100 border-start-0 ms-0 form-control" placeholder="<?php echo lang('email');?> / <?php echo lang('username');?>" id="email" name="email" required>
+                                 
+                            </div> 
+                            <div class="wrap-input100 validate-input input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                </div>
+                                <input type="password" class="input100 border-start-0 ms-0 form-control" placeholder="<?php echo lang('password');?>" id="password" name="password" required> 
+                            </div> 
+                            <div class="submit">
+                                <button type="submit" class="btn btn-primary mx-auto btn-block" id="submit" data-loading-text="<?php echo lang('submiting');?>...">
+                                    <?php echo lang('login');?>
+                                </button>
+                                    </div>
+                             
+                           
+                        </form> 
+                    </div>
+                </div>
+            </div>
+        </div>  
+    </div>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>  
+    <script src="/static/js/xiuno.js"></script> 
+    <script src="/static/js/bull.js"></script>
+    <script src="/static/js/md5.js"></script>
+<script ajax-eval="true">
+    var body = $('body');
+    var referer = '<?php echo $referer;?>';
+    body.on('submit', '#form', function() {
+        var jthis = $(this);
+        var jsubmit = jthis.find('#submit');
+        jthis.reset();
+        jsubmit.button('loading');
+        var postdata = jthis.serializeObject();
+        postdata.password = $.md5(postdata.password);
+        $.xpost(jthis.attr('action'), postdata, function(code, message) {
+            if(code == 0) {
+                jsubmit.button(message);
+                     setTimeout(function () {
+                    window.location = '/admin/';
+                }, 1000);
+            } else if(xn.is_number(code)) {
+                $.alert(message);
+                jsubmit.button('reset');
+            } else {
+                jthis.find('[name="'+code+'"]').alert(message).focus();
+                jsubmit.button('reset');
+            }
+        });
+        return false;
+    });
+ 
+</script>
+</body> 
+</html>

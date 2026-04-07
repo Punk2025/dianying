@@ -1,0 +1,16 @@
+# 含数据库密码、auth_key，勿提交公网仓库（用 config.default.php 还原）
+niuniucms/config/config.php
+
+# 运行期缓存与日志（可再生成）
+niuniucms/runtime/cache/
+niuniucms/runtime/log/
+
+# 与源码重复、体积大
+niuniucms.zip
+
+# 杂项
+__MACOSX/
+.DS_Store
+*.swp
+*~
+.user.ini

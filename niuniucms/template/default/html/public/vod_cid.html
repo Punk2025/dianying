@@ -1,0 +1,47 @@
+
+{block:vod_cid cid="2" n="12"}
+<div class="pt-3">
+    <div class="flex justify-between">
+        <span style="font-size: 20px; font-weight: 600; font-style: normal; font-family: PingFang SC;">{$data[cate_name]}</span>
+    </div>
+    <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-x-5 gap-y-2 py-2">
+        {loop:$data['videolist'] $v}  
+        <div class="flex flex-col items-center desktop-hover-effect">
+    <div class="relative w-full aspect-[530/726] group mx-4 my-2 rounded-lg desktop-hover-effect">
+        <a class="absolute inset-0 flex rounded-lg lg:group-hover:improve-text-unblurry lg:transition lg:group-hover:scale-120 lg:group-hover:duration-500 lg:group-hover:cursor-pointer group-hover:rounded-lg lg:group-hover:z-10 lg:group-hover:rounded-lg"
+            href="{$v.url}">
+            <img alt="{$v.name}"  class="rounded-lg lazy" data-original="{$v.pic}" src="/template/default/images/load.png" style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;">
+            <div class="bg-[#0000008c] h-[100%] w-full flex flex-col rounded-lg md:group-hover:z-10 lg:group-hover:block hidden">
+                <div class="rounded-t-lg w-full h-[45%] flex justify-center items-center">
+                    <div class="rounded-full bg-[#FAC33D] w-10 h-10 flex justify-center items-center">
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="play" class="svg-inline--fa fa-play " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="font-size: 18px;">
+                            <path fill="currentColor" d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="bg-[#1D2023] rounded-b-lg w-full h-[55%] px-2 py-1.5 flex">
+                    <div class="flex flex-col overflow-hidden">
+                        <span class="antialiased text-[10px]/4 text-[#FAC33D] font-bold">{$v.name}</span>
+                        <div class="vod-tags flex flex-row flex-wrap py-0.5">
+                            <span class="antialiased rounded-md bg-[#ffffff1a] text-[10px] text-[#9C9C9C] p-1">{$v.year}</span>
+                            <span class="antialiased rounded-md bg-[#ffffff1a] text-[10px] text-[#9C9C9C] p-1">{$v.area}</span>
+                        </div>
+                        <div class="flex overflow-hidden">
+                        <span class="antialiased text-[10px] text-[#9C9C9C] 2xl:line-clamp-[7] xl:line-clamp-5 lg:line-clamp-4 line-clamp-2">{$v.blurb}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <div class="flex absolute w-full bottom-1 px-1.5 justify-end">
+            <div class="bg-[#00000099] rounded-md p-1 max-w-full">
+                <p class="text-xs truncate">{$v.remarks}</p>
+            </div>
+        </div>
+    </div>
+    <span class="text-center text-sm mx-1 md-hover-effect"  style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{$v.name}</span>
+</div>
+        {/loop}
+    </div>
+</div>
+ {/block}

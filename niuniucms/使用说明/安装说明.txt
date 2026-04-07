@@ -1,0 +1,45 @@
+欢迎使用牛牛Cms 本程序使用开源框架进行深度开发、加密核心代码、也可屏蔽niuniucms.com  niuniuzs.com域名不进行数据交互、部分功能受限。仅支持赞助的资源站数据采集、不可自定义、支持在线升级
+
+安装说明
+1、编译安装 php版本7.4
+2、安装sg14解密 fileinfo
+3、安装ffi C拓展
+4、安装mysql
+5、nginx
+
+安装后访问
+
+http://你的域名/?user-login.html
+再次输出/admin 进入管理页面
+
+
+
+一、如果安装ffi  宝塔
+1、 登录服务器 
+2、执行shell命令
+cd /www/server/php/74/src/ext/ffi
+/www/server/php/74/bin/phpize
+./configure --with-php-config=/www/server/php/74/bin/php-config
+make
+make install
+sed -i 's/^;extension=ffi/extension=ffi/' /www/server/php/74/etc/php.ini
+sed -i 's/^;ffi\.enable=preload/ffi.enable=true/' /www/server/php/74/etc/php.ini
+
+3、重启php
+
+
+部分可能不存在 /www/server/php/74/src/ext/ffi这个目录 
+需要下载 php对应版本的源码 进行解压后再进行编译 
+进入 解压后的 ext/ffi目录
+
+/www/server/php/74/bin/phpize
+./configure --with-php-config=/www/server/php/74/bin/php-config
+make
+make install
+sed -i 's/^;extension=ffi/extension=ffi/' /www/server/php/74/etc/php.ini
+sed -i 's/^;ffi\.enable=preload/ffi.enable=true/' /www/server/php/74/etc/php.ini
+
+重启php
+
+
+

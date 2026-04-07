@@ -1,0 +1,873 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+  <div class="side-app">
+    <div class="main-container container-fluid">
+      <div class="row mt-5">
+        <div class="col-xl-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <?php echo lang('zz');?>
+              </h3>
+              <span class="ms-auto flex-wrap gap-2 ">
+                <a href="<?php echo url('api-del', '', TRUE); ?>" class="btn btn-danger">清空现有分类</a>
+                <a href="<?php echo url('api-intov', '', TRUE); ?>" class="btn btn-info">导入影视分类</a>
+                <a href="<?php echo url('api-intox', '', TRUE); ?>" class="btn btn-warning">导入X分类</a>
+                <a href="<?php echo url('api-rsync',array('type'=>'seeall'));?>" class="btn btn-danger">查看异步任务</a>
+                <a data-bs-toggle="modal" href="#exampleModalToggle" role="button" class="btn btn-light"><i
+                    class="ti ti-help align-middle me-1 fs-18"></i>使用帮助</a>
+
+                <div class="modal fade" id="exampleModalToggle" aria-hidden="true"
+                  aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalToggleLabel">分类管理</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        分类导入说明：<br>1、清空现有分类 会清空目前站点的所有分类<br>
+                        2、导入影视【x】分类 不会覆盖掉现有的分类 只会增加没有的
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                          <a href="<?php echo url('api-del', '', TRUE); ?>" class="btn btn-danger">清空现有分类</a>
+                          <a href="<?php echo url('api-intov', '', TRUE); ?>" class="btn btn-info">导入影视分类</a>
+                          <a href="<?php echo url('api-intox', '', TRUE); ?>" class="btn btn-warning">导入X分类</a>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal"
+                          data-bs-dismiss="modal">下一步【如何采集】</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal fade" id="exampleModalToggle2" aria-hidden="true"
+                  aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalToggleLabel2">采集管理</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        一键采集说明：<br>1、选择你想采集的资源站点击 一键采集 <br>
+                        2、一键采集会自动添加 播放器、采集接口、自动绑定现有分类、自动添加定时任务 <br>
+                        3、定时任务无需设置时间，系统自动运行。<br>
+                        4、如果你想手动采集可以点击 采集今日、采集本周、采集全部 <br>
+                        5、如果你想自定义采集其他资源 暂不支持 <br>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal"
+                          data-bs-dismiss="modal">上一步【分类导入】</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <a data-bs-toggle="modal" href="#api_rsync" role="button" class="btn btn-light"><i
+                    class="ti ti-help align-middle me-1 fs-18"></i>异步定时说明</a>
+                <div class="modal fade" id="api_rsync" aria-hidden="true" aria-labelledby="api_rsyncLabel"
+                  tabindex="-1">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="api_rsyncLabel">异步定时说明</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        异步定时采集说明：<br>
+                        1、必须安装<br>
+                        2、必须设置一键采集<br>
+                        3、默认走第一页开始采集 直到采集结束 中途不可停止<br>
+                        4、定时说明 默认15分钟采集最新的一次 无需设置宝塔任务
+                        5、不可屏蔽海外访问！！！<br>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </div>
+            <div class="card-body">
+
+              <div class="table-responsive">
+                <table class="table border text-nowrap text-md-nowrap table-bordered mb-0">
+                  <thead>
+                    <tr>
+                      <th>资源类型</th>
+                      <th>资源名称</th>
+                      <th>官网</th>
+                      <th>群组</th>
+                      <th>一键采集</th>
+                      <th>分类绑定</th>
+                      <th>采集今日</th>
+                      <th>采集本周</th>
+                      <th>采集全部</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($arrlist as $key => $value) { ?>
+                    <tr>
+                      <td>
+                        <?php echo $value['type'];?>
+                      </td>
+                      <td>
+                        <?php echo $value['name'];?>
+                      </td>
+                      <td><a href="<?php echo $value['url'];?>" target="_blank">官网</a></td>
+                      <td><a href="<?php echo $value['tg'];?>" target="_blank">TG群组</a></td>
+
+
+
+                      <td>
+                        <?php $code =$value['code'];
+                      if (empty($conf['api'][$code])) { ?>
+                        <form action="<?php echo url('api-set', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="name" id="name" value="<?php echo $value['name']; ?>" />
+                          <input type="hidden" name="play" id="play" value="<?php echo $value['player']; ?>" />
+                          <button type="submit" class="btn btn-primary btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">一键采集</button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action="<?php echo url('api-set', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="name" id="name" value="<?php echo $value['name']; ?>" />
+                          <input type="hidden" name="play" id="play" value="<?php echo $value['player']; ?>" />
+                          <button type="submit" class="btn btn-primary btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">一键采集</button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action="<?php echo url('api-set', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="name" id="name" value="<?php echo $value['name']; ?>" />
+                          <input type="hidden" name="play" id="play" value="<?php echo $value['player']; ?>" />
+                          <button type="submit" class="btn btn-primary btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">一键采集</button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action="<?php echo url('api-set', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="name" id="name" value="<?php echo $value['name']; ?>" />
+                          <input type="hidden" name="play" id="play" value="<?php echo $value['player']; ?>" />
+                          <button type="submit" class="btn btn-primary btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">一键采集</button>
+                        </form>
+                      </td>
+                      <td>
+                        <form action="<?php echo url('api-set', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="name" id="name" value="<?php echo $value['name']; ?>" />
+                          <input type="hidden" name="play" id="play" value="<?php echo $value['player']; ?>" />
+                          <button type="submit" class="btn btn-primary btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">一键采集</button>
+                        </form>
+                      </td>
+                      <?php } else { ?>
+                      <form action="<?php echo url('api-setdel', '', TRUE); ?>" method="post" id="form">
+                        <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                        <button type="submit" class="btn btn-danger btn-sm" id="submit"
+                          data-loading-text="<?php echo lang('submiting'); ?>..." data-bs-placement="top"
+                          data-bs-toggle="tooltip" data-bs-original-title="会移除目前站点的所有绑定分类、不会清空以采集数据">移除采集</button>
+                      </form>
+                      </td>
+
+                      <td>
+                        <?php if (empty($conf['bind'][$code])) { ?>
+                        <form action="<?php echo url('api-auto', '', TRUE); ?>" method="post" id="form">
+                          <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                          <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                          <button type="submit" class="btn btn-info btn-sm" id="submit"
+                            data-loading-text="<?php echo lang('submiting'); ?>...">自动绑定分类</button>
+                        </form>
+                        <?php } else { ?>
+                        <a data-bs-toggle="modal" href="#<?php echo $value['code']; ?>" role="button"
+                          class="btn btn-secondary  btn-sm"> 未创建分类</a>
+
+                        <div class="modal fade" id="<?php echo $value['code']; ?>" tabindex="-1" role="dialog">
+                          <div class="modal-dialog modal-lg " role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">
+                                  <?php echo $value['name']; ?>自动绑定
+                                </h5>
+                                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">×</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <?php $code = $value['code'];
+                                                              $arrs = api_nobind($code);
+                                                               ?>
+                                <table class="table table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">分类名称</th>
+                                      <th scope="col">绑定状态</th>
+                                      <th scope="col">是否创建</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <?php if(is_array($arrs)) { foreach ($arrs as $keys => $vv) { ?>
+                                    <tr>
+                                      <td>
+                                        <?php echo $vv; ?>
+                                      </td>
+                                      <td>未创建</td>
+                                      <td>
+                                        <form action="<?php echo url('api-create', '', TRUE); ?>" method="post"
+                                          id="form">
+                                          <input type="hidden" name="name" id="name" value="<?php echo $vv; ?>" />
+                                          <input type="hidden" name="code" id="code"
+                                            value="<?php echo $value['code']; ?>" />
+                                          <input type="hidden" name="api" id="api"
+                                            value="<?php echo $value['api'];?>" />
+                                          <button type="submit" class="btn btn-info  btn-sm" id="submit"
+                                            data-loading-text="<?php echo lang('submiting'); ?>...">创建分类</button>
+                                        </form>
+                                      </td>
+                                    </tr>
+                                    <?php } } ?>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div class="modal-footer">
+                                <form action="<?php echo url('api-auto', '', TRUE); ?>" method="post" id="form">
+                                  <input type="hidden" name="code" id="code" value="<?php echo $value['code']; ?>" />
+                                  <input type="hidden" name="api" id="api" value="<?php echo $value['api'];?>" />
+                                  <button type="submit" class="btn btn-primary" id="submit"
+                                    data-loading-text="<?php echo lang('submiting'); ?>...">重新绑定分类</button>
+                                </form>
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <a href="javascript:void(0);" class="btn btn-success btn-sm open-bind-modal"
+                          data-code="<?php echo $value['code']; ?>" data-bs-toggle="modal"
+                          data-bs-target="#bindModal">绑定分类</a>
+
+                        <?php } ?>
+                      </td>
+                      <td>
+                        <a class="btn btn-danger btn-sm"
+                          href="<?php echo url('api-api',array('code'=>$value['code'],'type'=>'day','api'=>$value['api']));?>">今日采集</a>
+
+                        <a class="btn btn-green btn-sm" target="_blank"
+                          href="<?php echo url_domain();?>/api.php?route=cron&token=<?php echo $conf['auth_key'];?>&code=<?php echo $value['code'];?>&h=24&froms=<?php echo $value['code'];?>"
+                          data-bs-placement="top" data-bs-toggle="tooltip"
+                          data-bs-original-title="新标签采集今日全部数据、可复制链接进行宝塔计划任务、将h=24 改成168 可采集本周">定时采集</a>
+                      </td>
+                      <td><a class="btn btn-danger btn-sm"
+                          href="<?php echo url('api-api',array('code'=>$value['code'],'type'=>'week','api'=>$value['api']));?>">本周采集</a>
+
+                      </td>
+                      <td>
+                        <a data-bs-toggle="modal" href="#rsync<?php echo $value['code']; ?>" role="button"
+                          class="btn btn-success btn-sm" data-bs-placement="top" data-bs-toggle="tooltip"
+                          data-bs-original-title="不再占用浏览器、只需点击数据将入库到网站、目前测试中、暂不支持中途停止">异步采集</a>
+                        <div class="modal fade" id="rsync<?php echo $value['code']; ?>" tabindex="-1" role="dialog">
+                          <div class="modal-dialog modal-lg " role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">
+                                  <?php echo $value['name']; ?> 异步采集
+                                </h5>
+                                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">×</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <ul class="nav nav-pills nav-pills-circle">
+                                  <li class="nav-item">
+                                    <a class="nav-link border py-3 px-5 m-2 btn-info"
+                                      href="<?php echo url('api-rsync',array('code'=>$value['code'],'type'=>'start'));?>">
+                                      <span class="nav-link-icon d-block"><i class="fe fe-unlock"></i>启动异步采集</span>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link border py-3 px-5 m-2 btn-info"
+                                      href="<?php echo url('api-rsync',array('code'=>$value['code'],'type'=>'stop'));?>">
+                                      <span class="nav-link-icon d-block"><i class="fe fe-unlock"></i>停止异步采集</span>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link border py-3 px-5 m-2 btn-info"
+                                      href="<?php echo url('api-rsync',array('code'=>$value['code'],'type'=>'restart'));?>">
+                                      <span class="nav-link-icon d-block"><i class="fe fe-unlock"></i>重启异步采集</span>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link border py-3 px-5 m-2 btn-info"
+                                      href="<?php echo url('api-rsync',array('code'=>$value['code'],'type'=>'see'));?>">
+                                      <span class="nav-link-icon d-block"><i class="fe fe-unlock"></i>查看采集进度</span>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link border py-3 px-5 m-2 btn-info"
+                                      href="<?php echo url('api-rsync',array('code'=>$value['code'],'type'=>'seeall'));?>">
+                                      <span class="nav-link-icon d-block"><i class="fe fe-unlock"></i>查看所有任务</span>
+                                    </a>
+                                  </li>
+                                </ul>
+                              </div>
+                              <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <?php if(cache_get($value['code'].'pg')) { ?>
+                        <a class="btn btn-danger btn-sm"
+                          href="<?php echo url('api-api',array('code'=>$value['code'],'type'=>'all','api'=>$value['api'],'p'=>cache_get($value['code'].'pg')));?>"
+                          data-bs-placement="top" data-bs-toggle="tooltip" data-bs-original-title="继续采集">继续采集</a>
+                      </td>
+                      <?php } else { ?>
+                      <a class="btn btn-info btn-sm"
+                        href="<?php echo url('api-api',array('code'=>$value['code'],'type'=>'all','api'=>$value['api']));?>"
+                        data-bs-placement="top" data-bs-toggle="tooltip" data-bs-original-title="采集全部数据">全部采集</a>
+                      </td>
+                      <?php } ?>
+                      <?php } ?>
+                    </tr>
+                    <?php } ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<div class="modal fade" id="bindModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">绑定分类</h5>
+        <button type="button" class="btn btn-secondary btn-sm ms-3" data-bs-dismiss="modal">关闭</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="bind-loading" class="text-center py-4">正在加载分类数据...</div>
+        <div id="bind-content" class="d-none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style> 
+#bindModal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background-color: #1a1a2e;
+    border: 1px solid #2c2c54;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+} 
+#bindModal .modal-dialog {
+    max-width: 90%;
+    margin: 1.75rem auto;
+}
+
+#bindModal .modal-header {
+    background-color: #16213e;
+    border-bottom: 1px solid #2c2c54;
+    border-radius: 8px 8px 0 0;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#bindModal .modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+} 
+#bindModal .btn-close {
+    background-color: transparent;
+    color: #ffffff;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+}
+
+#bindModal .btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+}
+
+#bindModal .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+#bindModal .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+} 
+#bind-loading {
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #ffffff;
+} 
+#bind-loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    border: 2px solid #2c2c54;
+    border-top: 2px solid #4dabf7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 
+#bind-content .card {
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    border: 1px solid #2c2c54;
+    background-color: #16213e;
+    margin-bottom: 12px;
+    padding: 12px;
+}
+
+#bind-content .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: #4dabf7;
+}
+
+#bind-content .card .fw-bold {
+    color: #ffffff;
+    font-size: 13px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #2c2c54;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+ 
+#bind-content select {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #2c2c54;
+    background-color: #0f3460;
+    color: #ffffff;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#bind-content select:focus {
+    outline: none;
+    border-color: #4dabf7;
+    background-color: #16213e;
+    box-shadow: 0 0 0 2px rgba(77, 171, 247, 0.2);
+}
+
+#bind-content select option {
+    background-color: #0f3460;
+    color: #ffffff;
+    font-size: 12px;
+} 
+.status-text {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    display: inline-block;
+    background-color: #2c2c54;
+    color: #ffffff;
+}
+
+.status-text-bound {
+    background-color: #1e5128;
+    color: #40c057;
+    font-weight: 500;
+}
+
+.status-text-unbound {
+    background-color: #2c2c54;
+    color: #adb5bd;
+}
+.btn-unbind, .btn-create {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.btn-unbind {
+    background-color: #c92a2a;
+    border: 1px solid #e03131;
+    color: white;
+}
+
+.btn-unbind:hover {
+    background-color: #a02a2a;
+    border-color: #c92a2a;
+    box-shadow: 0 2px 8px rgba(224, 49, 49, 0.3);
+}
+
+.btn-create {
+    background-color: #ffc107;
+    border: 1px solid #ffc107;
+    color: #212529;
+}
+
+.btn-create:hover {
+    background-color: #ffca2c;
+    border-color: #ffca2c;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+#bind-content .row {
+    margin-left: -6px;
+    margin-right: -6px;
+}
+
+#bind-content .col-md-3, #bind-content .col-sm-6 {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+@media (max-width: 1200px) {
+    #bind-content .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+@media (max-width: 992px) {
+    #bind-content .col-md-3 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (max-width: 768px) {
+    #bind-content .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    #bindModal .modal-dialog {
+        max-width: 95%;
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    #bind-content .col-sm-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    #bindModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    #bindModal .modal-header {
+        padding: 10px 15px;
+    }
+    
+    #bindModal .modal-title {
+        font-size: 14px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const bindModal = document.getElementById('bindModal');
+  const contentDiv = document.getElementById('bind-content');
+  const loadingDiv = document.getElementById('bind-loading');
+  function refreshCategoryData(code) {
+    contentDiv.classList.add('d-none');
+    loadingDiv.classList.remove('d-none');
+    loadingDiv.textContent = '正在加载分类数据...';
+    contentDiv.innerHTML = '';
+
+    fetch(`/admin/index.php?0=api&1=cate&code=${code}`)
+      .then(res => res.json())
+      .then(data => {
+        loadingDiv.classList.add('d-none');
+        contentDiv.classList.remove('d-none');
+
+        const api_type = data.api_type || [];
+        const cate = data.cate || {};
+        const bind = data.bind || {};
+
+        let html = '<div class="container-fluid"><div class="row g-3">';
+        api_type.forEach((item) => {
+          const typeName = item.type_name;
+          const boundId = bind[typeName] || '';
+          const localExist = Object.keys(cate).includes(typeName);
+          const statusClass = boundId ? 'status-text-bound' : 'status-text-unbound';
+          const statusText = boundId ? '已绑定' : '未绑定';
+
+          html += `<div class="col-md-3 col-sm-6">
+            <div class="card h-100 p-4">
+              <div class="fw-bold mb-2">${typeName}</div>`;
+
+          if (localExist) {
+            html += `<select class="form-select form-select-sm mb-1 local-cate" data-type-name="${typeName}">
+                       <option value="">-- 请选择本地分类 --</option>`;
+            for (const [name, id] of Object.entries(cate)) {
+              const selected = id == boundId ? 'selected' : '';
+              html += `<option value="${id}" ${selected}>${name}</option>`;
+            }
+            html += `</select>
+                     <small class="${statusClass} status-text">${statusText}</small>`;
+            if (boundId) {
+              html += `<button class="btn btn-sm btn-danger btn-unbind mt-2 w-100">解绑</button>`;
+            }
+          } else {
+            html += `<small class="status-text-unbound mb-2">本地未创建</small>
+                     <button class="btn btn-warning btn-create w-100" data-type-name="${typeName}" data-code="${code}">创建分类</button>`;
+          }
+
+          html += `</div></div>`;
+        });
+        html += '</div></div>';
+        contentDiv.innerHTML = html;
+      })
+      .catch(err => {
+        loadingDiv.textContent = '加载失败，请刷新重试';
+        console.error(err);
+      });
+  }
+  bindModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const code = button.getAttribute('data-code');
+    bindModal.dataset.code = code;
+    refreshCategoryData(code);
+  });
+
+  contentDiv.addEventListener('click', function (e) {
+    const target = e.target;
+    const code = bindModal.dataset.code;
+    if (target.classList.contains('btn-unbind')) {
+      const card = target.closest('.card');
+      const typeName = card.querySelector('select').dataset.typeName;
+      const statusElem = card.querySelector('.status-text');
+      statusElem.textContent = '解绑中...';
+      statusElem.style.position = 'relative';
+      statusElem.style.paddingRight = '20px';
+      statusElem.innerHTML += '<span class="loading-dots"></span>';
+
+      fetch(`/admin/index.php?0=api&1=cate`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: `binstatus=unbind&code=${encodeURIComponent(code)}&type_name=${encodeURIComponent(typeName)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        const loadingDots = statusElem.querySelector('.loading-dots');
+        if(loadingDots) loadingDots.remove();
+        
+        if (data.success) {
+          card.style.backgroundColor = '#f8fff8';
+          setTimeout(() => {
+            card.style.transition = 'background-color 0.5s ease';
+            card.style.backgroundColor = '';
+          }, 200);
+          
+          statusElem.textContent = '未绑定';
+          statusElem.className = 'status-text-unbound status-text';
+          card.querySelector('select').value = '';
+          
+          target.style.transition = 'opacity 0.3s ease';
+          target.style.opacity = '0';
+          setTimeout(() => {
+            target.remove();
+          }, 300);
+        } else {
+          alert(data.msg || '解绑失败');
+        }
+      });
+    }
+    if (target.classList.contains('btn-create')) {
+      const typeName = target.dataset.typeName;
+      const code = bindModal.dataset.code;
+
+      fetch(`/admin/index.php?0=api&1=newcreate`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: `type_name=${encodeURIComponent(typeName)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          refreshCategoryData(code);
+          alert('分类创建成功，分类列表已刷新');
+        } else {
+          alert(data.msg || '创建失败');
+        }
+      });
+    }
+  });
+
+  // 下拉绑定/解绑
+  contentDiv.addEventListener('change', function(e){
+    if(!e.target.classList.contains('local-cate')) return;
+
+    const select = e.target;
+    const typeName = select.dataset.typeName;
+    const code = bindModal.dataset.code;
+    const localId = select.value;
+    const card = select.closest('.card');
+    const statusElem = card.querySelector('.status-text');
+
+    const binstatus = localId ? 'bind' : 'unbind';
+          statusElem.textContent = binstatus === 'bind' ? '绑定中...' : '解绑中...';
+          statusElem.style.position = 'relative';
+          statusElem.style.paddingRight = '20px';
+          statusElem.innerHTML += '<span class="loading-dots"></span>';
+          const style = document.createElement('style');
+          style.textContent = `
+            .loading-dots::after {
+              content: '';
+              position: absolute;
+              right: 6px;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 14px;
+              height: 4px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            }
+            
+            .loading-dots::after::before,
+            .loading-dots::after::after {
+              content: '';
+              width: 3px;
+              height: 3px;
+              background-color: currentColor;
+              border-radius: 50%;
+              animation: dots 1.4s infinite ease-in-out both;
+            }
+            
+            @keyframes dots {
+              0%, 80%, 100% {
+                transform: scale(0);
+              }
+              40% {
+                transform: scale(1);
+              }
+            }
+          `;
+          document.head.appendChild(style);
+
+    fetch(`/admin/index.php?0=api&1=cate`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body: `binstatus=${binstatus}&code=${encodeURIComponent(code)}&type_name=${encodeURIComponent(typeName)}&local_id=${encodeURIComponent(localId||'')}`
+    })
+    .then(res => res.json())
+    .then(data=>{
+      const loadingDots = statusElem.querySelector('.loading-dots');
+      if(loadingDots) loadingDots.remove();
+      
+      if(data.success){
+        card.style.backgroundColor = '#f8fff8';
+        setTimeout(() => {
+          card.style.transition = 'background-color 0.5s ease';
+          card.style.backgroundColor = '';
+        }, 200);
+        
+        if(localId){
+          statusElem.textContent = '已绑定';
+          statusElem.className = 'status-text-bound status-text';
+          if(!card.querySelector('.btn-unbind')){
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-danger btn-unbind mt-2 w-100';
+            btn.textContent = '解绑';
+            btn.style.opacity = '0';
+            card.appendChild(btn);
+            setTimeout(() => {
+              btn.style.transition = 'opacity 0.3s ease';
+              btn.style.opacity = '1';
+            }, 10);
+          }
+        }else{
+          statusElem.textContent = '未绑定';
+          statusElem.className = 'status-text-unbound status-text';
+          const btn = card.querySelector('.btn-unbind');
+          if(btn) {
+            btn.style.transition = 'opacity 0.3s ease';
+            btn.style.opacity = '0';
+            setTimeout(() => {
+              btn.remove();
+            }, 300);
+          }
+        }
+      }else{
+        card.style.backgroundColor = '#fff8f8';
+        setTimeout(() => {
+          card.style.transition = 'background-color 0.5s ease';
+          card.style.backgroundColor = '';
+        }, 500);
+        
+        alert(data.msg || '操作失败');
+        select.value = localId ? '' : localId;
+        statusElem.textContent = localId ? '未绑定':'已绑定';
+        statusElem.className = localId ? 'status-text-unbound status-text':'status-text-bound status-text';
+      }
+    })
+    .catch(err=>{
+      const loadingDots = statusElem.querySelector('.loading-dots');
+      if(loadingDots) loadingDots.remove();
+      alert('请求失败，请重试');
+      console.error(err);
+      select.value = localId ? '' : localId;
+      statusElem.textContent = localId ? '未绑定':'已绑定';
+      statusElem.className = localId ? 'status-text-unbound status-text':'status-text-bound status-text';
+    });
+  });
+  window.addEventListener('beforeunload', () => {
+    const loadingStyles = document.querySelectorAll('style');
+    loadingStyles.forEach(style => {
+      if (style.textContent.includes('.loading-dots')) {
+        style.remove();
+      }
+    });
+  });
+});
+</script>

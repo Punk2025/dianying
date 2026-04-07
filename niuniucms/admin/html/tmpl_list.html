@@ -1,0 +1,74 @@
+
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5">  
+                <div class="col-lg-12 col-xl-12"> 
+                    <div class="card">
+                        <div class="card-header border-bottom-0">
+                            <h2 class="card-title"><?php echo lang('tmpl_page');?></h2> 
+                        </div>
+                        <div class="card-body">      
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab-11">
+                                    <div class="row">
+                                        <?php foreach ($tmpllist as $dir=>$t) { ?> 
+                                            <div class="col-sm-6 col-md-6 col-xl-3 alert">
+                                                <div class="card">
+                                                    <div class="product-grid6">
+                                                        <div class="product-image6 p-5"> 
+                                                                <img class="img-responsive br-7 w-100" style="height: 280px; " src="/template/<?php echo $dir;?>/icon.png" alt="img"> 
+                                                        </div>
+                                                        <div class="card-body pt-0">
+                                                            <div class="product-content text-center">
+                                                                <h5 class="title fw-bold fs-20"><?php echo $t['name']; ?></h5> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer text-center">
+
+                                                             <?php if(0==$t['installed']) { ?>
+                                                               
+                                                                 <a data-href="<?php echo url('tmpl-post', array('dir'=>$dir,'type'=>1), TRUE);?>"  href="javascript:void(0);"  class="btn btn btn-info mx-2 mb-1 w-sm install">安装</a> 
+
+                                                               <?php } ?>
+                                                            <?php if(1==$t['installed']) { ?>
+                                                                 <?php if($dir=='default'){ ?>
+                                                                     <a data-href="#"  href="#"  class="btn btn-danger mx-2 mb-1 w-sm uninstall">不可卸载</a>
+                                                                <?php }else{ ?>
+                                                                <a data-href="<?php echo url('tmpl-post', array('dir'=>$dir,'type'=>2), TRUE);?>"  href="javascript:void(0);"  class="btn btn-danger mx-2 mb-1 w-sm uninstall"><?php echo lang('uninstall');?></a>
+                                                                <?php } ?>  
+                                                               <?php } ?>  
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <?php } ?> 
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                     
+                </div>
+               
+
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+    body.on('click', '.install, .uninstall, .down', function () {
+    var jthis = $(this);
+    var href = jthis.data('href') || jthis.attr('href');
+    $.xpost(href, function (code, message) {
+        if (code == 0) {
+            $.alert(message).delay(1000).location();
+        } else {
+            $.alert(message);
+        }
+    });
+    return false;
+});
+</script>

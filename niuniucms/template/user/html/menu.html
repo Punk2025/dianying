@@ -1,0 +1,86 @@
+<!-- menu -->
+<div class="menu">
+    <div class="menu-header">
+        <a href="<?php echo url('member');?>" class="menu-header-logo">
+            <img src="/static/logo.png" alt="logo">
+        </a>
+        <a href="<?php echo url('member');?>" class="btn btn-sm menu-close-btn">
+            <i class="bi bi-x"></i>
+        </a>
+    </div>
+    <div class="menu-body">
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center" data-bs-toggle="dropdown">
+                <div class="avatar me-3">
+                </div>
+                <div>
+                    <div class="fw-bold">
+                        <?php echo $user['username'];?>
+                    </div>
+                    <small class="text-muted">
+                        <?php echo $user['groupname'];?>
+                    </small>
+                </div>
+            </a>
+        </div>
+        <ul>
+            
+            <li class="menu-divider">收藏点赞</li>
+             <li <?php if($action=='art_like'||$action=='vod_like'){echo 'class="open"';}?>>
+                <a href="#">
+                    <span class="nav-link-icon">
+                        <i class="bi bi-heart"></i>
+                    </span>
+                    <span>我的点赞</span>
+                </a>
+                <ul>
+                    <li>
+                        <a <?php if($action=='art_like'){echo 'class="active"';}?> href="<?php echo url('member-art_like');?>"
+                           >文章点赞</a>
+                    </li>
+                    <li>
+                        <a <?php if($action=='vod_like'){echo 'class="active"';}?> href="<?php echo url('member-vod_like');?>"
+                           >视频点赞</a>
+                    </li>
+                </ul>
+            </li>
+             <li <?php if($action=='art_favorites'||$action=='vod_favorites'){echo 'class="open"';}?>>
+                <a href="#">
+                    <span class="nav-link-icon">
+                        <i class="bi bi-bookmark"></i>
+                    </span>
+                    <span>我的收藏</span>
+                </a>
+                <ul>
+                    <li>
+                        <a <?php if($action=='art_favorites'){echo 'class="active"';}?>  href="<?php echo url('member-art_favorites');?>"
+                           >文章收藏</a>
+                    </li>
+                    <li>
+                        <a <?php if($action=='vod_favorites'){echo 'class="active"';}?> href="<?php echo url('member-vod_favorites');?>"
+                           >视频收藏</a>
+                    </li>
+                </ul>
+            </li> 
+            <li class="menu-divider">账号操作</li>
+            <!--<li>
+                <a href="<?php echo url('member-invite');?>">
+                    <span class="nav-link-icon">
+                        <i class="bi bi-people"></i>
+                    </span>
+                    <span>我的邀请</span>
+                    <span class="badge bg-success rounded-circle ms-auto">2</span>
+                </a>
+            </li>-->
+            <li> <a href="<?php echo url('member-password');?>"> <span class="nav-link-icon"> <i class="bi bi-key"></i>
+                    </span> <span>修改密码</span> </a></li>
+
+
+            <li class="menu-divider">常用操作</li>
+            <li> <a href="<?php echo url('user-logout');?>"> <span class="nav-link-icon"> 
+                <i class="bi bi-box-arrow-right"></i> </span> <span>退出登录</span> </a></li>
+
+        </ul>
+    </div>
+</div>
+<!-- ./  menu -->

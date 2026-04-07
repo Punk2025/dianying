@@ -1,0 +1,49 @@
+url样式 
+默认:?video-1.html
+伪静态1:video-1.html
+伪静态2:video/1.html
+伪静态3:video/1
+
+伪静态 0 1 2 3 都支持 自定义 名称
+
+搜索示例（keyword=测试）：
+默认(0): /?search.html&keyword=测试
+伪静态1(1): /search-1-测试.html
+伪静态2(2): /search/1/测试.html
+伪静态3(3): /search/1/测试
+
+伪静态 2 3 支持 自定义 分类名称 如 dianying/1.html   dongzuo/101.html
+
+
+默认 
+ 
+伪静态1
+location / {
+    if (!-e $request_filename) {
+      rewrite ^((.*)/) /index.php last;
+    }
+}
+
+
+伪静态2、3
+需要编辑 config/config.php 
+'path' => '/',
+'cookie_path' => '/',
+也可后台自己设置 
+
+
+location / { 
+    if (!-e $request_filename) { 
+        rewrite ^((.*)/)?(.*).html$ $1/index.php last; 
+    } 
+}
+
+
+
+伪静态站群单独使用 
+ location / {
+        if (!-e $request_filename) {
+        rewrite ^/(.*)\.html$ /index.php last; 
+        rewrite ^/(.*)/?$ /index.php last;
+        }
+        }

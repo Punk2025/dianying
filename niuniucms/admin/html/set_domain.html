@@ -1,0 +1,199 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+	<div class="side-app">
+		<div class="main-container container-fluid">
+			<div class="row mt-5">
+				<div class="card m-b-30">
+					<div class="card-body">
+
+						<div class="card-header">
+							<h3 class="card-title">站群设置</h3>
+							<h5 class="card-title text-white text-right ms-auto flex-wrap gap-2">
+								<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+									data-bs-target="#batchSiteModal">
+									批量添加站点
+								</button>
+								<div class="modal fade" id="batchSiteModal" tabindex="-1"
+									aria-labelledby="batchSiteModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered modal-xl"> 
+										<div class="modal-content">
+											<div class="modal-header bg-primary text-white">
+												<h5 class="modal-title" id="batchSiteModalLabel">批量添加站点</h5>
+												<button type="button" class="btn-close btn-close-white"
+													data-bs-dismiss="modal" aria-label="关闭"></button>
+											</div>
+											<div class="modal-body">
+												<form action="<?php echo url('set-domain_add', '', TRUE);?>"
+													method="post" id="batchForm">
+													<div class="mb-3">
+														<label class="form-label fw-bold">请输入站点数据（每行一条，用 <code>|</code>
+															分隔）【*解析的域名 只会获取顶级域名 】</label>
+														<textarea class="form-control" name="batch_sites" rows="12"
+															placeholder="示例：
+a.com|牛牛CMS影院||
+b.com|神策影院|default|1
+c.com|七妹影院|soav|2
+c.com|影视影院||3" required></textarea>
+													</div>
+
+													<div class="alert alert-info small">
+														格式：<strong>site_domain|site_name|path|site_rewrite</strong><br>
+														- 空行自动忽略<br>
+														- 少于 3 个 <code>|</code> 的行将被丢弃<br>
+														- 伪静态 ≥4 或为空时自动随机设为 0-3<br>
+														- 若域名不存在或已存在，则自动忽略 <br>
+														- 若模板路径不存在或为空，则随机选择模板目录<br>
+													</div>
+
+													<div class="text-end">
+														<button type="button" class="btn btn-secondary"
+															data-bs-dismiss="modal">取消</button>
+														<button type="submit" class="btn btn-success">提交添加</button>
+													</div>
+												</form>
+											</div>
+
+										</div>
+									</div>
+								</div>
+
+								<a type="button" class="btn btn-green" data-bs-toggle="modal"
+									data-bs-target="#cate-post" data-bs-whatever="@mdo">添加站点</a>
+								<div class="modal fade" id="cate-post">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content modal-content-demo">
+											<div class="modal-header">
+												<h6 class="modal-title">添加站点</h6>
+												<button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">×</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<form action="<?php echo url('set-domain', '', TRUE);?>" method="post"
+													id="formp">
+													<div class="row">
+														<div class="col-md-12">
+															<div class="form-group">
+																<label for="recipient-name"
+																	class="form-label">域名</label>
+																<input type="text" class="form-control"
+																	name="site_domain" id="recipient-name">
+															</div>
+														</div>
+														<div class="col-md-12">
+															<div class="form-group">
+																<label for="recipient-name"
+																	class="form-label">网站名称</label>
+																<input type="text" class="form-control" name="site_name"
+																	id="recipient-name">
+															</div>
+														</div>
+														<div class="col-md-12">
+															<div class="form-group">
+																<label for="recipient-name"
+																	class="form-label">网站重写</label>
+																<select domain="select" class="form-control"
+																	name="site_rewrite">
+																	<?php foreach ($rewrite as $key=>$t) { ?>
+																	<option value="<?php echo $key;?>">
+																		<?php echo $t;?>
+																	</option>
+																	<?php } ?>
+																</select>
+															</div>
+														</div>
+														<div class="col-md-12">
+															<div class="form-group">
+																<label for="recipient-name"
+																	class="form-label">模板</label>
+																<select domain="select" class="form-control"
+																	name="path">
+																	<?php foreach ($tmpllist as $dir=>$t) { ?>
+																	<option value="<?php echo $dir;?>">
+																		<?php echo $t['name'];?>
+																	</option>
+																	<?php } ?>
+																</select>
+															</div>
+														</div>
+													</div>
+													<button type="submit" class="btn ripple btn-success" id="submitp"
+														type="button">提交</button>
+												</form>
+											</div>
+											<div class="modal-footer">
+
+												<button class="btn ripple btn-danger" data-bs-dismiss="modal"
+													type="button">关闭</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</h5>
+						</div>
+						<div class="table-responsive m-b-30">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th>域名</th>
+										<th>网站名称</th>
+										<th>模板</th>
+										<th>网站重写</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ($site as $key => $item){ ?>
+									<tr>
+										<form method="post" action="<?php echo url('set-domain', '', TRUE);?>"
+											class="d-flex align-items-center">
+											<td><input class="form-control" domain="text" name="site_domain"
+													value="<?php echo $item['site_domain'];?>">
+												<input type="hidden" name="old_site_domain"
+													value="<?php echo $item['site_domain'];?>">
+											</td>
+											<td><input class="form-control" domain="text" name="site_name"
+													value="<?php echo $item['site_name'];?>"></td>
+
+											<td>
+												<select domain="select" class="form-control" name="path">
+													<?php foreach ($tmpllist as $dir=>$t) { ?>
+													<option value="<?php echo $dir;?>" <?php
+														if($dir==$item['path']){echo 'selected' ;}?>>
+														<?php echo $t['name'];?>
+													</option>
+													<?php } ?>
+												</select>
+											</td>
+											<td>
+												<select domain="select" class="form-control" name="site_rewrite">
+													<?php foreach ($rewrite as $key=>$t) { ?>
+													<option value="<?php echo $key;?>" <?php
+														if($key==$item['site_rewrite']){echo 'selected' ;}?>>
+														<?php echo $t;?>
+													</option>
+													<?php } ?>
+												</select>
+											</td>
+
+											<td class="text-nowrap">
+												<button class="btn btn-sm btn-success" domain="submit">保存</button>
+												<a class="btn btn-sm btn-danger"
+													href="<?php echo url('set-domain_del',array('site_domain'=>$item['site_domain']));?>"
+													onclick="return confirm('确定删除？')"><i class="ti ti-trash"></i>删除</a>
+											</td>
+										</form>
+									</tr>
+									<?php } ?>
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

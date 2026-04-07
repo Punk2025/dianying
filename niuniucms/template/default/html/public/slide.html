@@ -1,0 +1,67 @@
+
+<div class="mobile" style="position: relative; width: 100%; overflow: hidden;">
+    <div class="mobile h-full">
+        <div class="slick-slider slick-initialized h-full">
+            <div class="slick-list mobileBannerSwiper h-full">
+                <div class="swiper-wrapper">
+                    {if:isset($stickylist)}
+                    {loop:$stickylist $v}
+                    <div class="slick-slide swiper-slide">
+                        <a class="d-flex h-full aspect-[2/1] slider-container" href="{$v.url}">
+                            <img src="{$v.pic_slide}" alt="{$v.name}" class="inset-0" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; opacity: 0.9;">
+                             <div class="gradient-overlay"></div>
+                            <div class="relative" tabindex="-1" style="width: 100%;height: 100%; display: inline-block;">
+                                <div style="z-index: 1; position: absolute; bottom: 0px; padding-left: 1.2rem; padding-bottom: 2rem;">
+                                    {$v.name}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {/loop}
+                    {/if}
+                </div>
+            </div>
+            <div class="slick-dots"></div>
+        </div>
+    </div>
+</div>
+<div class="desktop bannerSwiper" style="position: relative; width: 100% ; overflow: hidden; cursor: pointer;">
+        <div class="desktop d-flex swiper-wrapper">
+            {if:isset($stickylist)}
+                    {loop:$stickylist $v}
+            <a href="{$v.url}" class="wrap-is-me swiper-slide aspect-[5/2]">
+                <img src="{$v.pic_slide}" alt="{$v.name}" class="slide-is-me d-flex inset-0" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; opacity: 0.9;">
+                <div class="desktop  d-flex" style="position: absolute; bottom: 40px; left: 10px; color: rgb(255, 255, 255); z-index: 1; width: 100%;">
+                    <div class="flex container">
+                        <div class="col pt-3">
+                            <p class="text-lg">{$v.name}</p>
+                            <p class="text-sm pt-1" style="font-weight: 200;">{$v.year}| {$v.area}</p>
+                            <p class="text-sm pt-1" style="font-weight: 200;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 1;text-overflow: ellipsis;overflow: hidden;">{$v.remarks}</p>
+                            <div class="flex flex-row flex-wrap hover-effect"
+                                style="cursor: pointer; background: rgba(255, 255, 255, 0.18); width: fit-content; padding: 0.5rem 1rem; border-radius: 100px; margin-top: 0.5rem;">
+                                <img  width="17" height="19" src="/template/default/images/play.svg"
+                                    style="padding-right: 0.5rem;">
+                                <div class="text-sm">看正片</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: row; z-index: 10; width: 80%; justify-content: flex-end;">
+                               {if:isset($stickylist)}
+                                {loop:$stickylist $v}
+                            <div class="hidden xl:flex" style="flex-direction: column; justify-content: center; align-items: center; justify-self: center; height: 100%; width: 6rem; margin-right: 1rem; cursor: pointer;">
+                                <div style="width: 100%; text-align: center;">
+                                <img class="style_carousel_item_card__wqto7 lazy" data-original="{$v.pic}" src="/template/default/images/load.png" alt="{$v.name}" style="width: 100%; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 12px;">
+                                </div>
+                                <div style="padding-right: 10px; padding-left: 10px; text-align: center; font-size: 12px; padding-top: 6px;">
+                                    <p class="line-clamp-1">{$v.name}</p>
+                                </div>
+                            </div>
+                               {/loop}
+                    {/if}
+                        </div>
+                    </div>
+                </div>
+            </a>
+               {/loop}
+                    {/if}
+        </div>
+    </div>

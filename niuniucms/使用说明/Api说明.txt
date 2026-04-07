@@ -1,0 +1,6 @@
+// 异步数据调用  通过 API  制作小程序和APP，无刷新瀑布流  
+
+根据自己的伪静态格式 进行异步请求  /dongzuo/list_2*.html?json=1
+后台开启API  所有网页后面增加 ?json=1 部分使用&json=1 
+调用json数据 返回json数据  
+{"code":0,"message":{}}

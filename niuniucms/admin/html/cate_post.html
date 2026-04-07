@@ -1,0 +1,104 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<!--app-content open-->
+           <div class="main-content app-content mt-0">
+               <div class="side-app">
+
+                   <!-- CONTAINER -->
+                   <div class="main-container container-fluid">
+
+                       
+                       <!-- ROW-1 OPEN -->
+                       <!-- Row -->
+                       <div class="row mt-5"> 
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title"><?php echo lang('cate_title');?></div>
+                                </div>
+                                <div class="card-body">
+                                  
+                                    <form action="<?php echo url('cate-update','',true);?>" method="post" id="form">
+                                        <input type="hidden" name="cid" value="<?php echo $_cid;?>">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">分类名称 <span class="text-red">*</span></label>
+                                                    <input type="text" name="name" class="form-control" value="<?php echo $name;?>" placeholder="<?php echo $name;?>">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">URL别名 <span class="text-red">*</span></label>
+                                                    <input type="text" name="alias" class="form-control"  value="<?php echo $alias;?>" placeholder="<?php echo $alias;?>">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">类型</label>
+                                                     <select name="model" class="form-control form-select" data-bs-placeholder="选择类型">
+                                                        <option value="0" selected>视频</option>
+                                                        <option value="1">文章</option> 
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">上级分类 </label> 
+                                                        <select name="category" class="form-control form-select" data-bs-placeholder="选择父级类型">
+                                                        <option value="0" selected>顶级分类</option>
+                                                        <?php if ($arrlist) { foreach($arrlist as $_cid=>$_cate) { ?>
+                                                            <option value="<?php echo $_cid;?>" ><?php echo $_cate['name'];?></option> 
+                                                          <?php }}  ?> 
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">导航显示：</label>
+                                                <div class="d-flex flex-wrap">
+                                                    <div class="custom-control custom-radio">
+                                                    <input type="radio" class="custom-control-input" id="nav_display-是" name="nav_display" value="1" checked="checked"><label class="custom-control-label mr-2" for="nav_display-是">是</label>
+                                                </div>
+                                                <div class="custom-control custom-radio ml-2">
+                                                    <input type="radio" class="custom-control-input" id="nav_display-否" name="nav_display" value="0"><label class="custom-control-label mr-2" for="nav_display-否">否</label> 
+                                                </div></div>
+                                            </div>
+                                             
+                                        </div>
+                                        <button type="submit" class="btn ripple btn-success mt-4"  id="submit" type="button">保存</button>
+                                    </form>
+
+                                </div>
+                                 
+                            </div>
+                        </div>
+                    </div>
+                       <!-- /Row -->
+                   </div>
+                   <!-- CONTAINER CLOSED -->
+               </div>
+           </div>
+           <!--app-content closed-->
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+
+<script>
+  
+    var jform = $("#form");
+    jform.on('submit', function(){
+        jform.reset();
+        var jthis = $(this);
+        var jsubmit = jthis.find('#submit');
+        jsubmit.button('loading');
+        var postdata = jform.serialize();
+        $.xpost(jform.attr('action'), postdata, function(code, message) {
+            if(code == 0) {
+                $.alert(message);
+                jsubmit.text(message).delay(1000).location(xn.url('cate-list', '', true));
+            } else {
+                $.alert(message);
+                jsubmit.button('reset');
+            }
+        });
+        return false;
+    }); 
+</script>

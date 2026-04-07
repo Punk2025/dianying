@@ -1,0 +1,39 @@
+目前仅支持在list 列表使用
+{if:$page_list['total_page'] }
+ 共{$page_list['total_page']}页
+{/if}
+
+{if:$page_list['current_page'] }
+ 当前第{$page_list['current_page']}页
+{/if}
+
+{if:$page_list['first']}                    
+<a href="{$page_list['first']}">首页</a>
+{/if}
+
+{if:$page_list['last']}
+<a href="{$page_list['last']}">尾页</a>
+{/if}
+
+{if:$page_list['current_url']}
+<a href="{$page_list['current_url']}">当前页</a>
+{/if} 
+
+{if:$page_list['prev']}
+<a href="{$page_list['prev']}">上一页</a>
+{/if}
+
+{if:$page_list['next']}
+<a href="{$page_list['next']}">下一页</a>
+{/if}
+
+最近分页
+{if:$page_list['pages']}
+    {loop:$page_list['pages'] $p}
+    {if:$p['current']}
+        <span class="page-number page-current desktop active">{$p['page']}</span>
+    {else}
+        <a href="{$p['url']}" class="page-number desktop">{$p['page']}</a>
+    {/if}
+{/loop}
+{/if}

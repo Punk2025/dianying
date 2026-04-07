@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+    {inc:public/include.html}
+	</head>
+<body class="overflow-y-auto overflow-x-hidden">
+       <div class="relative w-full h-full flex flex-col overscroll-none no-scrollbar scroll-pt-[6px]" style="align-items: center;">
+              <div class="z-30 w-screen sticky top-0 mobile bg-black">
+                  <div class="flex py-3 mx-2.5">
+                <div class="gap-y-2 flex-col w-full md:flex-row flex">
+                    <div class="flex-1 flex gap-x-2 md:justify-between">
+                        <div class="flex justify-between w-22 pl-2 pr-2 self-center backPage">
+                            <img  width="9" height="16"  src="/template/default/images/arrowleft.svg"></div>
+                       <div class="items-center flex flex-1 md:flex-none">
+                                <div class="flex-1 md:flex-none">
+                                    <div class="relative flex flex-1 md:flex-none">
+                                         <form method="get" name="search" class="w-full"  action="{$search_url}">
+                                        <div class="relative flex-1">
+                                            <input id="searchInput" placeholder="请输入要搜索的关键词" maxlength="20" class="border-0 border-gray-300 text-white rounded-full pl-10 md:pl-4 md:pr-10 pr-4 py-2 focus:outline-none w-full md:w-60 header-search-input-desktop text-[14px]" name="keyword" autocomplete="off"  type="text" value="{if:empty($keyword)}{$keyword}{/if}">
+                                            <button type="submit" class="absolute inset-y-0 left-3 flex items-center justify-center md:hidden">
+                                                <img alt="search" loading="lazy" width="20" height="20" class="text-gray-400"
+                                                    src="/template/default/images/search.png">
+                                            </button>
+                                            <button type="submit"  class="absolute inset-y-0 right-3 items-center justify-center hidden md:flex">
+                                                <img alt="search" loading="lazy" width="20" height="20"  class="text-gray-400"
+                                                    src="/template/default/images/search.png">
+                                            </button>
+                                        </div>
+                                        	</form>
+                                    </div>
+                                    <div id="searchWrap" class="hidden absolute flex flex-col items-center pt-1 w-full h-[calc(100dvh-52px)] md:h-auto z-20 left-0 md:left-auto md:w-96">
+                                        <div class="py-3 px-4 bg-[#1d2023] md:rounded-md w-full h-full md:bg-[#18191ef5] md:w-96">
+                                            <div class="no-scrollbar overflow-y-scroll w-full h-full overflow-scroll overscroll-none">
+                                                <div class="w-full h-[calc(100%+1px)]">
+                                                    <div class="flex flex-row justify-between">
+                                                        <div class="text-sm">热搜总榜</div>
+                                                    </div>
+
+                                                     {block:vod_top cid="" n="15"} 
+													  		{loop:$data $v} 
+                                                            <div class="flex flex-row justify-between py-2.5 cursor-pointer search-hot-item">
+                                                        <div class="flex flex-row">
+                                                            <div class="text-sm w-8 text-center font-bold {if:($v['n']<4)}text-hot-{$v[n]} {else}text-hot-4{/if}">{$v[n]}
+                                                            </div>
+                                                            <a  href="{$v.url}" title="{$v.name}" class="text-sm">{$v.name}</a>
+                                                        </div>
+                                                    </div> 
+													{/loop}
+													{/block}  
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+           </div>  
+           <div class="desktop z-50 fixed top-0 w-screen">{inc:public/head.html}</div>   
+            <div class="w-full grow flex justify-center ">
+                <div class="flex flex-col">
+                <div class="mobile">
+                    <div></div>
+                </div>
+                <div class="desktop">
+                    <div class="style_containerHeader__hXI_t">
+                        <div class="d-flex" style="width: 100%;">
+                            <div class="overlay" style="width: 100%;">
+                                <div class="px-0 d-flex flex-column ">
+                                    <div class="topic-container-header container content-end">
+                                        <div class="topic-header-text">{$keyword}</div> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="desktop">
+                     <div class="container w-full overflow-x-auto max-w-full" style="display: flex; overflow-x: auto; scrollbar-width: none; padding: 10px 8px;"> 
+        {loop:$sonlist $s}
+        <a class="btn btn-dark hover-effect text-white btn-dark-catagory text-nowrap" href="{$s.url}" style="border-radius: 10px;">{$s.name}</a>
+        {/loop}  
+        
+    </div>
+                    <div class="d-flex container pt-3 " style="width: 100%;">
+                        <div class="row w-screen">
+                            {loop:$artlist $v} 
+                            <div class="col-lg-6 col-md-12 mt-2 mb-2 cursor-pointer">
+                                <a  href="{$v.url}">
+                                    <div class="topic-details-card">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div style="padding: 0px; width: 132px; height: 206px; position: relative; overflow: hidden; border-radius: 10px;">
+                                                        <img  data-original="{$v.pic}" src="/template/default/images/load.png" alt="{$v.name}" class="rounded-xl  lazy" style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover;">
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="topic-details-title">{$v.name}</div> 
+                                                        <div class="topic-details-title-sub text-secondary "> </div>
+                                                        <button class="btn btn-topic-play">
+                                                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="play" class="svg-inline--fa fa-play " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="color: white;"><path fill="currentColor" d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z">
+                                                          </path>
+                                                            </svg> 
+                                                        <span class="ml-2" href="{$v.url}"> 立即查看 </span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                             {/loop}  
+                        </div> 
+                    </div>
+                   
+                </div>
+                <div class="mobile">
+                    <div class="d-flex container pt-3" style="width: 100%;">
+                        <div class="row">
+                           {loop:$artlist $v}
+                            <div class="col-lg-6 col-md-12 pt-3 pb-3 cursor-pointer">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div style="width: 128px;">
+                                                <div style="padding: 0px; width: 104px; height: 180px; position: relative; overflow: hidden; border-radius: 10px;">
+                                                    <img data-original="{$v.pic}" src="/template/default/images/load.png" alt="{$v.name}" class="rounded-xl object-cover lazy" style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;">
+                                                </div>
+                                            </div>
+                                            <div class="col pl-0">
+                                                <div class="topic-details-title-mobile">{$v.name}</div> 
+                                                <a href="{$v.url}" class="btn btn-topic-play">
+                                                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="play" class="svg-inline--fa fa-play " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="color: white;"><path fill="currentColor" d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z">
+                                                </path>
+                                                 </svg> 
+                                             <span class="ml-2" > 立即查看 </span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/loop} 
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+           
+           </div>  
+            {inc:public/page.html}
+          {inc:public/foot.html}
+        </div>   
+        <script type="text/javascript">
+            $('.hl-total').html('{$__PAGING__.record_total}');
+        </script>
+</body>
+</html>
+

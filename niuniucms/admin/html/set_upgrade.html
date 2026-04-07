@@ -1,0 +1,36 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5"> 
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><?php echo lang('online_upgrade');?></h3>
+                    </div>
+                    <div class="card-body">
+                      
+                       <div class="row row-sm"> 
+                                            <div class="details col-lg-12 col-md-12 mt-4 mt-xl-0">
+                                                <div class="mt-2 mb-4">
+                                                   <?php echo $update_log;?>
+                                                    <hr>
+                                                    <div class="btn-list mt-4">
+                                                        <button class="btn ripple btn-primary me-2" id="upgrade"><i class="fe fe-download-cloud"> </i><?php echo lang('online_upgrade');?></button> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                      
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+
+<script>
+    $('#upgrade').on('click', function () {window.location = xn.url('set-upgrade', {type:1}, true);});
+</script>

@@ -1,0 +1,224 @@
+
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">  
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12 col-xl-12">
+                    <div class="input-group mb-5"> 
+                            <input type="text" id="keyword" class="form-control" placeholder="搜索" name="keyword" value="<?php if(!empty($keyword)) { ?><?php echo $keyword;?> <?php } ?>">
+                            <div class="input-group-text btn btn-primary"> <i class="fa fa-search" aria-hidden="true" id="search"></i> </div> 
+                    </div>
+                    <div class="card">
+                        <div class="card-header border-bottom-0"> 
+                            <h2 class="card-title"> 
+                                 <?php echo lang('vod_poster');?>
+                               </h2>
+                            
+                        </div>
+                        <div class="e-table px-5 pb-5">
+                            <div class="table-responsive table-lg">
+                                <table class="table border-top table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"> </th>
+                                            <th class="text-center">vid</th>
+                                            <th class="text-center">名称</th>
+                                            <th class="text-center">分类</th>
+                                            <th class="text-center">图片</th>
+                                            <th class="text-center">标签</th>
+                                            <th class="text-center">播放组</th>
+                                            <th class="text-center">添加时间</th>
+                                            <th class="text-center">管理</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vodlist">
+                                        <?php if($videolist) { foreach($videolist as &$_video) { ?>
+                                        <tr vid="<?php echo $_video['vid']; ?>">
+                                            <td class="align-middle text-center">
+
+                                                <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" id="delete-<?php echo $_video['vid']; ?>" name="delete" value="1" />
+                                        <label class="custom-control-label custom-checkbox" for="delete-<?php echo$_video['vid']; ?>">
+
+                                        </label>
+                                    </div> 
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                 <?php echo $_video['vid'];?>
+                                            </td>
+                                            <td class="align-middle text-start">
+                                                <?php if($_video['sticky'] > 0) { ?>
+                                                    <span class="mr-2 font-weight-bold badge btn btn-danger ">
+                                                            推荐
+                                                    </span>
+                                                    <?php } ?><a target="_blank" href="<?php echo ($conf['url_rewrite_on'] < 2 ? '../' : ''),$_video['url']; ?>"><?php echo $_video['name'];?></a>
+                                           </td>
+                                           <td class="align-middle text-center">
+                                            <?php echo $_video['cate_name'];?>
+                                            </td>
+                                           
+                                            <td class="align-middle text-center">
+                                                <a href="<?php echo $_video['pic']; ?>"
+                                                    class="gallery-item"
+                                                    data-lg-size="1406-1390"
+                                                    data-sub-html="<h4><?php echo $_video['name']; ?></h4>">
+                                                    <img alt="image" class="avatar avatar-xxl br-7" src="<?php echo $_video['pic']; ?>" />
+                                                 </a> 
+                                              </td>
+                                            <td class="text-nowrap align-middle">
+                                                <?php if($_video['tag']){?>
+                                                    <div class="tags text-wrap">
+                                                        <?php foreach($_video['tag_fmt'] as $key => $_tag) {?>
+                                                                <span class="tag"><a target="_blank"  href="<?php echo ($conf['url_rewrite_on'] < 2 ? '../' : ''),url('tag-'.$key, '', 2);?>">
+                                                                    <?php echo $_tag;?>
+                                                                </a></span> 
+                                                        <?php }?> 
+                                                    </div> 
+                                                    <?php }?> 
+
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <?php echo $_video['play_from'];?>
+                                                </td>
+                                            <td class="text-nowrap align-middle"><span><?php echo $_video['create_date_fmt_ymd'];?></span></td>
+
+                                            <td class="text-center align-middle">
+                                                <div class="btn-group align-top">
+                                                    <a class="btn btn-sm btn-danger badge mr-2" href="<?php echo url('vod-del',array('vid'=>$_video['vid']),true);?>">删除</a>
+                                                    <button class="btn btn-sm btn-primary badge" data-bs-toggle="modal" data-bs-target="#input-modal<?php echo $_video['vid']; ?>" data-bs-whatever="@mdo" type="button">推荐管理</button> 
+                                                    <div class="modal fade" id="input-modal<?php echo $_video['vid']; ?>">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content modal-content-demo">
+                                                                <div class="modal-header">
+                                                                    <h6 class="modal-title">推荐等级</h6>
+                                                                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">×</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="<?php echo url('vod-sticky', '', true);?>" method="post" id="mode_sticky_form">
+                                                                        <input type="hidden" name="vid" value="<?php echo $_video['vid'];?>">
+                                                                        <input type="hidden" name="cid" value="<?php echo $_video['cid'];?>">
+                                                                        <div class="form-group d-flex justify-content-center">
+                                                                            <span class="mr-2">
+                                                                                <?php echo $_video['name'];?> 
+                                                            
+                                                                                    <?php if($_video['sticky'] == 1) { ?>
+                                                                                        <span class="mr-2 font-weight-bold badge btn btn-danger">
+                                                                                            <?php echo lang('top_3');?>
+                                                                                        </span>
+                                                                                        <?php } ?> 
+
+                                                                            </span> 
+                                                                        </div>
+                                                                        <div class="form-group row text-center">
+                                                                            <div class="col-12">
+                                                                                <label class="custom-input custom-radio mr-2">
+                                                                                    <input class="mr-2" type="radio" name="sticky" value="0" />
+                                                                                    <?php echo lang('top_0');?>
+                                                                                </label> 
+                                                                                <label class="custom-input custom-radio mr-2"><input type="radio" name="sticky" value="1" />
+                                                                                    <?php echo lang('top_3');?>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group d-flex justify-content-center">
+                                                                            <button type="submit" class="btn btn-primary mr-2" data-loading-text="<?php echo lang('submiting');?>...">
+                                                                                <?php echo lang('confirm');?>
+                                                                            </button> 
+                                                                        </div>
+                                                                    </form>
+                                                                  </div>
+                                                                <div class="modal-footer"> 
+                                                                    <button class="btn ripple btn-danger" data-bs-dismiss="modal" type="button">关闭</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php }} else { ?>
+                                            <li class="list-group-item">
+                                                <div><?php echo lang('none');?></div>
+                                            </li>
+                                            <?php } ?>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p>
+                                <label class="mr-1">
+                                    <input type="checkbox" data-target='input[name="delete"]' class="checkall mt-2 mr-2" value="" aria-label="<?php echo lang('checkall');?>" />
+                                    <?php echo lang('checkall');?>
+                                </label>
+                                <button class="btn btn-danger btn-sm ml-3" id="confirm"><?php echo lang('delete');?></button></p>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <?php if ($pagination) { ?>
+                            <nav class="my-1"><ul class="pagination justify-content-center flex-wrap"><?php echo $pagination; ?></ul></nav>
+                            <?php } ?>
+                    </div>
+                </div>
+                <!-- COL-END -->
+            </div>
+            <!-- ROW CLOSED -->
+
+
+ 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+
+<script>
+  $('.mod-button button').each(function () {
+        var modal_url = $(this).attr('data-modal-url');
+        if (url_rewrite_on < 2) $(this).attr('data-modal-url', '../' + modal_url);
+    });
+
+    var select = $('select[name="cid"]');
+    select.val(<?php echo $cid;?>);
+    select.change(function () {
+        var cid = $(this).val();
+        <?php if ('vod' == $route) { ?>
+            window.location = xn.url('vod-list', {cid:cid}, true);
+        <?php } elseif ('sticky' == $route) { ?>
+            window.location = xn.url('sticky-list', {cid:cid}, true);
+        <?php } ?>
+    });
+</script> 
+<script>
+  lightGallery(document.body, {
+    selector: '.gallery-item',
+    plugins: [lgZoom, lgThumbnail],
+    speed: 500
+  });
+</script>
+ 
+<script>
+    var jconfirm = $("#confirm");
+    var jvodlist = $('#vodlist');
+    /*删除选中的内容*/
+jconfirm.on('click', function(){
+	var jchecked = jvodlist.find('input[name="delete"]').filter(function(){ return this.checked; });
+	if(jchecked.length < 1) return alert("<?php echo lang('please_check_delete_vod');?>");
+	if(!window.confirm("<?php echo lang('vod_delete_confirm');?>")) return false; 
+	jchecked.each(function() {
+        var jtr = $(this).parents('tr');
+		var vid = jtr.attr('vid'); 
+        $.xpost(xn.url('vod-del', '', true), {vid: vid,}, function (code, message) {
+            if (code == 0) { 
+                window.location.reload();
+            } else {
+                $.alert(message);
+            }
+        });
+	});
+});
+ 
+</script>
+

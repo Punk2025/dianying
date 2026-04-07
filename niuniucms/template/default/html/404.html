@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {inc:public/include.html}
+</head>
+<body>
+<div
+  class="relative w-full h-full flex flex-col overflow-y-auto overflow-x-hidden overscroll-none no-scrollbar scroll-pt-[6px]"
+  style="align-items: center"
+>
+  <div class="z-50 sticky top-0 md:fixed w-screen">
+            {inc:public/head.html}
+        </div>
+</div>
+  <div class="w-full grow flex justify-center">
+
+    <div class="fixed inset-0 flex flex-1 flex-col z-10 bg-black/100 flex flex-col flex-1 items-center justify-center text-[#808686]"
+    >
+      <p></p>
+      <img
+        alt="404"
+        loading="lazy"
+        width="300"
+        height="309"
+        decoding="async"
+        data-nimg="1"
+        src="{$path_tpl}images/404.svg" 
+      />
+      <p></p>
+      <a
+        href="/"
+        class="bg-tayaRed p-2 rounded-[5px] my-5 text-white cursor-pointer"
+      >返回首页</a>
+    </div>
+  </div> 
+   {inc:public/foot.html}
+</body>
+</html>

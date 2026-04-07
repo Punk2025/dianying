@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>{$seo.t}-{$cate.name}</title>
+<meta name="author" content="{$seo.t}">
+<meta name="keywords" content="{$seo.d},{$cate.name}">
+<meta name="description" content="{$seo.k},{$cate.name}">
+<link rel="icon" sizes="16x16" href="/template/9C18A518/img/favicon.png">
+<link rel="stylesheet" href="/template/9C18A518/css/all.css">
+<link rel="stylesheet" href="/template/9C18A518/css/elegant-font-icons.css">
+<link rel="stylesheet" href="/template/9C18A518/css/bootstrap.min.css">
+<link rel="stylesheet" href="/template/9C18A518/css/owl.carousel.css">
+<link rel="stylesheet" href="/template/9C18A518/css/style.css">
+<link rel="stylesheet" href="/template/9C18A518/css/custom.css">
+</head>
+<body>
+<!-- 页头 开始 -->
+{inc:header.html}
+<!-- 页头 结束 -->
+<section class="section masonry-layout pt-45">
+<div class="container-fluid">
+<!-- 广告开始
+<p style="margin:5px 0;"><a href="广告链接" target="_blank"><img src="广告图片" style="width:1200px;height:120px;"></a></p>
+广告结束 -->
+<div class="row">
+<div class="col-lg-12">
+<div class="card-columns">
+{loop:$videolist $v}
+<div class="card"><div class="post-card"><div class="post-card-image"><a href="{$v.url}" title="{$v.name}"><img src="{$v.pic}" alt="{$v.name}"></a></div><div class="post-card-content"><a href="{$v.url}" title="{$v.name}" class="categorie">{$cate.name}</a><h5><a href="{$v.url}" title="{$v.name}" class="post-title">{$v.name}</a></h5><p>{$v.name}...</p><div class="post-card-info"><ul class="list-inline"><li><a href="{$v.url}" title="{$v.name}"><img src="{$v.pic}" alt="{$v.name}"></a></li><li><a href="{$v.url}" title="{$v.name}"><?php echo rand(5,9) ?>.<?php echo rand(0,9) ?> 分</a></li><li class="dot"></li><li>{$v.views} 人观看</li></ul></div></div></div></div>
+{/loop}
+</div>
+<div class="pagination" id="wr-page">
+<script src="/template/9C18A518/js/jQuery.js"></script>
+<script src="/template/9C18A518/js/page.js?t=1"></script>
+<script type="text/javascript">
+$("#wr-page").wrpage({
+pagesize: '{$videos}',
+wr_current: '{$page}',
+baseUrl: '{$page_baseurl}',
+})
+</script>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 页尾 开始 -->
+{inc:footer.html}
+<!-- 页尾 结束 -->
+<script src="/template/9C18A518/js/popper.min.js"></script>
+<script src="/template/9C18A518/js/bootstrap.min.js"></script>
+<script src="/template/9C18A518/js/ajax-contact.js"></script>
+<script src="/template/9C18A518/js/owl.carousel.min.js"></script>
+<script src="/template/9C18A518/js/switch.js"></script>
+<script src="/template/9C18A518/js/main.js"></script>
+<script src="/template/9C18A518/js/language.js"></script>
+</body>
+</html>

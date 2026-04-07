@@ -1,0 +1,12 @@
+
+异步定时采集说明：
+1、必须安装             直接复制或者搬家请访问  请联系客服处理
+2、必须设置一键采集
+3、默认走第一页开始采集 直到采集结束 中途不可停止
+4、不可屏蔽海外访问！！！
+
+
+
+宝塔定时执行采集： 
+token 安装时自动生成 请自行查看 config/config.php  auth_key
+http://你的域名/api.php?route=cron&token=你的token&code=snm3u8 

@@ -1,0 +1,56 @@
+
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5"> 
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">伪静态设置</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="<?php echo url('set-rw', '', TRUE);?>" method="post" id="form">
+                             
+                            <div class="form-group row">
+                                <label class="col-3 col-sm-2 form-control-label">伪静态设置</label>
+                                <div class="col-9 col-sm-10">
+                                    <?php echo $input['rewrite']; ?>
+                                    <p class="text-muted">
+                                        默认:?video-1.html<br>
+                                        伪静态1:video-1.html<br> 
+                                        伪静态2:video/1.html<br>
+                                        伪静态3:video/1<br>
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="col-6 form-control-label">伪静态修改后需 【清理缓存】</label><br>
+                                <label class="col-6 form-control-label">nginx伪静态规则【其他规则自己设置】</label><br>
+                                伪静态1
+                                <pre><code>location / {
+        if (!-e $request_filename) {
+        ewrite ^((.*)/)?(.*).html$ $1/index.php last;
+        }
+        }
+        </code></pre>
+        伪静态2/3
+                                <pre><code>location / {
+        if (!-e $request_filename) {
+        rewrite ^((.*)/) /index.php last;
+        }
+        }</code></pre>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <button type="submit" class="btn btn-danger btn-block col-md-3 mx-auto" id="submit" data-loading-text="<?php echo lang('submiting');?>..."><?php echo lang('confirm');?></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

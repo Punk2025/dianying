@@ -1,0 +1,14 @@
+1、后台提示非法操作
+需要编辑 config/config.php 
+'cdn_on' => 0,设置为1  
+使用CDN ，不开启此处，会提示非法操作，进入后台会一直要求重复输入密码
+也可以 绑定一个ip+端口号进行登录管理
+
+2、防止 xss 攻击
+nginx 添加 
+add_header  Set-Cookie  "HttpOnly";
+
+3、控制目录权限
+location ~ /(config|lang|runtime|model|addons|route|upload|template|core|public)/.*\.php$ { 
+        deny all;
+    }

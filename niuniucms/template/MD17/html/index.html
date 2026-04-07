@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+{inc:public/include.html}
+	</head>
+	<body>
+		<div id="__nuxt">
+			<div id="__layout">
+				<div class="app-container">
+					<div class="page-index">
+						<div class="navbar van-tabs van-tabs--line">
+							<div class="van-header">
+	<div class="van-sticky">
+		<div class="van-tabs__wrap van-tabs__wrap--scrollable">
+{inc:public/head.html}
+		</div>
+	</div>
+</div>
+							<div class="van-tabs__content van-tabs__content--animated">
+								<div class="van-tabs__track" >
+									<div role="tabpanel" class="van-tab__pane-wrapper">
+										<div class="van-tab__pane">
+											<div class="recommend-search van-search van-search--show-action">
+						<div class="van-header">
+							<div class="van-sticky">
+							    <script>
+function handleSearch() {
+var keyword = document.getElementById('keyword').value;
+var url = '{$search_url}&keyword=' + encodeURIComponent(keyword);
+window.location.href = url;
+return false; 
+}
+</script>
+
+								<form id="search" name="search" method="get" action="{$search_url}" onsubmit="return handleSearch()">
+									<div class="search-input van-search van-search--show-action">
+										<div class="van-search__content van-search__content--round">
+											<div class="van-cell van-cell--borderless van-field">
+												<div class="van-cell__value van-cell__value--alone van-field__value">
+													<div class="van-field__body">
+														<input type="search" id="keyword" name="keyword" placeholder="请输入关键字" class="van-field__control">
+														<button style="border:none;background-color: transparent;" type="submit" class="van-field__right-icon">
+															<img class="block" src="{$path_tpl}static/images/search-btn.png" height="35">
+														</button>
+													</div>
+												</div>
+											</div>
+										</div>
+										<button style="padding: 0px 15px; display: block; height: 35px;" type="submit" class="submit-button filters-btn" >搜索</button>
+									</div>
+								</form>
+							</div>
+						</div>
+
+</div>
+<div class="my-swipe van-swipe swiper mySwiper">
+	<div class="van-swipe__track swiper-wrapper">
+{if:isset($stickylist)}
+{loop:$stickylist $v}
+				<div class="van-swipe-item swiper-slide">
+			<a href="{$v.play_data.0.url}" target="_blank" title="" class="swiper-link">
+				<div class="aspect-ratio" style="padding-top: 46.6667%;border-radius: 0px;">
+					<div class="aspect-ratio-content">
+						<div class="easy-image">
+							<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="">
+						</div>
+					</div>
+				</div>
+			</a>
+		</div>
+{/loop}
+{/if}
+			</div>
+	<div class="swiper-pagination"></div>
+</div><div class="notice-container">
+	<div class="notice van-notice-bar">
+		<img src="{$path_tpl}static/picture/notice-title.png" class="notice-title">
+		<div class="van-notice-bar__wrap">
+			<marquee behavior="scroll" direction="left">
+			<div>邀请好友注册可获得VIP会员，充值未到账请联系在线客服  回家地址发邮箱：{$nncms.email}</div>
+			</marquee>
+		</div>
+	</div>
+</div>
+<div class="section-frame">
+	<div class="section-frame-header">
+		<div class="title" style="color: rgb(255, 63, 96);">最新</div>
+		<a href="/index.php/label/new.html" class="more">更多<i class="van-icon van-icon-arrow" style="font-size: 16px;"></i></a>
+	</div>
+	<div class="video-item-combination">
+		<div id="vodlistnew" class="row-2 van-row">
+{block:vod_index_new n="4"}
+{loop:$data $v} 
+						<div class="van-col van-col--12">
+				<div class="video-item">
+					<a href="{$v.play_data.0.url}" class="block" title="{$v.name}">
+						<div class="aspect-ratio" >
+							<div class="aspect-ratio-content">
+								<div class="easy-image">
+									<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="{$v.name}">
+								</div>
+							</div>
+							<div class="overlay">
+																<div class="flag">{$v.remarks}</div>
+																<div class="times">{$v.views}次播放</div>
+																<div class="duration">{$v.create_date_fmt_ymd}</div>
+															</div>
+						</div>
+					</a>
+					<a href="{$v.play_data.0.url}" class="block title van-ellipsis" title="{$v.name}">{$v.name}</a>
+				</div>
+			</div>
+{/loop} 
+{/block}
+					</div>
+	</div>
+	<!--<div class="actions">-->
+	<!--	<a href="/index.php/label/new.html" class="action-btn"><img src="{$path_tpl}static/picture/play.png">更多推荐</a>-->
+	<!--	<div class="action-btn mdchange" page="2" by="time" tid="new" url="/index.php/label/inew.html"><img src="{$path_tpl}static/picture/refresh.png">换一换</div>-->
+	<!--</div>-->
+</div><div class="section-frame">
+	<div class="section-frame-header">
+		<div class="title" style="color: rgb(255, 63, 96);">国产</div>
+		<a href="/index.php/vod/show/id/1.html" class="more">更多<i class="van-icon van-icon-arrow" style="font-size: 16px;"></i></a>
+	</div>
+	<div class="video-item-combination">
+{block:vod_top cid="" n="4"} 
+{if:isset($data)}
+{loop:$data $v}
+						<div class="van-col van-col--12">
+				<div class="video-item">
+					<a href="{$v.play_data.0.url}" class="block" title="{$v.name}">
+						<div class="aspect-ratio" >
+							<div class="aspect-ratio-content">
+								<div class="easy-image">
+									<img class="madou-lazy" data-src="{$v.pic}" src="{$path_tpl}static/images/placeholder.png" onerror="javascript:this.src='{$path_tpl}static/images/placeholder.png'" alt="{$v.name}">
+								</div>
+							</div>
+							<div class="overlay">
+																<div class="flag">
+									<i class="icon van-icon">
+										<img src="{$path_tpl}static/picture/coin.png" class="van-icon__image">
+									</i>{$v.remarks}								</div>
+																<div class="times">{$v.views}次播放</div>
+																<div class="duration">{$v.create_date_fmt_ymd}</div>
+															</div>
+						</div>
+					</a>
+					<a href="{$v.play_data.0.url}" class="block title van-ellipsis" title="{$v.name}">{$v.name}</a>
+				</div>
+			</div>
+{/loop}
+{/if}
+{/block}
+					</div>
+	</div>
+	<div class="actions">
+		<a href="/index.php/vod/show/id/1.html" class="action-btn"><img src="{$path_tpl}static/picture/play.png">更多推荐</a>
+		<div class="action-btn mdchange" page="2" by="time" tid="1" url="/index.php/label/index.html"><img src="{$path_tpl}static/picture/refresh.png">换一换</div>
+	</div>
+</div>
+
+											<div class="end-tips">精彩还多着呢，去逛逛其它的吧～</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+{inc:public/foot.html}
+	</body>
+</html>

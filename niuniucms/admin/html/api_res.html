@@ -1,0 +1,24 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid"> 
+            <div class="row mt-5"> 
+                <div class="card">
+                    <div class="card-header">
+                       <h5>数据采集中</h5> 
+                    </div>
+                    <div class="card-body">
+                        <p class="text-start lh-lg"> 
+                            <?php echo $resstr;?>
+                        </p>
+                    </div>
+                    <div class="card-footer text-start">
+                        <button type="submit" class="btn btn-success my-1" id="submit" data-loading-text="正在提交..."><?php echo jump("正在采集 $p 页", $jump, 1)?></button> 
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div> 
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

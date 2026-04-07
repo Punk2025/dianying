@@ -1,0 +1,226 @@
+ <!--APP-SIDEBAR-->
+ <div class="sticky">
+     <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
+     <div class="app-sidebar">
+         <div class="side-header">
+             <a class="header-brand1" href="index.html">
+                 <img src="/static/logo.png" class="header-brand-img desktop-logo" alt="logo">
+                 <img src="/static/logo.png" class="header-brand-img toggle-logo" alt="logo">
+                 <img src="/static/logo.png" class="header-brand-img light-logo" alt="logo">
+                 <img src="/static/logo.png" class="header-brand-img light-logo1" alt="logo">
+             </a>
+             <!-- LOGO -->
+         </div>
+         <div class="main-sidemenu">
+             <div class="slide-left disabled" id="slide-left"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191"
+                     width="24" height="24" viewBox="0 0 24 24">
+                     <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z" />
+                 </svg></div>
+             <ul class="side-menu">
+                 <li class="sub-category">
+                     <h3> </h3>
+                 </li>
+                 <li class="slide <?php if($route == 'index') echo 'active';?>">
+                     <a class="side-menu__item has-link <?php if($route == 'index') echo 'active';?>"
+                         data-bs-toggle="slide" href="/admin/"><i class="side-menu__icon fe fe-home"></i><span
+                             class="side-menu__label"><?php echo lang('index');?></span></a>
+                 </li>
+                 <li class="slide <?php if($route == 'cate') echo 'active';?>">
+                     <a class="side-menu__item has-link <?php if($route == 'cate') echo 'active';?>"
+                         data-bs-toggle="slide" href="<?php echo url('cate-list','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-type"></i><span class="side-menu__label"><?php echo lang('cate');?></span></a>
+                 </li>  
+                <li class="slide <?php if($route == 'api') echo 'is-expanded';?>">
+                     <a class="side-menu__item <?php if($route == 'api') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                             class="side-menu__icon fe fe-copy"></i><span class="side-menu__label"><?php echo lang('api');?></span><i
+                             class="angle fe fe-chevron-right"></i>
+                     </a>
+                     <ul class="slide-menu">
+                         <li class="panel sidetab-menu"> 
+                             <div class="panel-body tabs-menu-body p-0 border-0">
+                                 <div class="tab-content">
+                                     <div class="tab-pane active" id="side21">
+                                         <ul class="sidemenu-list"> 
+
+                                             <li><a href="<?php echo url('api-list','',TRUE);?>" class="slide-item <?php if($action == 'list') echo 'active';?>">视频<?php echo lang('api');?></a></li>
+                                             <li><a href="<?php echo url('api-art_list','',TRUE);?>" class="slide-item <?php if($action == 'art_list') echo 'active';?>">文章<?php echo lang('api');?></a></li> 
+                                         </ul>
+                                     </div> 
+                                 </div>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
+
+                <li class="slide <?php if($route == 'art') echo 'is-expanded';?>">
+                    <a class="side-menu__item <?php if($route == 'art') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                            class="side-menu__icon fe fe-video"></i><span class="side-menu__label"><?php echo lang('art');?></span><i
+                            class="angle fe fe-chevron-right"></i>
+                    </a>
+                    <ul class="slide-menu">
+                        <li class="panel sidetab-menu"> 
+                            <div class="panel-body tabs-menu-body p-0 border-0">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="side21">
+                                        <ul class="sidemenu-list">  
+                                            <li><a href="<?php echo url('art-list','',TRUE);?>" class="slide-item <?php if($action == 'list') echo 'active';?>"><?php echo lang('art_page');?></a></li>
+                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="slide <?php if($route == 'vod') echo 'is-expanded';?>">
+                    <a class="side-menu__item <?php if($route == 'vod') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                            class="side-menu__icon fe fe-video"></i><span class="side-menu__label"><?php echo lang('vod');?></span><i
+                            class="angle fe fe-chevron-right"></i>
+                    </a>
+                    <ul class="slide-menu">
+                        <li class="panel sidetab-menu"> 
+                            <div class="panel-body tabs-menu-body p-0 border-0">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="side21">
+                                        <ul class="sidemenu-list">  
+                                            <li><a href="<?php echo url('vod-list','',TRUE);?>" class="slide-item <?php if($action == 'list') echo 'active';?>"><?php echo lang('vod_page');?></a></li>
+                                            <li><a href="<?php echo url('vod-posterlist','',TRUE);?>" class="slide-item <?php if($action == 'posterlist') echo 'active';?>"><?php echo lang('vod_poster');?></a></li>
+                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="slide <?php if($route == 'tmpl') echo 'is-expanded';?>">
+                    <a class="side-menu__item <?php if($route == 'tmpl') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                            class="side-menu__icon fe fe-folder"></i><span class="side-menu__label"><?php echo lang('tmpl');?></span><i
+                            class="angle fe fe-chevron-right"></i>
+                    </a>
+                    <ul class="slide-menu">
+                        <li class="panel sidetab-menu"> 
+                            <div class="panel-body tabs-menu-body p-0 border-0">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="side21">
+                                        <ul class="sidemenu-list">  
+                                            <li><a href="<?php echo url('tmpl-cloud','',TRUE);?>" class="slide-item <?php if($route == 'tmpl'&&$action == 'cloud') echo 'active';?>"><?php echo lang('tmpl_page_cloud');?></a></li>
+                                            <li><a href="<?php echo url('tmpl-list','',TRUE);?>" class="slide-item <?php if($route == 'tmpl'&&$action == 'list') echo 'active';?>"><?php echo lang('tmpl_page');?></a></li>
+                                            <li><a href="<?php echo url('tmpl-file','',TRUE);?>" class="slide-item  <?php if($route == 'tmpl'&&$action == 'file') echo 'active';?>"><?php echo lang('tmpl_editor');?></a></li> 
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                 <li class="slide <?php if($route == 'user') echo 'is-expanded';?>">
+                     <a class="side-menu__item <?php if($route == 'user') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                             class="side-menu__icon fe fe-user"></i><span class="side-menu__label"><?php echo lang('user');?></span><i
+                             class="angle fe fe-chevron-right"></i>
+                     </a>
+                     <ul class="slide-menu">
+                         <li class="panel sidetab-menu"> 
+                             <div class="panel-body tabs-menu-body p-0 border-0">
+                                 <div class="tab-content">
+                                     <div class="tab-pane active" id="side21">
+                                         <ul class="sidemenu-list">  
+                                             <li><a href="<?php echo url('user-list','',TRUE);?>" class="slide-item <?php if($action == 'list'||$action == 'update') echo 'active';?>"><?php echo lang('user_admin');?></a></li>
+                                              <li><a href="<?php echo url('user-create','',TRUE);?>" class="slide-item  <?php if($action == 'create') echo 'active';?>"><?php echo lang('admin_user_create');?></a></li>
+                                             <li><a href="<?php echo url('user-group_list','',TRUE);?>" class="slide-item  <?php if($action == 'group_list') echo 'active';?>"><?php echo lang('group_admin');?></a></li> 
+                                             
+                                         </ul>
+                                     </div>
+
+                                 </div>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
+
+                 <li class="slide <?php if($route == 'link') echo 'active';?>">
+                     <a class="side-menu__item has-link <?php if($route == 'link') echo 'active';?>"
+                         href="<?php echo url('link','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-link"></i><span class="side-menu__label"><?php echo lang('friends__link');?></span></a>
+                 </li>
+                 <li class="slide <?php if($route == 'set') echo 'is-expanded';?>">
+                     <a class="side-menu__item <?php if($route == 'set') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                             class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"><?php echo lang('setting');?></span><i
+                             class="angle fe fe-chevron-right"></i>
+                     </a>
+                     <ul class="slide-menu">
+                         <li class="panel sidetab-menu"> 
+                             <div class="panel-body tabs-menu-body p-0 border-0">
+                                 <div class="tab-content">
+                                     <div class="tab-pane active" id="side21">
+                                         <ul class="sidemenu-list"> 
+
+                                             <li><a href="<?php echo url('set-set','',TRUE);?>" class="slide-item <?php if($action == 'set') echo 'active';?>"><?php echo lang('set_web');?></a></li>
+                                               <li><a href="<?php echo url('set-domain','',TRUE);?>" class="slide-item <?php if($action == 'domain') echo 'active';?>"><?php echo lang('set_domain');?></a></li>
+                                             <li><a href="<?php echo url('set-seo','',TRUE);?>" class="slide-item  <?php if($action == 'seo') echo 'active';?>"><?php echo lang('set_seo');?></a></li>
+                                             <li><a href="<?php echo url('set-op','',TRUE);?>" class="slide-item  <?php if($action == 'op') echo 'active';?>"><?php echo lang('set_op');?></a></li>
+                                             <li><a href="<?php echo url('set-cache','',TRUE);?>" class="slide-item  <?php if($action == 'cache') echo 'active';?>"><?php echo lang('set_cache');?></a></li>
+                                             <li><a href="<?php echo url('set-player','',TRUE);?>" class="slide-item  <?php if($action == 'player') echo 'active';?>"><?php echo lang('player_set');?></a></li>
+                                             <li><a href="<?php echo url('set-danmu','',TRUE);?>" class="slide-item  <?php if($action == 'danmu') echo 'active';?>"><?php echo lang('danmu_set');?></a></li>
+                                              <li><a href="<?php echo url('set-route','',TRUE);?>" class="slide-item  <?php if($action == 'route') echo 'active';?>"><?php echo lang('route_set');?></a></li>
+                                             <li><a href="<?php echo url('set-rw','',TRUE);?>" class="slide-item  <?php if($action == 'rw') echo 'active';?>"><?php echo lang('rw_set');?></a></li>
+                                             <li><a href="<?php echo url('set-rm','',TRUE);?>" class="slide-item  <?php if($action == 'rm') echo 'active';?>">清空数据</a></li>
+ 
+                                         </ul>
+                                     </div>
+
+                                 </div>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
+                 <li class="sub-category">
+                     <h3><?php echo lang('other_admin');?></h3>
+
+                 </li>
+                   <?php if($conf['fast_api']==0){ ?>
+                  <li class="slide">
+                     <a class="side-menu__item has-link" href="<?php echo url('api-fastapi','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-settings"></i><span class="side-menu__label">快速采集</span><span
+                             class="badge bg-red br-5 side-badge blink-text pb-1">New</span></a>
+                 </li>
+                  <?php }?>
+                 <li class="slide">
+                     <a class="side-menu__item has-link" href="<?php echo url('set-domain','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"><?php echo lang('set_domain');?></span><span
+                             class="badge bg-red br-5 side-badge blink-text pb-1">New</span></a>
+                 </li>
+                 
+                 <?php if($version!=$cloud_version){ ?>
+                 <li class="slide">
+                     <a class="side-menu__item has-link" href="<?php echo url('set-upgrade','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-download-cloud"></i><span class="side-menu__label"><?php echo lang('online_upgrade');?></span><span
+                             class="badge bg-green br-5 side-badge blink-text pb-1">New</span></a>
+                 </li>
+                <?php }?>
+                <?php $repn=count($nnzs['replist']); if($repn>0){ ?>
+                 <li class="slide">
+                     <a class="side-menu__item has-link" href="<?php echo url('set-rep','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-download-cloud"></i><span class="side-menu__label"><?php echo lang('rep');?></span><span
+                             class="badge bg-green br-5 side-badge blink-text pb-1"><?php echo $repn;?></span></a>
+                 </li>
+                <?php }?>
+                 <li class="slide">
+                     <a class="side-menu__item has-link" href="<?php echo url('set-cache','',TRUE);?>"><i
+                             class="side-menu__icon fe fe-trash-2"></i><span class="side-menu__label"><?php echo lang('set_cache');?></span><span
+                             class="badge bg-green br-5 side-badge blink-text pb-1">New</span></a>
+                 </li>
+                 <li>
+                     <a class="side-menu__item has-link" href="<?php echo url('index-logout', '', TRUE);?>">
+                         <i class="side-menu__icon fe fe-log-out"></i><span class="side-menu__label"><?php echo lang('logout');?></span></a>
+                 </li>
+
+             </ul>
+             <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"
+                     height="24" viewBox="0 0 24 24">
+                     <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z" />
+                 </svg></div>
+         </div>
+     </div>
+ </div>

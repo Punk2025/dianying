@@ -1,0 +1,34 @@
+
+ <!-- header -->
+    <div class="header">
+    <div class="menu-toggle-btn"> <!-- Menu close button for mobile devices -->
+        <a href="#">
+            <i class="bi bi-list"></i>
+        </a>
+    </div> 
+    <a href="<?php echo url('member-index');?>" class="logo">
+        <img width="100" src="static/logo.png" alt="logo">
+    </a> 
+    <div class="page-title"><?php echo $header['title'];?></div>
+    <form class="search-form">
+        <div class="input-group">
+            <button class="btn btn-outline-light" type="button" id="button-addon1">
+                <i class="bi bi-search"></i>
+            </button>
+            <input type="text" class="form-control" placeholder="搜索......"
+                   aria-label="Example text with button addon" aria-describedby="button-addon1">
+            <a href="#" class="btn btn-outline-light close-header-search-bar">
+                <i class="bi bi-x"></i>
+            </a>
+        </div>
+    </form>  
+    <div class="header-mobile-buttons">
+        <a href="#" class="search-bar-btn">
+            <i class="bi bi-search"></i>
+        </a>
+        <a href="#" class="actions-btn">
+            <i class="bi bi-three-dots"></i>
+        </a>
+    </div> 
+</div>
+    <!-- ./ header -->

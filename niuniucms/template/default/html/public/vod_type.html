@@ -1,0 +1,46 @@
+<div class="bg-[#1D2023] pt-2 screen-list"> 
+    <div class="transition-all duration-500 md:h-fit md:visible md:py-2 ease-out h-[280px] py-2  flex flex-col divide-y divide-gray-800 container md:flex md:opacity-100">  
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+                 <a href="" class="flex flex-col items-center cursor-pointer {if:$cid==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$cid==''}text-yellow-500{else}text-white{/if}">全部分类</span>
+            </a> 
+                {loop:$sonlist $s} 
+                <a href="{$s.type_url}" class="flex flex-col items-center cursor-pointer {if:$cid==$s[cid]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$cid==$s[cid]}text-yellow-500{else}text-white{/if}">{$s.name}</span>
+                </a>
+                {/loop} 
+        </div> 
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="{$pageurl}" class="flex flex-col items-center cursor-pointer {if:$req_area==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_area==''}text-yellow-500{else}text-white{/if}">地区</span>
+            </a> 
+            {loop:$type_urls[area] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_area==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_area==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div>
+
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="#" class="flex flex-col items-center cursor-pointer {if:$req_year==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_year==''}text-yellow-500{else}text-white{/if}">年份</span>
+            </a> 
+            {loop:$type_urls[year] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_year==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_year==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div>
+
+        <div class="flex md:flex-wrap gap-x-4 gap-y-2 py-2 overflow-scroll no-scrollbar">
+            <a href="#" class="flex flex-col items-center cursor-pointer {if:$req_lang==''}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_lang==''}text-yellow-500{else}text-white{/if}">语言</span>
+            </a> 
+            {loop:$type_urls[lang] $v}
+            <a href="{$v.url}" class="flex flex-col items-center cursor-pointer {if:$req_lang==$v[name]}bg-theme-transparent{/if} p-2">
+                <span class="text-sm hover:text-yellow-500 transition-colors duration-300 truncate {if:$req_lang==$v[name]}text-yellow-500{else}text-white{/if}">{$v.name}</span>
+            </a>
+            {/loop} 
+        </div> 
+    </div> 
+</div>

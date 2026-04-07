@@ -1,0 +1,30 @@
+<div class="modal fade" id="country-selector">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content country-select-modal">
+            <div class="modal-header">
+                <h6 class="modal-title"><?php echo lang('zz');?></h6><button aria-label="Close" class="btn-close"
+                    data-bs-dismiss="modal" type="button"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <ul class="row p-3">
+                    <?php if($nnzs['apilist']) { foreach($nnzs['apilist'] as &$_api) { ?>
+                    <li class="col-lg-6 mb-2">
+                        <a href="<?php echo $_api['url'];?>" target="_blank" class="btn btn-country btn-lg btn-block active">
+                            <i class="fe fe-video"></i><span class="country-selector"></span><?php echo $_api['name'];?>
+                        </a>
+                    </li>
+                    <?php } }?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+            <div class="container">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-md-12 col-sm-12 text-center">
+                        Copyright © <span id="year"></span> <a href="javascript:void(0)"><?php echo APP_NAME;?></a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="/"><?php echo APP_NAME;?></a> All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer> 
