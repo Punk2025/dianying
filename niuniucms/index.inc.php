@@ -42,7 +42,7 @@ $route_tag = $conf['route']['tag'];
 $route_art = $conf['route']['art'];
 $route = param(0, 'index');
 $pku_url = url($route_type, '', false);
-$alias_reservation = array('index', 'admin','user', 'search','sitemap');
+$alias_reservation = array('index', 'admin','user', 'search','sitemap','adclick','adimg');
 if ($conf['url_rewrite_on'] > 1 && !in_array($route, $alias_reservation)) {
     $aliaslist = cate_alias_cache();
     $alias_cid = array_value($aliaslist, $route, 0);
@@ -75,6 +75,8 @@ $path_tpl = '/template/' . $config['theme'] . '/';
 $tpl_default_logo = $path_tpl . 'Images/logo.png';
 $site_logo_pc = !empty($conf['logo_pc']) ? $conf['logo_pc'] : $tpl_default_logo;
 $site_logo_m = !empty($conf['logo_m']) ? $conf['logo_m'] : $site_logo_pc;
+$tpl_default_mobile_qr = $path_tpl . 'Images/erweima.png';
+$site_mobile_watch_qr = !empty($conf['mobile_watch_qr']) ? $conf['mobile_watch_qr'] : $tpl_default_mobile_qr;
 $maccms =$nncms = array(
     'site_name' => $conf['sitename'],
     'path_tpl' => $path_tpl,
@@ -84,6 +86,7 @@ $maccms =$nncms = array(
     'site_email' => $conf['email'],
     'logo' => $site_logo_pc,
     'logo_m' => $site_logo_m,
+    'mobile_watch_qr' => $site_mobile_watch_qr,
     'path' => http_url_path(),
     'tj' => $conf['agg'],
     'type'=>$catelist,
@@ -118,9 +121,13 @@ if (isset($domain['site'][$hosts]) && is_array($domain['site'][$hosts])) {
         if (empty($conf['logo_m'])) {
             $nncms['logo_m'] = $maccms['logo_m'] = $nncms['logo'];
         }
+        if (empty($conf['mobile_watch_qr'])) {
+            $nncms['mobile_watch_qr'] = $maccms['mobile_watch_qr'] = $path_tpl . 'Images/erweima.png';
+        }
     }
 }
 if (!defined('SKIP_ROUTE')) {
+    ad_inject_nncms($nncms, $maccms);
     switch ($route) {
         case 'index':
             include _include(APP_PATH . 'route/index.php');
@@ -160,6 +167,12 @@ if (!defined('SKIP_ROUTE')) {
             break;
         case 'danmu':
             include _include(APP_PATH . 'route/danmu.php');
+            break;
+        case 'adclick':
+            include _include(APP_PATH . 'route/adclick.php');
+            break;
+        case 'adimg':
+            include _include(APP_PATH . 'route/adimg.php');
             break;
         default:
              include _include(APP_PATH . 'route/index.php');

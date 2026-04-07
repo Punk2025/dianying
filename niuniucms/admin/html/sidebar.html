@@ -144,6 +144,27 @@
                          href="<?php echo url('link','',TRUE);?>"><i
                              class="side-menu__icon fe fe-link"></i><span class="side-menu__label"><?php echo lang('friends__link');?></span></a>
                  </li>
+                 <li class="slide <?php if($route == 'ad') echo 'is-expanded';?>">
+                     <a class="side-menu__item <?php if($route == 'ad') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                             class="side-menu__icon fe fe-image"></i><span class="side-menu__label">广告管理</span><i
+                             class="angle fe fe-chevron-right"></i>
+                     </a>
+                     <ul class="slide-menu">
+                         <li class="panel sidetab-menu">
+                             <div class="panel-body tabs-menu-body p-0 border-0">
+                                 <div class="tab-content">
+                                     <div class="tab-pane active">
+                                         <ul class="sidemenu-list">
+                                             <li><a href="<?php echo url('ad-list','',TRUE);?>" class="slide-item <?php if($route == 'ad' && isset($action) && $action == 'list') echo 'active';?>">广告列表</a></li>
+                                             <li><a href="<?php echo url('ad-create','',TRUE);?>" class="slide-item <?php if($route == 'ad' && isset($action) && $action == 'create') echo 'active';?>">新增广告</a></li>
+                                             <li><a href="<?php echo url('ad-stat','',TRUE);?>" class="slide-item <?php if($route == 'ad' && isset($action) && $action == 'stat') echo 'active';?>">统计报表</a></li>
+                                         </ul>
+                                     </div>
+                                 </div>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
                  <li class="slide <?php if($route == 'set') echo 'is-expanded';?>">
                      <a class="side-menu__item <?php if($route == 'set') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
                              class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"><?php echo lang('setting');?></span><i
@@ -199,7 +220,7 @@
                              class="badge bg-green br-5 side-badge blink-text pb-1">New</span></a>
                  </li>
                 <?php }?>
-                <?php $repn=count($nnzs['replist']); if($repn>0){ ?>
+                <?php $repn = (!empty($nnzs) && is_array($nnzs) && isset($nnzs['replist']) && is_array($nnzs['replist'])) ? count($nnzs['replist']) : 0; if($repn>0){ ?>
                  <li class="slide">
                      <a class="side-menu__item has-link" href="<?php echo url('set-rep','',TRUE);?>"><i
                              class="side-menu__icon fe fe-download-cloud"></i><span class="side-menu__label"><?php echo lang('rep');?></span><span

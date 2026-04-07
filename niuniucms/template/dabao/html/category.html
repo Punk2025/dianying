@@ -4,7 +4,7 @@
 
  
  <div class="main">
-     
+     {if:isset($nncms['ad_slot_list_top_banner']) && $nncms['ad_slot_list_top_banner']}<div class="mb clearfix">{$nncms.ad_slot_list_top_banner}</div>{/if}
      {loop:$arrlistall['list'] $t} 
 {if:isset($t[news])} 
 	<div class="index-area clearfix">

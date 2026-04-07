@@ -38,10 +38,11 @@
 	    	</dl>
 
         <div name="ee" class="ee"><span class="js">介绍：</span>欢迎在线观看由{$video.actor}等主演的{$video.cate_name}《{$video.name}》，87电影院第一时间为你提供《{$video.name}》，如果你喜欢《{$video.name}》请把它分享给的朋友，有您们的支持我们会做的更好。祝你观片愉快！剧情简介:{$video.content}</div>
+	{if:isset($nncms['ad_slot_video_intro_under']) && $nncms['ad_slot_video_intro_under']}<div class="mb clearfix">{$nncms.ad_slot_video_intro_under}</div>{/if}
 
 	    </div>
 
-	    <div class="ct-r"> 
+	    <div class="ct-r">{if:isset($nncms['ad_slot_video_sidebar']) && $nncms['ad_slot_video_sidebar']}{$nncms.ad_slot_video_sidebar}{/if}
 </div>
 
 	</div>

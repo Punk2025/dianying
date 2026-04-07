@@ -15901,7 +15901,7 @@ ul.inbox-pagination li {
 }
 
 .bg-recentorder {
-    background-image: url("../images/landing/backgrounds/2.jpg");
+    background-image: none; /* was missing asset */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -18857,7 +18857,7 @@ img {
 }
 
 .landing-top-header {
-    background-image: url(../images/landing/backgrounds/5.png);
+    background-image: none; /* was missing asset */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -18879,7 +18879,7 @@ img {
     width: 35%;
     height: 80%;
     overflow: hidden;
-    background-image: url(../images/landing/backgrounds/1.png);
+    background-image: none; /* was missing asset */
 }
 
 .landing-top-header .top {
@@ -19233,7 +19233,7 @@ img {
 }
 
 .landing-page .bg-image-landing {
-    background-image: url(../images/landing/backgrounds/5.png);
+    background-image: none; /* was missing asset */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -19253,7 +19253,7 @@ img {
     inset-inline-end: 0;
     width: 35%;
     height: 80%;
-    background-image: url(../images/landing/backgrounds/1.png);
+    background-image: none; /* was missing asset */
 }
 
 .landing-page .landing-statistics .card-body {
@@ -19265,7 +19265,7 @@ img {
 }
 
 .landing-page .testimonial-owl-landing {
-    background-image: url(../images/landing/backgrounds/2.jpg);
+    background-image: none; /* was missing asset */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -20102,7 +20102,7 @@ img {
 }
 
 .bg-image-style {
-    background-image: url(../images/landing/backgrounds/3.png);
+    background-image: none; /* was missing asset */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -20234,11 +20234,11 @@ img {
 }
 
 .dark-mode.landing-page .landing-top-header {
-    background-image: url(../images/landing/backgrounds/6.png);
+    background-image: none; /* was missing asset */
 }
 
 .dark-mode.landing-page .landing-top-header::before {
-    background-image: url(../images/landing/backgrounds/7.png);
+    background-image: none; /* was missing asset */
 }
 
 .dark-mode.landing-page .logo-2 {
@@ -20300,15 +20300,15 @@ img {
 }
 
 .dark-mode.landing-page .bg-image-landing {
-    background-image: url(../images/landing/backgrounds/6.png);
+    background-image: none; /* was missing asset */
 }
 
 .dark-mode.landing-page .bg-image-landing::before {
-    background-image: url(../images/landing/backgrounds/7.png);
+    background-image: none; /* was missing asset */
 }
 
 .dark-mode.landing-page .bg-image-style {
-    background-image: url(../images/landing/backgrounds/4.png);
+    background-image: none; /* was missing asset */
 }
 
 .dark-mode.landing-page .card .card {
@@ -29203,7 +29203,7 @@ a.text-primary:focus {
 
 .login-img {
     position: relative;
-    background-image: url(../images/landing/backgrounds/2.jpg);
+    background-image: none; /* was missing asset */
 }
 
 .login-img::before {
@@ -50675,7 +50675,7 @@ body.transparent-mode *:hover::-webkit-scrollbar-thumb {
 }
 
 .transparent-mode .bg-recentorder {
-    background: linear-gradient(to right, var(--transparent-body) 0%, tranparent 100%), url("../images/landing/backgrounds/2.jpg");
+    background: linear-gradient(to right, var(--transparent-body) 0%, transparent 100%); /* was missing bg image */
 }
 
 .transparent-mode .bg-recentorder:before {

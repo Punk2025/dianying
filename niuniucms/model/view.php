@@ -3,7 +3,26 @@ function _file($srcfile)
 {
     global $conf; 
     $tmpfile = $conf['cache_path'] . substr(str_replace('/', '_', $srcfile), strlen(APP_PATH));
-    if (!is_file($tmpfile) || DEBUG > 1) {
+    $srcMtime = is_file($srcfile) ? (int) filemtime($srcfile) : 0;
+    $tmpMtime = is_file($tmpfile) ? (int) filemtime($tmpfile) : 0;
+    $need_rebuild = !is_file($tmpfile) || DEBUG > 1 || $srcMtime > $tmpMtime;
+    if (!$need_rebuild && $srcMtime > 0 && is_file($srcfile)) {
+        $srct = @file_get_contents($srcfile, false, null, 0, 262144);
+        if ($srct !== false && preg_match_all('#\{inc\:([\w|\/\.]+)\}#', $srct, $incm)) {
+            $bd = dirname($srcfile);
+            foreach ($incm[1] as $rel) {
+                if ($rel === '' || strpos($rel, '..') !== false || strpos($rel, "\0") !== false) {
+                    continue;
+                }
+                $p = $bd . '/' . ltrim($rel, '/');
+                if (is_file($p) && (int) filemtime($p) > $tmpMtime) {
+                    $need_rebuild = true;
+                    break;
+                }
+            }
+        }
+    }
+    if ($need_rebuild) {
         $s = addons_compile_srcfile($srcfile);
         $s = ltrim($s);
         $reg_arr = '[a-zA-Z_]\w*(?:\[\w+\]|\[\'\w+\'\]|\[\"\w+\"\]|\[\$[a-zA-Z_]\w*\])*';
@@ -61,7 +80,9 @@ function dot_to_array_syntax($str)
 {
     $parts = explode('.', $str);
     $base = array_shift($parts);
-    return '$' . $base . implode('', array_map(fn($v) => "['$v']", $parts));
+    return '$' . $base . implode('', array_map(function ($v) {
+        return "['" . $v . "']";
+    }, $parts));
 }
 function process_vars_dot($matches)
 {
@@ -276,5 +297,24 @@ if ( isset($configs['theme']) && $config['theme'] == $configs['theme']) {
     if (!is_file($path_file))
         $path_file = APP_PATH . ($dir ? 'addons/' . $dir . '/view/html/' : 'template/default/html/') . $default_pre;
     return $path_file;*/
+}
+
+/** 删除某主题已编译的前台 HTML 模板缓存（runtime/cache/template_{theme}_html_*.html），改 inc 子模板或站点变量后需刷新时用 */
+function view_clear_compiled_theme_html($theme)
+{
+    global $conf;
+    $theme = is_string($theme) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $theme) : '';
+    if ($theme === '') {
+        return;
+    }
+    $dir = rtrim(str_replace('\\', '/', $conf['cache_path']), '/');
+    if ($dir === '' || !is_dir($dir)) {
+        return;
+    }
+    foreach (glob($dir . '/template_' . $theme . '_html_*.html') ?: array() as $f) {
+        if (is_file($f)) {
+            @unlink($f);
+        }
+    }
 }
 ?>

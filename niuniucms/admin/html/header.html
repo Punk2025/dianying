@@ -70,7 +70,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="notifications-menu">
-                                                    <?php if($nnzs['replist']) {foreach($nnzs['replist'] as &$_rep) { ?>
+                                                    <?php if (!empty($nnzs) && is_array($nnzs) && !empty($nnzs['replist']) && is_array($nnzs['replist'])) { foreach($nnzs['replist'] as &$_rep) { ?>
                                                         <a class="dropdown-item d-flex" target="_blank" href="/api.php?route=rep&old=<?php echo $_rep['old'];?>&new=<?php echo $_rep['new'];?>&token=<?php echo $conf['auth_key'];?>&type=<?php echo $_rep['type'];?>">
                                                         <div class="mt-1 wd-80p">
                                                             <h5 class="notification-label mb-1"><?php echo $_rep['sitename'];?>
@@ -78,7 +78,7 @@
                                                             <span class="notification-subtext"><?php echo $_rep['addtime'];?></span>
                                                         </div>
                                                     </a> 
-                                                    <?php }} else { ?>
+                                                    <?php } } else { ?>
                                                     暂无相关数据
                                                     <?php } ?>
                                                      

@@ -57,7 +57,7 @@
 
       <li class="bb"><strong class="ma"><i class="mabg"></i>手机观看</strong>
 
-      <div class="cc maw"><i class="ewmbg"></i><p>扫描二维码用手机观看</p></div>  
+      <div class="cc maw"><img src="{$nncms.mobile_watch_qr}" alt="手机观看" class="ewmbg" width="150" height="150" loading="lazy" decoding="async" /><p>扫描二维码用手机观看</p></div>
 
 <!--<li class="bb member"><strong class="ma"><i class="mbbg"></i></strong><div class="cc mbp"></div> </li>-->
 </ul>
@@ -142,9 +142,6 @@ return false;
 }
 </script>
 <div class="main">
-
-
-
-<!--/麒麟点击广告-->
-
+<!--/麒麟点击广告 / 导航下横幅-->
+{if:isset($nncms['ad_slot_header_under']) && $nncms['ad_slot_header_under']}{$nncms.ad_slot_header_under}{/if}
 </div>

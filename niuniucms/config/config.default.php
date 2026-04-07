@@ -57,6 +57,7 @@ return array(
   'logo' => '',
   'logo_m' => '/static/logo.png',
   'logo_pc' => '/static/logo.png',
+  'mobile_watch_qr' => '',
   'timezone' => 'Asia/Shanghai',  // 时区，默认中国
   'cms_lang' => 'zh-cn',
   'runlevel' => 5,    // 0: 站点关闭; 1: 管理员可读写; 2: 会员可读;  3: 会员可读写; 4：所有人只读; 5: 所有人可读写
@@ -78,6 +79,8 @@ return array(
   'session_delay_update' => 0, // 开启 session 延迟更新，减轻压力，会导致不重要的数据(useragent,url)显示有些延迟，单位为秒。
   'upload_image_width' => 927,    // 上传图片自动缩略的最大宽度
   'upload_resize' => 'thumb',      // 上传图片clip裁切 thumb缩略
+  'ad_image_encrypt' => 0,         // 1：本地上传加密 + adimg 解密；0：直接存 /upload/ad/（更省事，默认推荐）
+  'ad_image_secret' => '',        // 非空则参与派生 AES-256 密钥；空则用站点密钥派生
   'order_default' => 'lastpid',   // 作为回复排序
   'attach_dir_save_rule' => 'Ymd', // 附件存放规则，附件多用：Ymd，附件少：Ym 
   'user_create_on' => 1,

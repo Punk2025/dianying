@@ -50,7 +50,7 @@
 		autoPlay:true
 	});
 </script>
-
+{if:isset($nncms['ad_slot_index_slider_under']) && $nncms['ad_slot_index_slider_under']}<div class="main mb clearfix">{$nncms.ad_slot_index_slider_under}</div>{/if}
 
 <div class="main">
 <!--首页推荐-->
@@ -68,6 +68,7 @@
 </ul>
  </div>
   <div class="index-tj-r">
+{if:isset($nncms['ad_slot_index_sidebar_top']) && $nncms['ad_slot_index_sidebar_top']}<div class="mb-2">{$nncms.ad_slot_index_sidebar_top}</div>{/if}
  <h1 class="title index-color">随机推荐
 </h1><ul>
   {block:vod_top cid="" n="10"} 
@@ -112,6 +113,7 @@
 
 
 </div>
+{if:isset($nncms['ad_slot_index_bottom_banner']) && $nncms['ad_slot_index_bottom_banner']}<div class="main mb clearfix">{$nncms.ad_slot_index_bottom_banner}</div>{/if}
 
 <div class="ylink clearfix">
 友情连接：

@@ -57,6 +57,61 @@ switch ($action) {
         $pub = rtrim(str_replace('\\', '/', $conf['upload_url']), '/') . '/' . $subdir . $basename;
         message(0, '上传成功', array('url' => $pub));
         break;
+    case 'mobile_qr_upload':
+        if ('POST' !== $method) {
+            message(4, lang('method_error'));
+        }
+        empty($_FILES['mobile_qr']) && message(1, '请选择图片');
+        $f = $_FILES['mobile_qr'];
+        if (empty($f['tmp_name']) || !is_uploaded_file($f['tmp_name'])) {
+            message(1, '上传无效');
+        }
+        if (isset($f['error']) && (int) $f['error'] !== UPLOAD_ERR_OK) {
+            message(1, '上传失败');
+        }
+        $max_bytes = 2097152;
+        if (isset($f['size']) && (int) $f['size'] > $max_bytes) {
+            message(1, '图片不能超过 2MB');
+        }
+        $imginfo = @getimagesize($f['tmp_name']);
+        if ($imginfo === false) {
+            message(1, '不是有效的图片文件');
+        }
+        $mime_map = array(
+            IMAGETYPE_JPEG => 'jpg',
+            IMAGETYPE_PNG => 'png',
+            IMAGETYPE_GIF => 'gif',
+            IMAGETYPE_WEBP => 'webp',
+        );
+        if (!isset($mime_map[$imginfo[2]])) {
+            message(1, '仅支持 jpg、png、gif、webp');
+        }
+        $ext = $mime_map[$imginfo[2]];
+        if (function_exists('finfo_open')) {
+            $fi = finfo_open(FILEINFO_MIME_TYPE);
+            if ($fi) {
+                $mime = finfo_file($fi, $f['tmp_name']);
+                finfo_close($fi);
+                $mime_ok = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+                if ($mime && !in_array($mime, $mime_ok, true)) {
+                    message(1, '文件类型校验未通过');
+                }
+            }
+        }
+        $subdir = 'mobile_qr/' . date('Ym') . '/';
+        $base = rtrim(str_replace('\\', '/', $conf['upload_path']), '/');
+        $dest_dir = $base . '/' . $subdir;
+        if (!is_dir($dest_dir) && !@mkdir($dest_dir, 0755, true)) {
+            message(-1, '无法创建上传目录');
+        }
+        $basename = 'mqr_' . date('YmdHis') . '_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8) . '.' . $ext;
+        $dest = $dest_dir . $basename;
+        if (!move_upload_file($f['tmp_name'], $dest)) {
+            message(-1, '保存文件失败');
+        }
+        $pub = rtrim(str_replace('\\', '/', $conf['upload_url']), '/') . '/' . $subdir . $basename;
+        message(0, '上传成功', array('url' => $pub));
+        break;
     case 'set':
         $setting = array_value($config, 'setting');
         if ('GET' == $method) {
@@ -64,6 +119,7 @@ switch ($action) {
             $input['sitename'] = form_text('sitename', $conf['sitename']);
             $input['logo_pc'] = form_text('logo_pc', array_value($conf, 'logo_pc', ''), '100%', '/upload/logo.png 或完整图片 URL');
             $input['logo_m'] = form_text('logo_m', array_value($conf, 'logo_m', ''), '100%', '可选，留空同电脑端');
+            $input['mobile_watch_qr'] = form_text('mobile_watch_qr', array_value($conf, 'mobile_watch_qr', ''), '100%', '/upload/... 或完整 URL，留空用模板默认图');
             $input['pagesize'] = form_text('pagesize', $conf['pagesize']);
             $input['postlist_pagesize'] = form_text('postlist_pagesize', $conf['postlist_pagesize']);
             $input['listsize'] = form_text('listsize', $conf['listsize']);
@@ -91,6 +147,7 @@ switch ($action) {
             $sitename = param('sitename');
             $logo_pc = trim((string) param('logo_pc', ''));
             $logo_m = trim((string) param('logo_m', ''));
+            $mobile_watch_qr = trim((string) param('mobile_watch_qr', ''));
             $pagesize = param('pagesize');
             $postlist_pagesize = param('postlist_pagesize');
             $listsize = param('listsize');
@@ -116,6 +173,7 @@ switch ($action) {
             $replace['sitename'] = xn_html_safe(filter_all_html($sitename));
             $replace['logo_pc'] = strip_tags(trim(stripslashes($logo_pc)));
             $replace['logo_m'] = strip_tags(trim(stripslashes($logo_m)));
+            $replace['mobile_watch_qr'] = strip_tags(trim(stripslashes($mobile_watch_qr)));
             $replace['pagesize'] = intval($pagesize);
             $replace['postlist_pagesize'] = intval($postlist_pagesize);
             $replace['listsize'] = intval($listsize);
@@ -140,6 +198,9 @@ switch ($action) {
             $setting['tpl_mode'] = $tpl_mode;
             $config['setting'] = $setting;
             setting_set('conf', $config);
+            if (function_exists('view_clear_compiled_theme_html')) {
+                view_clear_compiled_theme_html(isset($config['theme']) ? $config['theme'] : 'default');
+            }
             message(0, lang('modify_successfully'));
         }
         break;

@@ -1,0 +1,94 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h2 class="card-title mb-0">广告统计</h2>
+                            <a class="btn btn-sm btn-outline-primary" href="<?php echo url('ad-list','',TRUE);?>">返回管理</a>
+                        </div>
+                        <div class="card-body">
+                            <h5>按版位汇总（累计点击/曝光字段）</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead><tr><th>版位</th><th>条数</th><th>累计点击</th><th>累计曝光(预留)</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($by_slot)) { foreach ($by_slot as $s) { ?>
+                                        <tr>
+                                            <td><?php $sk = $s['slot_key']; echo htmlspecialchars(isset($meta[$sk]) ? $meta[$sk]['name'] . ' (' . $sk . ')' : $sk);?></td>
+                                            <td><?php echo (int)$s['cnt'];?></td>
+                                            <td><?php echo (int)$s['sum_clicks'];?></td>
+                                            <td><?php echo (int)$s['sum_views'];?></td>
+                                        </tr>
+                                    <?php } } else { ?>
+                                        <tr><td colspan="4" class="text-muted">暂无数据</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h5 class="mt-4">点击日志按日（近 <?php echo (int)$days;?> 天）</h5>
+                            <form method="get" class="row g-2 mb-3" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'] ?? '');?>">
+                                <input type="hidden" name="0" value="ad" />
+                                <input type="hidden" name="1" value="stat" />
+                                <div class="col-auto">
+                                    <select name="slot" class="form-select form-select-sm">
+                                        <option value="">全部版位</option>
+                                        <?php
+                                        $ad_stat_groups = function_exists('ad_slot_meta_groups') ? ad_slot_meta_groups() : array('' => $meta);
+                                        foreach ($ad_stat_groups as $gname => $slots) { ?>
+                                        <optgroup label="<?php echo htmlspecialchars($gname, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
+                                            <?php foreach ($slots as $k => $m) { ?>
+                                            <option value="<?php echo htmlspecialchars($k);?>" <?php if (isset($slot_filter) && $slot_filter === $k) echo 'selected';?>><?php echo htmlspecialchars($m['name']);?></option>
+                                            <?php } ?>
+                                        </optgroup>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" name="days" class="form-control form-control-sm" value="<?php echo (int)$days;?>" min="1" max="90" style="width:80px" />
+                                </div>
+                                <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">筛选</button></div>
+                            </form>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead><tr><th>日期</th><th>点击次数</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($by_day)) { foreach ($by_day as $d) { ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($d['d']);?></td>
+                                            <td><?php echo (int)$d['c'];?></td>
+                                        </tr>
+                                    <?php } } else { ?>
+                                        <tr><td colspan="2" class="text-muted">暂无点击日志</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h5 class="mt-4">广告点击 TOP</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <thead><tr><th>ID</th><th>版位</th><th>名称</th><th>点击</th><th>状态</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($top_ads)) { foreach ($top_ads as $a) { ?>
+                                        <tr>
+                                            <td><?php echo (int)$a['id'];?></td>
+                                            <td><?php echo htmlspecialchars($a['slot_key']);?></td>
+                                            <td><?php echo htmlspecialchars($a['name']);?></td>
+                                            <td><?php echo (int)$a['clicks'];?></td>
+                                            <td><?php echo !empty($a['status']) ? '上架' : '下架';?></td>
+                                        </tr>
+                                    <?php } } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>

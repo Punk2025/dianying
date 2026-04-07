@@ -4,6 +4,7 @@
 
 <div class="main"> 
 	<h1 class="title">搜索"{$keyword}"  相关影视作品 </h1> 
+	{if:isset($nncms['ad_slot_list_top_banner']) && $nncms['ad_slot_list_top_banner']}<div class="mb clearfix">{$nncms.ad_slot_list_top_banner}</div>{/if}
 	<div class="index-area clearfix"> 
 	<ul> 
     {loop:$videolist $v}  

@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <ul class="row p-3">
-                    <?php if($nnzs['apilist']) { foreach($nnzs['apilist'] as &$_api) { ?>
+                    <?php if (!empty($nnzs) && is_array($nnzs) && !empty($nnzs['apilist']) && is_array($nnzs['apilist'])) { foreach($nnzs['apilist'] as &$_api) { ?>
                     <li class="col-lg-6 mb-2">
                         <a href="<?php echo $_api['url'];?>" target="_blank" class="btn btn-country btn-lg btn-block active">
                             <i class="fe fe-video"></i><span class="country-selector"></span><?php echo $_api['name'];?>

@@ -24,7 +24,7 @@
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        <?php if($nnzs['replist']) { foreach($nnzs['replist'] as &$_rep) { ?>
+                                        <?php if (!empty($nnzs) && is_array($nnzs) && !empty($nnzs['replist']) && is_array($nnzs['replist'])) { foreach($nnzs['replist'] as &$_rep) { ?>
                                         <tr>
                                             
                                             <td class="align-middle text-center">
@@ -56,7 +56,7 @@
                                             
                                             
                                         </tr>
-                                        <?php }} else { ?>
+                                        <?php } } else { ?>
                                             <li class="list-group-item">
                                                 <div><?php echo lang('none');?></div>
                                             </li>

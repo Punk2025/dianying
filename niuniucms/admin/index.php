@@ -12,11 +12,28 @@ if (DEBUG < 3) {
     }
     admin_token_check();
 }
-$nnzs=niuniuzs_codes(); 
-$version=$conf['version'];
-$rescode=codes();
-$cloud_version=$rescode['cloud_version'];
-$update_log=$rescode['update_log']; 
+$nnzs = niuniuzs_codes();
+if (!is_array($nnzs)) {
+    $nnzs = array();
+}
+if (!isset($nnzs['replist']) || !is_array($nnzs['replist'])) {
+    $nnzs['replist'] = array();
+}
+if (!isset($nnzs['apilist']) || !is_array($nnzs['apilist'])) {
+    $nnzs['apilist'] = array();
+}
+$version = $conf['version'];
+$rescode = codes();
+if (!is_array($rescode)) {
+    $rescode = array();
+}
+$rescode += array(
+    'cloud_version' => '',
+    'update_log' => '',
+    'down_path' => '',
+);
+$cloud_version = $rescode['cloud_version'];
+$update_log = $rescode['update_log'];
 $route = param(0, 'index');
 //cron_run();
 switch ($route) { 
@@ -46,7 +63,10 @@ switch ($route) {
         break;
      case 'user':
         include _include(ADMIN_PATH . 'route/user.php');
-        break; 
+        break;
+    case 'ad':
+        include _include(ADMIN_PATH . 'route/ad.php');
+        break;
     default:
         include _include(ADMIN_PATH . 'route/index.php');
         break;

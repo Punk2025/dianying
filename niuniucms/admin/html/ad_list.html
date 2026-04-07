@@ -1,0 +1,149 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12 col-xl-12">
+                    <div class="card">
+                        <div class="card-header border-bottom-0 d-flex flex-wrap align-items-center gap-2">
+                            <h2 class="card-title mb-0">广告管理</h2>
+                            <a class="btn btn-primary btn-sm" href="<?php echo url('ad-stat','',TRUE);?>">统计报表</a>
+                            <a class="btn btn-success btn-sm" href="<?php echo url('ad-create','',TRUE);?>">新增广告</a>
+                            <button type="button" class="btn btn-outline-success btn-sm" id="ad_batch_on">批量上架</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="ad_batch_off">批量下架</button>
+                            <button type="button" class="btn btn-outline-info btn-sm" id="ad_batch_url_btn" data-bs-toggle="modal" data-bs-target="#ad_batch_url_modal">批量换链接</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">按版位筛选</label>
+                                <?php $ad_list_base = url('ad-list', '', TRUE); ?>
+                                <select class="form-select form-select-sm" style="max-width:360px" onchange="var b='<?php echo htmlspecialchars($ad_list_base, ENT_QUOTES);?>'; var v=this.value; if(v){b+=(b.indexOf('?')>=0?'&':'?')+'slot='+encodeURIComponent(v);} location.href=b;">
+                                    <option value="">全部版位</option>
+                                    <?php
+                                    $ad_groups = function_exists('ad_slot_meta_groups') ? ad_slot_meta_groups() : array('' => $meta);
+                                    foreach ($ad_groups as $gname => $slots) { ?>
+                                    <optgroup label="<?php echo htmlspecialchars($gname, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
+                                        <?php foreach ($slots as $k => $m) { ?>
+                                        <option value="<?php echo htmlspecialchars($k);?>" <?php if (isset($slot_key) && $slot_key === $k) echo 'selected';?>><?php echo htmlspecialchars($m['name']);?></option>
+                                        <?php } ?>
+                                    </optgroup>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:42px"><input type="checkbox" class="form-check-input" id="ad_check_all" title="全选本页" /></th>
+                                            <th>ID</th>
+                                            <th>版位</th>
+                                            <th>名称</th>
+                                            <th>类型</th>
+                                            <th>排序</th>
+                                            <th>状态</th>
+                                            <th>点击</th>
+                                            <th>更新</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($arrlist)) { foreach ($arrlist as $val) { ?>
+                                        <tr>
+                                            <td><input type="checkbox" class="form-check-input ad-id-cb" name="ids[]" value="<?php echo (int)$val['id'];?>" /></td>
+                                            <td><?php echo (int)$val['id'];?></td>
+                                            <td><?php echo htmlspecialchars(isset($meta[$val['slot_key']]) ? $meta[$val['slot_key']]['name'] : $val['slot_key']);?></td>
+                                            <td><?php echo htmlspecialchars($val['name']);?></td>
+                                            <td><?php echo (int)$val['ad_type'] === 2 ? 'HTML' : '图片';?></td>
+                                            <td><?php echo (int)$val['weight'];?></td>
+                                            <td><?php echo !empty($val['status']) ? '<span class="text-success">上架</span>' : '<span class="text-muted">下架</span>';?></td>
+                                            <td><?php echo (int)$val['clicks'];?></td>
+                                            <td><?php echo !empty($val['update_date']) ? date('Y-m-d H:i', $val['update_date']) : '-';?></td>
+                                            <td>
+                                                <a class="btn btn-sm btn-outline-primary" href="<?php echo url('ad-update-' . (int)$val['id'], '', TRUE);?>">编辑</a>
+                                                <a class="btn btn-sm btn-outline-danger ad-del" href="#" data-id="<?php echo (int)$val['id'];?>">删除</a>
+                                            </td>
+                                        </tr>
+                                        <?php } } else { ?>
+                                        <tr><td colspan="10" class="text-center text-muted">暂无数据，请先执行 install/upgrade_ad_20260407.sql 建表</td></tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center"><?php echo isset($pagination) ? $pagination : '';?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="modal fade" id="ad_batch_url_modal" tabindex="-1" aria-labelledby="ad_batch_url_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="ad_batch_url_modal_label">批量更换跳转链接</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-2">仅对勾选的「图片+链接」类广告生效；HTML 代码类广告不会修改。留空表示去掉跳转链接（仅展示图片）。</p>
+                <label class="form-label" for="ad_batch_url_input">新跳转 URL</label>
+                <input type="text" class="form-control" id="ad_batch_url_input" placeholder="https://..." autocomplete="off" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="ad_batch_url_submit">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+$('body').on('click', 'a.ad-del', function(e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    if (!id || !confirm('确定删除？')) return;
+    $.xpost(xn.url('ad-delete', '', true), { id: id }, function(code, msg) {
+        if (code == 0) { location.reload(); } else { alert(msg); }
+    });
+});
+$('#ad_check_all').on('change', function () {
+    $('.ad-id-cb').prop('checked', $(this).prop('checked'));
+});
+function adBatchStatus(st) {
+    var ids = $('.ad-id-cb:checked').map(function () { return $(this).val(); }).get();
+    if (!ids.length) {
+        alert('请先勾选要操作的广告');
+        return;
+    }
+    var tip = st ? '确定将选中的广告全部上架？' : '确定将选中的广告全部下架？';
+    if (!confirm(tip)) return;
+    $.xpost(xn.url('ad-batchstatus', '', true), { ids: ids, status: st }, function (code, msg) {
+        if (code == 0) { location.reload(); } else { alert(msg); }
+    });
+}
+$('#ad_batch_on').on('click', function () { adBatchStatus(1); });
+$('#ad_batch_off').on('click', function () { adBatchStatus(0); });
+$('#ad_batch_url_btn').on('click', function () {
+    $('#ad_batch_url_input').val('');
+});
+$('#ad_batch_url_submit').on('click', function () {
+    var ids = $('.ad-id-cb:checked').map(function () { return $(this).val(); }).get();
+    if (!ids.length) {
+        alert('请先勾选要操作的广告');
+        return;
+    }
+    var u = $.trim($('#ad_batch_url_input').val());
+    $.xpost(xn.url('ad-batchurl', '', true), { ids: ids, url: u }, function (code, msg) {
+        if (code == 0) {
+            var modalEl = document.getElementById('ad_batch_url_modal');
+            if (modalEl && window.bootstrap && bootstrap.Modal) {
+                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+            }
+            location.reload();
+        } else {
+            alert(msg);
+        }
+    });
+});
+</script>

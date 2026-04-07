@@ -5,6 +5,11 @@ niuniucms/config/config.php
 niuniucms/runtime/cache/
 niuniucms/runtime/log/
 
+# 用户上传（广告图、加密图、手机观看二维码等，勿入库）
+niuniucms/upload/ad/
+niuniucms/upload/encrypt_image/
+niuniucms/upload/mobile_qr/
+
 # 与源码重复、体积大
 niuniucms.zip
 
