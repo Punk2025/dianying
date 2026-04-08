@@ -26,6 +26,29 @@ register_shutdown_function(function () {
 
 $reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $reqPath = $reqPath ? rawurldecode($reqPath) : '';
+$reqPathLower = strtolower($reqPath);
+$probeDenyList = array(
+    '/.git',
+    '/.env',
+    '/.svn',
+    '/.ht',
+    '/phpmyadmin',
+    '/wp-admin',
+    '/wp-login.php',
+    '/adminer',
+    '/vendor/',
+    '/composer.json',
+    '/composer.lock',
+    '/install/',
+);
+foreach ($probeDenyList as $needle) {
+    if ($reqPathLower !== '' && strpos($reqPathLower, $needle) !== false) {
+        header('HTTP/1.1 403 Forbidden');
+        header('Content-Type: text/plain; charset=utf-8');
+        echo '403 Forbidden';
+        exit;
+    }
+}
 $reqExt = $reqPath ? strtolower(pathinfo($reqPath, PATHINFO_EXTENSION)) : '';
 $staticMime = [
     'css' => 'text/css; charset=utf-8',

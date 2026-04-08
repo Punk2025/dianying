@@ -3,6 +3,16 @@ define('DEBUG', 2);
 define('APP_PATH', realpath(dirname(__FILE__) . '/../') . '/');
 define('INSTALL_PATH', dirname(__FILE__) . '/'); 
 define('MESSAGE_HTM_PATH', INSTALL_PATH . 'html/message.html');
+// Production safety: once installed, installer must stay unreachable from web.
+if (PHP_SAPI !== 'cli') {
+    $alreadyInstalled = is_file(APP_PATH . 'install.lock') || is_file(APP_PATH . 'config/config.php');
+    if ($alreadyInstalled) {
+        header('HTTP/1.1 403 Forbidden');
+        header('Content-Type: text/plain; charset=utf-8');
+        echo '403 Forbidden';
+        exit;
+    }
+}
 if (!function_exists('sg_load')){
     include APP_PATH . 'public/html/install_sg.html';
     exit;
