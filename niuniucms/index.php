@@ -67,6 +67,84 @@ $domain = (@include APP_PATH . 'config/domain.php');
 substr($conf['log_path'], 0, 2) == './' AND $conf['log_path'] = APP_PATH . $conf['log_path'];
 substr($conf['cache_path'], 0, 2) == './' AND $conf['cache_path'] = APP_PATH . $conf['cache_path'];
 substr($conf['upload_path'], 0, 2) == './' AND $conf['upload_path'] = APP_PATH . $conf['upload_path'];
+function early_acl_split_list($s)
+{
+    $s = str_replace(array('，', "\r", "\n", "\t"), array(',', ',', ',', ''), (string) $s);
+    return array_values(array_filter(array_map('trim', explode(',', $s))));
+}
+function early_acl_client_ip($conf)
+{
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    if (empty($conf['cdn_on'])) {
+        return trim((string) $ip);
+    }
+    $candidates = array(
+        $_SERVER['HTTP_CDN_SRC_IP'] ?? '',
+        $_SERVER['HTTP_CLIENTIP'] ?? '',
+        $_SERVER['HTTP_CLIENT_IP'] ?? '',
+        $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+    );
+    foreach ($candidates as $cand) {
+        $cand = trim((string) $cand);
+        if ($cand === '') continue;
+        if (strpos($cand, ',') !== false) {
+            $arr = array_filter(array_map('trim', explode(',', $cand)));
+            $cand = !empty($arr) ? end($arr) : '';
+        }
+        if ($cand !== '') return $cand;
+    }
+    return trim((string) $ip);
+}
+function early_acl_ipv4_u32($ip)
+{
+    if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) return false;
+    $n = ip2long($ip);
+    if ($n === false) return false;
+    if ($n < 0) $n = sprintf('%u', $n);
+    return (float) $n;
+}
+function early_acl_ip_in_cidr($ip, $cidr)
+{
+    if (strpos($cidr, '/') === false) return false;
+    list($base, $mask) = array_pad(explode('/', $cidr, 2), 2, '');
+    $mask = intval($mask);
+    if ($mask < 0 || $mask > 32) return false;
+    $ipN = early_acl_ipv4_u32($ip);
+    $baseN = early_acl_ipv4_u32(trim($base));
+    if ($ipN === false || $baseN === false) return false;
+    $size = pow(2, 32 - $mask);
+    if ($size <= 0) return false;
+    return floor($ipN / $size) === floor($baseN / $size);
+}
+function early_acl_ip_in_list($ip, $listText)
+{
+    if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) return false;
+    $items = early_acl_split_list($listText);
+    foreach ($items as $rule) {
+        if ($rule === '') continue;
+        if (strpos($rule, '/') !== false) {
+            if (early_acl_ip_in_cidr($ip, $rule)) return true;
+        } elseif ($ip === $rule) {
+            return true;
+        }
+    }
+    return false;
+}
+if (!empty($conf['agent_ip_acl_on'])) {
+    $clientIp = early_acl_client_ip($conf);
+    $allowList = (string) ($conf['agent_ip_allowlist'] ?? '');
+    $blockList = (string) ($conf['agent_ip_blocklist'] ?? '');
+    $allow = $allowList !== '' && early_acl_ip_in_list($clientIp, $allowList);
+    $block = !$allow && $blockList !== '' && early_acl_ip_in_list($clientIp, $blockList);
+    if ($block) {
+        $msg = trim((string) ($conf['agent_ip_deny_message'] ?? '访问受限'));
+        if ($msg === '') $msg = '访问受限';
+        header('HTTP/1.1 403 Forbidden');
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><html><head><meta charset="utf-8"><title>403 Forbidden</title></head><body><h3>403 Forbidden</h3><p>' . htmlspecialchars($msg, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</p></body></html>';
+        exit;
+    }
+}
 function get_domain($host = null, $level = 2)
 {
     if ($host === null) {

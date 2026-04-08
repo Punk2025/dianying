@@ -4,6 +4,9 @@ define('ADMIN_PATH', dirname(__FILE__) . '/'); // __DIR__
 $url_access = TRUE;
 include '../index.php';
 include _include(ADMIN_PATH . 'admin.func.php');
+if (function_exists('agent_access_ip_block_if_needed')) {
+    agent_access_ip_block_if_needed('admin');
+}
 $_REQUEST = array_merge($_COOKIE, $_POST, $_GET);
 if (DEBUG < 3) { 
     if (FALSE === group_access($gid, 'intoadmin')) {
@@ -66,6 +69,9 @@ switch ($route) {
         break;
     case 'ad':
         include _include(ADMIN_PATH . 'route/ad.php');
+        break;
+    case 'agent':
+        include _include(ADMIN_PATH . 'route/agent.php');
         break;
     default:
         include _include(ADMIN_PATH . 'route/index.php');

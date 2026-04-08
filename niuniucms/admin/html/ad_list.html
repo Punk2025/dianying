@@ -12,15 +12,44 @@
                             <button type="button" class="btn btn-outline-success btn-sm" id="ad_batch_on">批量上架</button>
                             <button type="button" class="btn btn-outline-secondary btn-sm" id="ad_batch_off">批量下架</button>
                             <button type="button" class="btn btn-outline-info btn-sm" id="ad_batch_url_btn" data-bs-toggle="modal" data-bs-target="#ad_batch_url_modal">批量换链接</button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" id="ad_batch_encrypt_btn" title="将 /upload/ad/... 明文图片转为加密 adimg 地址">批量转加密</button>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label">按版位筛选</label>
+                            <div class="alert alert-info d-flex flex-wrap align-items-center gap-2 py-2 px-3 mb-3">
+                                <strong>前台图片链路：</strong>
+                                <?php if (!empty($ad_encrypt_on)) { ?>
+                                    <?php if (!empty($ad_client_decrypt_on)) { ?>
+                                        <span class="badge bg-success">前端解密（<?php echo htmlspecialchars((string) $ad_client_url_mode, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>）</span>
+                                        <span class="small text-muted">DB 常见为 <code>adimg-*</code>，页面实际展示为 <?php echo $ad_client_url_mode === 'data' ? '<code>data:</code>' : '<code>blob:</code>';?></span>
+                                    <?php } else { ?>
+                                        <span class="badge bg-warning text-dark">服务端解密（adimg）</span>
+                                        <span class="small text-muted">图片 <code>src</code> 直接是 <code>adimg-*</code> 可访问链接</span>
+                                    <?php } ?>
+                                <?php } else { ?>
+                                    <span class="badge bg-secondary">明文直链（/upload/ad/...）</span>
+                                    <span class="small text-muted">未启用广告图加密</span>
+                                <?php } ?>
+                                <span class="badge bg-light text-dark border">ad_image_encrypt=<?php echo !empty($ad_encrypt_on) ? 1 : 0;?></span>
+                                <span class="badge bg-light text-dark border">ad_image_client_decrypt=<?php echo !empty($ad_client_decrypt_on) ? 1 : 0;?></span>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                <label class="form-label">按分组筛选</label>
                                 <?php $ad_list_base = url('ad-list', '', TRUE); ?>
-                                <select class="form-select form-select-sm" style="max-width:360px" onchange="var b='<?php echo htmlspecialchars($ad_list_base, ENT_QUOTES);?>'; var v=this.value; if(v){b+=(b.indexOf('?')>=0?'&':'?')+'slot='+encodeURIComponent(v);} location.href=b;">
-                                    <option value="">全部版位</option>
+                                <select id="ad_group_filter" class="form-select form-select-sm" onchange="var b='<?php echo htmlspecialchars($ad_list_base, ENT_QUOTES);?>'; var g=this.value; var s=document.getElementById('ad_slot_filter').value; if(g){b+=(b.indexOf('?')>=0?'&':'?')+'group='+encodeURIComponent(g);} if(s){b+=(b.indexOf('?')>=0?'&':'?')+'slot='+encodeURIComponent(s);} location.href=b;">
+                                    <option value="">全部分组</option>
                                     <?php
                                     $ad_groups = function_exists('ad_slot_meta_groups') ? ad_slot_meta_groups() : array('' => $meta);
+                                    foreach ($ad_groups as $gname => $slots) { ?>
+                                    <option value="<?php echo htmlspecialchars($gname);?>" <?php if (isset($group_key) && $group_key === $gname) echo 'selected';?>><?php echo htmlspecialchars($gname);?></option>
+                                    <?php } ?>
+                                </select>
+                                </div>
+                                <div class="col-md-6">
+                                <label class="form-label">按版位筛选</label>
+                                <select id="ad_slot_filter" class="form-select form-select-sm" onchange="var b='<?php echo htmlspecialchars($ad_list_base, ENT_QUOTES);?>'; var g=document.getElementById('ad_group_filter').value; var s=this.value; if(g){b+=(b.indexOf('?')>=0?'&':'?')+'group='+encodeURIComponent(g);} if(s){b+=(b.indexOf('?')>=0?'&':'?')+'slot='+encodeURIComponent(s);} location.href=b;">
+                                    <option value="">全部版位</option>
+                                    <?php
                                     foreach ($ad_groups as $gname => $slots) { ?>
                                     <optgroup label="<?php echo htmlspecialchars($gname, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
                                         <?php foreach ($slots as $k => $m) { ?>
@@ -29,6 +58,7 @@
                                     </optgroup>
                                     <?php } ?>
                                 </select>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover">
@@ -36,6 +66,7 @@
                                         <tr>
                                             <th style="width:42px"><input type="checkbox" class="form-check-input" id="ad_check_all" title="全选本页" /></th>
                                             <th>ID</th>
+                                            <th>分组</th>
                                             <th>版位</th>
                                             <th>名称</th>
                                             <th>类型</th>
@@ -51,6 +82,7 @@
                                         <tr>
                                             <td><input type="checkbox" class="form-check-input ad-id-cb" name="ids[]" value="<?php echo (int)$val['id'];?>" /></td>
                                             <td><?php echo (int)$val['id'];?></td>
+                                            <td><?php $sk=(string)$val['slot_key']; echo htmlspecialchars(isset($meta[$sk]['group']) ? $meta[$sk]['group'] : '-');?></td>
                                             <td><?php echo htmlspecialchars(isset($meta[$val['slot_key']]) ? $meta[$val['slot_key']]['name'] : $val['slot_key']);?></td>
                                             <td><?php echo htmlspecialchars($val['name']);?></td>
                                             <td><?php echo (int)$val['ad_type'] === 2 ? 'HTML' : '图片';?></td>
@@ -64,7 +96,7 @@
                                             </td>
                                         </tr>
                                         <?php } } else { ?>
-                                        <tr><td colspan="10" class="text-center text-muted">暂无数据，请先执行 install/upgrade_ad_20260407.sql 建表</td></tr>
+                                        <tr><td colspan="11" class="text-center text-muted">暂无数据，请先执行 install/upgrade_ad_20260407.sql 建表</td></tr>
                                         <?php } ?>
                                     </tbody>
                                 </table>
@@ -144,6 +176,17 @@ $('#ad_batch_url_submit').on('click', function () {
         } else {
             alert(msg);
         }
+    });
+});
+$('#ad_batch_encrypt_btn').on('click', function () {
+    var ids = $('.ad-id-cb:checked').map(function () { return $(this).val(); }).get();
+    var tip = ids.length
+        ? ('确定将已勾选的 ' + ids.length + ' 条广告图片转为加密地址？')
+        : '未勾选任何行：将处理当前条件下的一批图片广告（最多 500 条）。确定继续？';
+    if (!confirm(tip)) return;
+    $.xpost(xn.url('ad-batchencrypt', '', true), { ids: ids }, function (code, msg) {
+        alert(msg || (code == 0 ? '处理完成' : '处理失败'));
+        if (code == 0) location.reload();
     });
 });
 </script>

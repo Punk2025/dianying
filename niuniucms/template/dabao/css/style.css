@@ -1970,11 +1970,85 @@ margin-bottom:.5rem
 	margin-top:10px;
 	width:136px;
 	height:30px;
-	background:url(../images/play.jpg) 0 -30px no-repeat;
-	text-indent:-999px
+	line-height:30px;
+	text-align:center;
+	text-indent:0;
+	color:#fff;
+	font-size:14px;
+	font-weight:700;
+	border-radius:3px;
+	background:linear-gradient(180deg,#1ecb7c 0,#17b86f 100%);
+	box-shadow:0 2px 8px rgba(23,184,111,.35)
 }
 .channel-silder-play:hover {
-	background-position:0 0
+	color:#fff;
+	background:linear-gradient(180deg,#25d686 0,#1bbf75 100%)
+}
+.nn-ad-icon-grid-wrap {
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+	gap:12px 10px;
+	padding:12px;
+	background:rgba(255,255,255,.04);
+	border:1px solid rgba(255,255,255,.08);
+	border-radius:10px
+}
+.nn-ad-index_icon_grid {
+	margin:0
+}
+.nn-ad-icon-link {
+	display:block;
+	text-align:center
+}
+.nn-ad-icon-img {
+	display:block;
+	width:64px;
+	height:64px;
+	margin:0 auto 6px auto;
+	border-radius:14px;
+	overflow:hidden;
+	box-shadow:0 4px 14px rgba(0,0,0,.2)
+}
+.nn-ad-icon-img img {
+	width:100% !important;
+	height:100% !important;
+	object-fit:cover;
+	border-radius:14px;
+	margin:0 !important
+}
+.nn-ad-icon-title {
+	display:block;
+	max-width:100%;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	font-size:12px;
+	line-height:16px
+}
+@media (max-width:767px) {
+	.nn-ad-icon-grid-wrap {
+		grid-template-columns:repeat(4,minmax(0,1fr));
+		gap:10px 8px;
+		padding:10px 8px
+	}
+	.nn-ad-icon-img {
+		width:56px;
+		height:56px;
+		border-radius:12px
+	}
+	.nn-ad-icon-title {
+		font-size:11px
+	}
+}
+@media (max-width:420px) {
+	.nn-ad-icon-grid-wrap {
+		grid-template-columns:repeat(3,minmax(0,1fr));
+		gap:10px 8px
+	}
+	.nn-ad-icon-img {
+		width:52px;
+		height:52px
+	}
 }
 .channel-silder-nav {
 	position:absolute;

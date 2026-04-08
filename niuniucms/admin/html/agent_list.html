@@ -1,0 +1,156 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12 col-xl-12">
+                    <div class="card mb-3">
+                        <div class="card-header border-bottom-0 d-flex flex-wrap align-items-center gap-2">
+                            <h2 class="card-title mb-0">代理线管理</h2>
+                            <a class="btn btn-success btn-sm" href="<?php echo url('agent-create','',TRUE);?>">新增代理</a>
+                            <a class="btn btn-primary btn-sm" href="<?php echo url('agent-stat','',TRUE);?>">代理统计</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 px-3">
+                                入口示例：<code>https://你的入口域名/?agent=代理码</code>。<br>
+                                jump=1 走 H5（优先随机子域），jump=2 走下载页。
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>代理码</th>
+                                        <th>名称</th>
+                                        <th>跳转模式</th>
+                                        <th>状态</th>
+                                        <th>备注</th>
+                                        <th>推广链接</th>
+                                        <th>更新</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php if (!empty($arrlist)) { foreach ($arrlist as $v) { ?>
+                                    <tr>
+                                        <td><?php echo (int) $v['id'];?></td>
+                                        <td><code><?php echo htmlspecialchars($v['code']);?></code></td>
+                                        <td><?php echo htmlspecialchars($v['name']);?></td>
+                                        <td><?php echo (int) $v['jump_mode'] === 2 ? 'APP下载线' : 'H5线';?></td>
+                                        <td><?php echo !empty($v['status']) ? '<span class="text-success">启用</span>' : '<span class="text-muted">停用</span>';?></td>
+                                        <td><?php echo htmlspecialchars($v['note']);?></td>
+                                        <td>
+                                            <?php
+                                            $pool = trim((string) array_value($conf, 'agent_qd_url', ''));
+                                            if ($pool === '') {
+                                                $pool = trim((string) array_value($conf, 'qd_url', ''));
+                                            }
+                                            $first = '';
+                                            if ($pool !== '') {
+                                                $parts = array_filter(array_map('trim', explode(',', str_replace('，', ',', $pool))));
+                                                $first = !empty($parts) ? reset($parts) : '';
+                                            }
+                                            if ($first !== '') {
+                                                $host = preg_match('#^https?://#i', $first) ? $first : ('https://' . $first);
+                                                echo '<code>' . htmlspecialchars(rtrim($host, '/') . '/?agent=' . $v['code']) . '</code>';
+                                            } else {
+                                                echo '<span class="text-muted">请先在下方配置 agent_qd_url（或 qd_url）</span>';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?php echo !empty($v['update_date']) ? date('Y-m-d H:i', $v['update_date']) : '-';?></td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-primary" href="<?php echo url('agent-update-' . (int)$v['id'], '', TRUE);?>">编辑</a>
+                                            <a class="btn btn-sm btn-outline-danger agent-del" href="#" data-id="<?php echo (int)$v['id'];?>">删除</a>
+                                        </td>
+                                    </tr>
+                                    <?php } } else { ?>
+                                    <tr><td colspan="9" class="text-center text-muted">暂无代理</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center"><?php echo isset($pagination) ? $pagination : '';?></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0">跳转域名与 IP 限制设置</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="agent_settings_form">
+                                <div class="mb-3">
+                                    <label class="form-label">默认前端落地（qd_url）</label>
+                                    <input type="text" class="form-control" name="qd_url" value="<?php echo htmlspecialchars((string) array_value($conf, 'qd_url', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="https://front.example.com 或留空" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">代理专用前端主机池（agent_qd_url）</label>
+                                    <textarea class="form-control" name="agent_qd_url" rows="2" placeholder="a.com,b.com"><?php echo htmlspecialchars((string) array_value($conf, 'agent_qd_url', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">H5 随机主域池（agent_h5_domain_pool）</label>
+                                    <textarea class="form-control" name="agent_h5_domain_pool" rows="2" placeholder="h5a.com,h5b.com"><?php echo htmlspecialchars((string) array_value($conf, 'agent_h5_domain_pool', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">下载页路径（agent_download_path）</label>
+                                    <input type="text" class="form-control" name="agent_download_path" value="<?php echo htmlspecialchars((string) array_value($conf, 'agent_download_path', '#/pages/download/download2'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="#/pages/download/download2" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">跳转豁免 Host（agent_skip_hosts）</label>
+                                    <input type="text" class="form-control" name="agent_skip_hosts" value="<?php echo htmlspecialchars((string) array_value($conf, 'agent_skip_hosts', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="api.example.com,admin.example.com" />
+                                    <div class="form-text">这些 Host 命中时，不执行入口代理跳转。</div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label d-block">启用 IP 限制（agent_ip_acl_on）</label>
+                                        <div>
+                                            <label class="me-3"><input type="radio" name="agent_ip_acl_on" value="1" <?php if (!empty($conf['agent_ip_acl_on'])) echo 'checked';?>> 开启</label>
+                                            <label><input type="radio" name="agent_ip_acl_on" value="0" <?php if (empty($conf['agent_ip_acl_on'])) echo 'checked';?>> 关闭</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9 mb-3">
+                                        <label class="form-label">拦截提示语（agent_ip_deny_message）</label>
+                                        <input type="text" class="form-control" name="agent_ip_deny_message" value="<?php echo htmlspecialchars((string) array_value($conf, 'agent_ip_deny_message', '访问受限'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="访问受限" />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">IP 白名单（agent_ip_allowlist，优先放行）</label>
+                                    <textarea class="form-control" name="agent_ip_allowlist" rows="2" placeholder="127.0.0.1,192.168.1.0/24"><?php echo htmlspecialchars((string) array_value($conf, 'agent_ip_allowlist', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></textarea>
+                                    <div class="form-text">支持英文逗号或换行；支持单 IP 和 CIDR。白名单优先级高于黑名单（建议先加你自己的固定 IP）。</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">IP 黑名单（agent_ip_blocklist）</label>
+                                    <textarea class="form-control" name="agent_ip_blocklist" rows="3" placeholder="74.7.227.178,74.7.243.240,74.7.240.0/20"><?php echo htmlspecialchars((string) array_value($conf, 'agent_ip_blocklist', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></textarea>
+                                    <div class="form-text">支持英文逗号或换行；支持单 IP 和 CIDR。命中后全站返回 403（前台 + 后台）。</div>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="agent_settings_submit">保存设置</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+$('body').on('click', 'a.agent-del', function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    if (!id || !confirm('确定删除该代理？')) return;
+    $.xpost(xn.url('agent-delete', '', true), { id: id }, function (code, msg) {
+        if (code == 0) location.reload(); else alert(msg);
+    });
+});
+$('#agent_settings_submit').on('click', function () {
+    var data = $('#agent_settings_form').serializeArray();
+    var post = {};
+    data.forEach(function (it) { post[it.name] = it.value; });
+    $.xpost(xn.url('agent-settings', '', true), post, function (code, msg) {
+        alert(msg || (code == 0 ? '保存成功' : '保存失败'));
+        if (code == 0) location.reload();
+    });
+});
+</script>

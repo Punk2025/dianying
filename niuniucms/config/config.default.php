@@ -80,7 +80,19 @@ return array(
   'upload_image_width' => 927,    // 上传图片自动缩略的最大宽度
   'upload_resize' => 'thumb',      // 上传图片clip裁切 thumb缩略
   'ad_image_encrypt' => 0,         // 1：本地上传加密 + adimg 解密；0：直接存 /upload/ad/（更省事，默认推荐）
+  'ad_image_client_decrypt' => 0,  // 1：前台用 JS 拉 adenc 密文 + Web Crypto 解密（须 ad_image_encrypt=1）；0：img 仍用 adimg 服务端解密
+  'ad_image_client_url_mode' => 'blob', // 前端展示地址：blob(默认,占用更低) 或 data(可直接复制源码但体积更大)
+  'ad_enc_cors_origin' => '',     // 非空则 adenc 响应带 Access-Control-Allow-Origin（跨域 fetch 密文时用，如 * 或 https://app.example.com）
   'ad_image_secret' => '',        // 非空则参与派生 AES-256 密钥；空则用站点密钥派生
+  'qd_url' => '',                 // 普通入口默认跳转域名（留空=不改现有首页）
+  'agent_qd_url' => '',           // 代理专用前端主机池（逗号分隔，优先）
+  'agent_h5_domain_pool' => '',   // H5 随机主域池（逗号分隔，空则回退 domain）
+  'agent_download_path' => '#/pages/download/download2', // agent_jump=2 或海外分流下载页路径
+  'agent_skip_hosts' => '',       // 这些 host 访问时跳过代理入口跳转（逗号分隔）
+  'agent_ip_acl_on' => 0,         // 1: 启用 IP 黑白名单限制（默认关闭）
+  'agent_ip_allowlist' => '',     // 白名单（逗号/换行分隔，支持单 IP 与 CIDR，优先放行）
+  'agent_ip_blocklist' => '',     // 黑名单（逗号/换行分隔，支持单 IP 与 CIDR）
+  'agent_ip_deny_message' => '访问受限', // 命中黑名单时返回提示语
   'order_default' => 'lastpid',   // 作为回复排序
   'attach_dir_save_rule' => 'Ymd', // 附件存放规则，附件多用：Ymd，附件少：Ym 
   'user_create_on' => 1,

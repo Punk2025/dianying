@@ -165,6 +165,27 @@
                          </li>
                      </ul>
                  </li>
+                <li class="slide <?php if($route == 'agent') echo 'is-expanded';?>">
+                    <a class="side-menu__item <?php if($route == 'agent') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
+                            class="side-menu__icon fe fe-share-2"></i><span class="side-menu__label">代理线</span><i
+                            class="angle fe fe-chevron-right"></i>
+                    </a>
+                    <ul class="slide-menu">
+                        <li class="panel sidetab-menu">
+                            <div class="panel-body tabs-menu-body p-0 border-0">
+                                <div class="tab-content">
+                                    <div class="tab-pane active">
+                                        <ul class="sidemenu-list">
+                                            <li><a href="<?php echo url('agent-list','',TRUE);?>" class="slide-item <?php if($route == 'agent' && isset($action) && $action == 'list') echo 'active';?>">代理列表</a></li>
+                                            <li><a href="<?php echo url('agent-create','',TRUE);?>" class="slide-item <?php if($route == 'agent' && isset($action) && $action == 'create') echo 'active';?>">新增代理</a></li>
+                                            <li><a href="<?php echo url('agent-stat','',TRUE);?>" class="slide-item <?php if($route == 'agent' && isset($action) && $action == 'stat') echo 'active';?>">代理统计</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
                  <li class="slide <?php if($route == 'set') echo 'is-expanded';?>">
                      <a class="side-menu__item <?php if($route == 'set') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
                              class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"><?php echo lang('setting');?></span><i

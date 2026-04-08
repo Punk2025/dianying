@@ -54,12 +54,24 @@
                                     <div class="form-group">
                                         <label class="form-label"><?php echo lang('start_img_ad');?></label>
                                         <?php echo $input['start_img_ad'];?>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                            <input type="file" id="start_img_ad_file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control form-control-sm" style="max-width:220px;">
+                                            <span class="small text-muted">本地上传图片（<=2MB）</span>
+                                        </div>
+                                        <p class="small text-muted mb-1 mt-1">建议尺寸：1280x720（16:9），支持 jpg/png/gif/webp。</p>
+                                        <img id="start_img_ad_preview" src="" alt="开始广告图片预览" style="display:none;max-width:180px;max-height:100px;border-radius:6px;border:1px solid rgba(255,255,255,.15);padding:4px;background:rgba(0,0,0,.15);" />
                                     </div>
                                 </div>
                                 <div class="col-md-2 mb-3">
                                     <div class="form-group">
                                         <label class="form-label"><?php echo lang('start_mp4_ad');?></label>
                                         <?php echo $input['start_mp4_ad'];?>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                            <input type="file" id="start_mp4_ad_file" accept="video/mp4,video/webm" class="form-control form-control-sm" style="max-width:220px;">
+                                            <span class="small text-muted">本地上传视频（<=20MB）</span>
+                                        </div>
+                                        <p class="small text-muted mb-1 mt-1">建议：MP4(H.264/AAC) 或 WebM，1280x720，时长 5-15 秒。</p>
+                                        <video id="start_mp4_ad_preview" controls preload="metadata" style="display:none;max-width:220px;max-height:120px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:#000;"></video>
                                     </div>
                                 </div>
                                  <div class="col-md-2 mb-3">
@@ -93,6 +105,12 @@
                                     <div class="form-group">
                                         <label class="form-label"><?php echo lang('stop_ad');?></label>
                                         <?php echo $input['stop_ad'];?>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                            <input type="file" id="stop_ad_file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-control form-control-sm" style="max-width:220px;">
+                                            <span class="small text-muted">本地上传图片（<=2MB）</span>
+                                        </div>
+                                        <p class="small text-muted mb-1 mt-1">建议尺寸：600x338 或同 16:9 比例。</p>
+                                        <img id="stop_ad_preview" src="" alt="暂停广告图片预览" style="display:none;max-width:180px;max-height:100px;border-radius:6px;border:1px solid rgba(255,255,255,.15);padding:4px;background:rgba(0,0,0,.15);" />
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
@@ -117,3 +135,117 @@
 </div>
 </div>
 <?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+    (function () {
+        var danmuImageUploadUrl = <?php echo xn_json_encode(url('set-danmu_image_upload', array('json' => 1), TRUE)); ?>;
+        var danmuVideoUploadUrl = <?php echo xn_json_encode(url('set-danmu_video_upload', array('json' => 1), TRUE)); ?>;
+        function getField(name) {
+            return document.querySelector('input[name="' + name + '"]');
+        }
+        function setPreviewImage(inputName, imgId) {
+            var el = getField(inputName);
+            var img = document.getElementById(imgId);
+            if (!el || !img) return;
+            var v = (el.value || '').trim();
+            if (!v) {
+                img.style.display = 'none';
+                img.removeAttribute('src');
+                return;
+            }
+            img.src = v;
+            img.style.display = '';
+            img.onerror = function () {
+                img.style.display = 'none';
+            };
+        }
+        function setPreviewVideo(inputName, videoId) {
+            var el = getField(inputName);
+            var vd = document.getElementById(videoId);
+            if (!el || !vd) return;
+            var v = (el.value || '').trim();
+            if (!v) {
+                vd.style.display = 'none';
+                vd.removeAttribute('src');
+                vd.load();
+                return;
+            }
+            vd.src = v;
+            vd.style.display = '';
+            vd.onerror = function () {
+                vd.style.display = 'none';
+            };
+        }
+        function uploadFile(fileInput, api, formField, fileKey, done) {
+            if (!fileInput.files || !fileInput.files.length) {
+                return;
+            }
+            var target = getField(formField);
+            if (!target) return;
+            var fd = new FormData();
+            fd.append(fileKey, fileInput.files[0]);
+            $.ajax({
+                url: api,
+                type: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                success: function (res) {
+                    if (res && res.code === 0 && res.url) {
+                        target.value = res.url;
+                        if (typeof done === 'function') done();
+                        if (typeof $.alert === 'function') {
+                            $.alert(res.message || '上传成功');
+                        } else {
+                            alert(res.message || '上传成功');
+                        }
+                    } else {
+                        alert((res && res.message) ? res.message : '上传失败');
+                    }
+                },
+                error: function (xhr) {
+                    var msg = '上传失败';
+                    try {
+                        var r = JSON.parse(xhr.responseText);
+                        if (r && r.message) msg = r.message;
+                    } catch (e) {}
+                    alert(msg);
+                }
+            });
+            fileInput.value = '';
+        }
+
+        var startImgInput = getField('start_img_ad');
+        var startVideoInput = getField('start_mp4_ad');
+        var stopImgInput = getField('stop_ad');
+        if (startImgInput) {
+            startImgInput.addEventListener('input', function () { setPreviewImage('start_img_ad', 'start_img_ad_preview'); });
+            setPreviewImage('start_img_ad', 'start_img_ad_preview');
+        }
+        if (startVideoInput) {
+            startVideoInput.addEventListener('input', function () { setPreviewVideo('start_mp4_ad', 'start_mp4_ad_preview'); });
+            setPreviewVideo('start_mp4_ad', 'start_mp4_ad_preview');
+        }
+        if (stopImgInput) {
+            stopImgInput.addEventListener('input', function () { setPreviewImage('stop_ad', 'stop_ad_preview'); });
+            setPreviewImage('stop_ad', 'stop_ad_preview');
+        }
+
+        $('#start_img_ad_file').on('change', function () {
+            uploadFile(this, danmuImageUploadUrl, 'start_img_ad', 'danmu_image', function () {
+                setPreviewImage('start_img_ad', 'start_img_ad_preview');
+            });
+        });
+        $('#stop_ad_file').on('change', function () {
+            uploadFile(this, danmuImageUploadUrl, 'stop_ad', 'danmu_image', function () {
+                setPreviewImage('stop_ad', 'stop_ad_preview');
+            });
+        });
+        $('#start_mp4_ad_file').on('change', function () {
+            uploadFile(this, danmuVideoUploadUrl, 'start_mp4_ad', 'danmu_video', function () {
+                setPreviewVideo('start_mp4_ad', 'start_mp4_ad_preview');
+            });
+        });
+    })();
+</script>

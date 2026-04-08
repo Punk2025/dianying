@@ -42,7 +42,7 @@ $route_tag = $conf['route']['tag'];
 $route_art = $conf['route']['art'];
 $route = param(0, 'index');
 $pku_url = url($route_type, '', false);
-$alias_reservation = array('index', 'admin','user', 'search','sitemap','adclick','adimg');
+$alias_reservation = array('index', 'admin','user', 'search','sitemap','adclick','adimg','adenc');
 if ($conf['url_rewrite_on'] > 1 && !in_array($route, $alias_reservation)) {
     $aliaslist = cate_alias_cache();
     $alias_cid = array_value($aliaslist, $route, 0);
@@ -127,7 +127,16 @@ if (isset($domain['site'][$hosts]) && is_array($domain['site'][$hosts])) {
     }
 }
 if (!defined('SKIP_ROUTE')) {
+    if (function_exists('agent_access_ip_block_if_needed')) {
+        agent_access_ip_block_if_needed($route);
+    }
     ad_inject_nncms($nncms, $maccms);
+    if (function_exists('agent_entry_jump_if_needed')) {
+        agent_entry_jump_if_needed($route);
+    }
+    if (function_exists('agent_track_visit')) {
+        agent_track_visit($route);
+    }
     switch ($route) {
         case 'index':
             include _include(APP_PATH . 'route/index.php');
@@ -173,6 +182,9 @@ if (!defined('SKIP_ROUTE')) {
             break;
         case 'adimg':
             include _include(APP_PATH . 'route/adimg.php');
+            break;
+        case 'adenc':
+            include _include(APP_PATH . 'route/adenc.php');
             break;
         default:
              include _include(APP_PATH . 'route/index.php');

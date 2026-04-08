@@ -1,0 +1,170 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h2 class="card-title mb-0">代理统计</h2>
+                            <a class="btn btn-sm btn-outline-primary" href="<?php echo url('agent-list','',TRUE);?>">返回代理管理</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning py-2 px-3">
+                                可在「按 IP 汇总 / 行为明细」中点击 <strong>一键拉黑</strong>，会自动写入黑名单并开启 IP 限制。
+                            </div>
+                            <div class="mb-3 d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-success" id="agent_resolve_batch_btn" data-days="<?php echo (int) $days;?>">一键解析待解析IP（批量）</button>
+                            </div>
+                            <form class="row g-2 mb-3" method="get" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
+                                <input type="hidden" name="0" value="agent">
+                                <input type="hidden" name="1" value="stat">
+                                <div class="col-auto">
+                                    <label class="col-form-label">代理码</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="text" class="form-control form-control-sm" name="code" value="<?php echo htmlspecialchars((string) $code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="可留空查看全部">
+                                </div>
+                                <div class="col-auto">
+                                    <label class="col-form-label">天数</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" min="1" max="90" class="form-control form-control-sm" name="days" value="<?php echo (int) $days;?>">
+                                </div>
+                                <div class="col-auto">
+                                    <label class="col-form-label">IP</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="text" class="form-control form-control-sm" name="ip" value="<?php echo htmlspecialchars((string) $ip, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="如 1.2.3.4 或 longip">
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-sm btn-primary" type="submit">筛选</button>
+                                </div>
+                            </form>
+                            <h5>按代理汇总（近 <?php echo (int) $days;?> 天）</h5>
+                            <div class="table-responsive mb-3">
+                                <table class="table table-bordered table-sm">
+                                    <thead><tr><th>代理码</th><th>名称</th><th>状态</th><th>访问PV</th><th>访问IP</th><th>广告点击</th><th>最近行为</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($overview)) { foreach ($overview as $v) { ?>
+                                        <tr>
+                                            <td><code><?php echo htmlspecialchars($v['code']);?></code></td>
+                                            <td><?php echo htmlspecialchars($v['name']);?></td>
+                                            <td><?php echo !empty($v['status']) ? '<span class="text-success">启用</span>' : '<span class="text-muted">停用</span>';?></td>
+                                            <td><?php echo (int) $v['visit_pv'];?></td>
+                                            <td><?php echo (int) $v['visit_ip'];?></td>
+                                            <td><?php echo (int) $v['ad_clicks'];?></td>
+                                            <td><?php echo !empty($v['last_log_date']) ? date('Y-m-d H:i:s', (int) $v['last_log_date']) : '-';?></td>
+                                        </tr>
+                                    <?php } } else { ?>
+                                        <tr><td colspan="7" class="text-muted">暂无数据</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h5>按 IP 汇总（近 <?php echo (int) $days;?> 天）</h5>
+                            <div class="table-responsive mb-3">
+                                <table class="table table-bordered table-sm">
+                                    <thead><tr><th>IP</th><th>访问PV</th><th>广告点击</th><th>拦截次数</th><th>行为总数</th><th>最近行为</th><th>操作</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($ip_overview)) { foreach ($ip_overview as $iv) { ?>
+                                        <tr>
+                                            <td><code><?php echo htmlspecialchars(function_exists('agent_longip_with_region') ? agent_longip_with_region($iv['longip']) : $iv['longip']);?></code></td>
+                                            <td><?php echo (int) $iv['visit_pv'];?></td>
+                                            <td><?php echo (int) $iv['ad_clicks'];?></td>
+                                            <td><?php echo (int) array_value($iv, 'blocked_hits', 0);?></td>
+                                            <td><?php echo (int) $iv['actions'];?></td>
+                                            <td><?php echo !empty($iv['last_date']) ? date('Y-m-d H:i:s', (int) $iv['last_date']) : '-';?></td>
+                                            <td>
+                                                <a class="btn btn-sm btn-outline-primary" href="<?php echo url('agent-stat', array('code' => $code, 'days' => (int) $days, 'ip' => (string) $iv['longip']), TRUE);?>">查看该IP行为</a>
+                                                <a class="btn btn-sm btn-outline-success agent-resolve-ip" href="#" data-ip="<?php echo htmlspecialchars((string) $iv['longip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">立即解析</a>
+                                                <a class="btn btn-sm btn-outline-danger agent-block-ip" href="#" data-ip="<?php echo htmlspecialchars((string) $iv['longip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" data-label="<?php echo htmlspecialchars(function_exists('agent_longip_with_region') ? agent_longip_with_region($iv['longip']) : $iv['longip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">一键拉黑</a>
+                                            </td>
+                                        </tr>
+                                    <?php } } else { ?>
+                                        <tr><td colspan="7" class="text-muted">暂无数据</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h5>行为明细（点击了什么 / 访问了什么）</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead><tr><th>ID</th><th>代理码</th><th>行为</th><th>IP</th><th>来源URI</th><th>备注</th><th>时间</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($logs)) { foreach ($logs as $r) { ?>
+                                        <?php $sus = function_exists('agent_is_suspicious_uri') ? agent_is_suspicious_uri($r['uri']) : false; ?>
+                                        <tr<?php if ($sus) echo ' class="table-danger"';?>>
+                                            <td><?php echo (int) $r['id'];?></td>
+                                            <td><code><?php echo htmlspecialchars($r['code']);?></code></td>
+                                            <td>
+                                                <?php if ($r['type'] === 'ad_click') { ?>
+                                                    <span class="text-danger">广告点击</span>
+                                                <?php } elseif ($r['type'] === 'visit') { ?>
+                                                    <span class="text-success">浏览</span>
+                                                <?php } else { ?>
+                                                    <?php echo htmlspecialchars($r['type']);?>
+                                                <?php } ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars(function_exists('agent_longip_with_region') ? agent_longip_with_region($r['longip']) : $r['longip']);?></td>
+                                            <td style="max-width:360px;word-break:break-all">
+                                                <?php if ($sus) { ?><span class="badge bg-danger">可疑扫描</span> <?php } ?>
+                                                <?php echo htmlspecialchars($r['uri']);?>
+                                            </td>
+                                            <td style="max-width:320px;word-break:break-all"><?php echo htmlspecialchars($r['memo']);?></td>
+                                            <td>
+                                                <?php echo date('Y-m-d H:i:s', (int) $r['create_date']);?>
+                                                <div class="mt-1">
+                                                    <a class="btn btn-xs btn-outline-danger agent-block-ip" href="#" data-ip="<?php echo htmlspecialchars((string) $r['longip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" data-label="<?php echo htmlspecialchars(function_exists('agent_longip_with_region') ? agent_longip_with_region($r['longip']) : $r['longip'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">拉黑此IP</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php } } else { ?>
+                                        <tr><td colspan="7" class="text-muted">暂无行为日志</td></tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center"><?php echo isset($pagination) ? $pagination : '';?></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+$('body').on('click', 'a.agent-block-ip', function (e) {
+    e.preventDefault();
+    var ip = String($(this).data('ip') || '').trim();
+    var label = String($(this).data('label') || ip).trim();
+    if (!ip) return;
+    if (!confirm('确认拉黑该 IP？\n' + label + '\n将自动启用 IP 限制。')) return;
+    $.xpost(xn.url('agent-blockip', '', true), { ip: ip }, function (code, msg) {
+        alert(msg || (code == 0 ? '已加入黑名单' : '操作失败'));
+        if (code == 0) location.reload();
+    });
+});
+$('#agent_resolve_batch_btn').on('click', function () {
+    var days = parseInt($(this).data('days') || 30, 10);
+    var limit = prompt('每次解析多少个IP（建议20~50）', '30');
+    if (limit === null) return;
+    limit = parseInt(limit, 10);
+    if (!limit || limit < 1) limit = 30;
+    $.xpost(xn.url('agent-resolvegeo', '', true), { limit: limit, days: days, max_fail: 5 }, function (code, msg) {
+        alert(msg || (code == 0 ? '解析完成' : '解析失败'));
+        if (code == 0) location.reload();
+    });
+});
+$('body').on('click', 'a.agent-resolve-ip', function (e) {
+    e.preventDefault();
+    var ip = String($(this).data('ip') || '').trim();
+    if (!ip) return;
+    $.xpost(xn.url('agent-resolvegeoone', '', true), { ip: ip, max_fail: 5 }, function (code, msg) {
+        alert(msg || (code == 0 ? '解析成功' : '解析失败'));
+        if (code == 0) location.reload();
+    });
+});
+</script>

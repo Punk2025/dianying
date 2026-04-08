@@ -112,6 +112,109 @@ switch ($action) {
         $pub = rtrim(str_replace('\\', '/', $conf['upload_url']), '/') . '/' . $subdir . $basename;
         message(0, '上传成功', array('url' => $pub));
         break;
+    case 'danmu_image_upload':
+        if ('POST' !== $method) {
+            message(4, lang('method_error'));
+        }
+        empty($_FILES['danmu_image']) && message(1, '请选择图片');
+        $f = $_FILES['danmu_image'];
+        if (empty($f['tmp_name']) || !is_uploaded_file($f['tmp_name'])) {
+            message(1, '上传无效');
+        }
+        if (isset($f['error']) && (int) $f['error'] !== UPLOAD_ERR_OK) {
+            message(1, '上传失败');
+        }
+        $max_bytes = 2097152;
+        if (isset($f['size']) && (int) $f['size'] > $max_bytes) {
+            message(1, '图片不能超过 2MB');
+        }
+        $imginfo = @getimagesize($f['tmp_name']);
+        if ($imginfo === false) {
+            message(1, '不是有效的图片文件');
+        }
+        $mime_map = array(
+            IMAGETYPE_JPEG => 'jpg',
+            IMAGETYPE_PNG => 'png',
+            IMAGETYPE_GIF => 'gif',
+            IMAGETYPE_WEBP => 'webp',
+        );
+        if (!isset($mime_map[$imginfo[2]])) {
+            message(1, '仅支持 jpg、png、gif、webp');
+        }
+        $ext = $mime_map[$imginfo[2]];
+        if (function_exists('finfo_open')) {
+            $fi = finfo_open(FILEINFO_MIME_TYPE);
+            if ($fi) {
+                $mime = finfo_file($fi, $f['tmp_name']);
+                finfo_close($fi);
+                $mime_ok = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+                if ($mime && !in_array($mime, $mime_ok, true)) {
+                    message(1, '文件类型校验未通过');
+                }
+            }
+        }
+        $subdir = 'danmu/' . date('Ym') . '/';
+        $base = rtrim(str_replace('\\', '/', $conf['upload_path']), '/');
+        $dest_dir = $base . '/' . $subdir;
+        if (!is_dir($dest_dir) && !@mkdir($dest_dir, 0755, true)) {
+            message(-1, '无法创建上传目录');
+        }
+        $basename = 'danmu_img_' . date('YmdHis') . '_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8) . '.' . $ext;
+        $dest = $dest_dir . $basename;
+        if (!move_upload_file($f['tmp_name'], $dest)) {
+            message(-1, '保存文件失败');
+        }
+        $pub = rtrim(str_replace('\\', '/', $conf['upload_url']), '/') . '/' . $subdir . $basename;
+        message(0, '上传成功', array('url' => $pub));
+        break;
+    case 'danmu_video_upload':
+        if ('POST' !== $method) {
+            message(4, lang('method_error'));
+        }
+        empty($_FILES['danmu_video']) && message(1, '请选择视频文件');
+        $f = $_FILES['danmu_video'];
+        if (empty($f['tmp_name']) || !is_uploaded_file($f['tmp_name'])) {
+            message(1, '上传无效');
+        }
+        if (isset($f['error']) && (int) $f['error'] !== UPLOAD_ERR_OK) {
+            message(1, '上传失败');
+        }
+        $max_bytes = 20971520;
+        if (isset($f['size']) && (int) $f['size'] > $max_bytes) {
+            message(1, '视频不能超过 20MB');
+        }
+        $name = strtolower((string) array_value($f, 'name', ''));
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $ext = strtolower((string) $ext);
+        $allow_ext = array('mp4', 'webm');
+        if (!in_array($ext, $allow_ext, true)) {
+            message(1, '仅支持 mp4、webm');
+        }
+        if (function_exists('finfo_open')) {
+            $fi = finfo_open(FILEINFO_MIME_TYPE);
+            if ($fi) {
+                $mime = finfo_file($fi, $f['tmp_name']);
+                finfo_close($fi);
+                $mime_ok = array('video/mp4', 'video/webm', 'application/octet-stream');
+                if ($mime && !in_array($mime, $mime_ok, true)) {
+                    message(1, '文件类型校验未通过');
+                }
+            }
+        }
+        $subdir = 'danmu/' . date('Ym') . '/';
+        $base = rtrim(str_replace('\\', '/', $conf['upload_path']), '/');
+        $dest_dir = $base . '/' . $subdir;
+        if (!is_dir($dest_dir) && !@mkdir($dest_dir, 0755, true)) {
+            message(-1, '无法创建上传目录');
+        }
+        $basename = 'danmu_video_' . date('YmdHis') . '_' . substr(md5(uniqid((string) mt_rand(), true)), 0, 8) . '.' . $ext;
+        $dest = $dest_dir . $basename;
+        if (!move_upload_file($f['tmp_name'], $dest)) {
+            message(-1, '保存文件失败');
+        }
+        $pub = rtrim(str_replace('\\', '/', $conf['upload_url']), '/') . '/' . $subdir . $basename;
+        message(0, '上传成功', array('url' => $pub));
+        break;
     case 'set':
         $setting = array_value($config, 'setting');
         if ('GET' == $method) {

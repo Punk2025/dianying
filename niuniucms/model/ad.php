@@ -55,6 +55,12 @@ function ad_slot_meta()
             'hint' => '首页大幻灯与主内容之间（index_top.html）',
             'size' => '与主内容同宽约 1180×120～180 px。',
         ),
+        'index_icon_grid' => array(
+            'group' => '首页',
+            'name' => '应用小图标宫格',
+            'hint' => '首页首屏推荐位（index_top.html）',
+            'size' => '建议 96×96 或 120×120 图标，多条会自动排成宫格。',
+        ),
         'index_sidebar_top' => array(
             'group' => '首页',
             'name' => '侧栏顶部',
@@ -90,6 +96,12 @@ function ad_slot_meta()
             'name' => '播放器下方',
             'hint' => '播放页 iframe 下（player.html）',
             'size' => '通栏约 1180×100～120 px。',
+        ),
+        'player_icon_grid' => array(
+            'group' => '播放页',
+            'name' => '播放页小图标宫格',
+            'hint' => '播放器下方应用小图标位（player.html）',
+            'size' => '建议 96×96 或 120×120 图标，多条自动排宫格。',
         ),
     );
 }
@@ -216,6 +228,90 @@ function ad_image_encrypt_on()
     return !empty($conf['ad_image_encrypt']);
 }
 
+/** 1：前台广告图走浏览器 AES 解密 + blob: 展示（须同时 ad_image_encrypt=1）；0：走 adimg 服务端解密 */
+function ad_image_client_decrypt_on()
+{
+    global $conf;
+    return !empty($conf['ad_image_client_decrypt']);
+}
+
+/** 前端展示地址模式：blob（默认）或 data */
+function ad_image_client_url_mode()
+{
+    global $conf;
+    $mode = strtolower(trim((string) array_value($conf, 'ad_image_client_url_mode', 'blob')));
+    return $mode === 'data' ? 'data' : 'blob';
+}
+
+/**
+ * 从数据库里存的 adimg 地址解析 32 位 hex token（与 ad_serve_encrypted_image 一致）。
+ *
+ * @return string 小写 hex，失败返回 ''
+ */
+function ad_extract_adimg_token($image_url)
+{
+    $s = trim((string) $image_url);
+    if ($s === '') {
+        return '';
+    }
+    if (!preg_match('/adimg[^a-f0-9]*([a-f0-9]{32})/i', $s, $m)) {
+        return '';
+    }
+    return strtolower($m[1]);
+}
+
+/**
+ * 拉取密文用的绝对 URL（供 fetch / data 属性）。
+ *
+ * @param string $token 32 位 hex
+ */
+function ad_cipher_fetch_url_absolute($token)
+{
+    $token = strtolower(preg_replace('/[^a-f0-9]/', '', (string) $token));
+    if (strlen($token) !== 32) {
+        return '';
+    }
+    if (!function_exists('url') || !function_exists('http_url_path')) {
+        return '';
+    }
+    $rel = url('adenc-' . $token, '', 2);
+    if (strpos($rel, 'http') === 0) {
+        return $rel;
+    }
+    $base = rtrim(http_url_path(), '/');
+    return $base . '/' . ltrim($rel, '/');
+}
+
+/** 输出 .enc 原始字节（IV+密文），供前端 Web Crypto 解密 */
+function ad_serve_encrypted_ciphertext()
+{
+    global $conf;
+    $token = strtolower(preg_replace('/[^a-f0-9]/', '', (string) param(1, '')));
+    if (strlen($token) !== 32) {
+        header('HTTP/1.0 404 Not Found');
+        exit;
+    }
+    $base = rtrim(str_replace('\\', '/', $conf['upload_path']), '/');
+    $full = $base . '/encrypt_image/d/' . $token . '.enc';
+    if (!is_file($full)) {
+        header('HTTP/1.0 404 Not Found');
+        exit;
+    }
+    $blob = file_get_contents($full);
+    if ($blob === FALSE || $blob === '') {
+        header('HTTP/1.0 404 Not Found');
+        exit;
+    }
+    if (!empty($conf['ad_enc_cors_origin'])) {
+        header('Access-Control-Allow-Origin: ' . $conf['ad_enc_cors_origin']);
+    }
+    header('Content-Type: application/octet-stream');
+    header('Cache-Control: public, max-age=86400');
+    header('X-Content-Type-Options: nosniff');
+    echo $blob;
+    exit;
+}
+
 function ad_image_aes_key()
 {
     global $conf;
@@ -336,21 +432,137 @@ function ad_serve_encrypted_image()
     exit;
 }
 
+/**
+ * 将广告图片 URL 映射到本地上传文件全路径（仅支持本站 upload 目录）。
+ *
+ * @return string 失败返回 ''
+ */
+function ad_image_to_local_upload_file($image_url)
+{
+    global $conf;
+    $img = trim((string) $image_url);
+    if ($img === '' || ad_extract_adimg_token($img) !== '') {
+        return '';
+    }
+    $path = $img;
+    if (preg_match('#^https?://#i', $img)) {
+        $p = parse_url($img, PHP_URL_PATH);
+        $path = is_string($p) ? $p : '';
+    }
+    $path = str_replace('\\', '/', trim((string) $path));
+    if ($path === '') {
+        return '';
+    }
+    $upload_url = '/' . trim((string) array_value($conf, 'upload_url', '/upload/'), '/') . '/';
+    if (strpos($path, $upload_url) !== 0) {
+        if (strpos($path, '/upload/') !== 0) {
+            return '';
+        }
+        $upload_url = '/upload/';
+    }
+    $sub = ltrim(substr($path, strlen($upload_url)), '/');
+    if ($sub === '') {
+        return '';
+    }
+    $base = rtrim(str_replace('\\', '/', (string) array_value($conf, 'upload_path', './upload/')), '/');
+    if ($base === '') {
+        return '';
+    }
+    $full = $base . '/' . $sub;
+    return is_file($full) ? $full : '';
+}
+
+/**
+ * 批量将广告 image 从明文 upload 路径转换为 adimg 加密地址。
+ *
+ * @param int[] $ids 为空则按条件批量处理一批
+ * @return array|false
+ */
+function ad__batch_encrypt_image_refs(array $ids = array(), $limit = 200, $d = null)
+{
+    if (!ad_table_ready() || !ad_image_encrypt_on()) {
+        return FALSE;
+    }
+    $limit = max(1, min(1000, (int) $limit));
+    $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+    $cond = array('ad_type' => 1);
+    if (!empty($ids)) {
+        $cond['id'] = $ids;
+    }
+    $rows = db_find('ad', $cond, array('id' => 1), 1, $limit, 'id', array(), $d);
+    $stat = array(
+        'total' => is_array($rows) ? count($rows) : 0,
+        'converted' => 0,
+        'skip_encrypted' => 0,
+        'skip_nonlocal' => 0,
+        'skip_missing' => 0,
+        'failed' => 0,
+    );
+    if (empty($rows) || !is_array($rows)) {
+        return $stat;
+    }
+    $now = (int) $GLOBALS['time'];
+    foreach ($rows as $row) {
+        $id = (int) array_value($row, 'id', 0);
+        $img = trim((string) array_value($row, 'image', ''));
+        if ($id < 1 || $img === '') {
+            $stat['skip_nonlocal']++;
+            continue;
+        }
+        if (ad_extract_adimg_token($img) !== '') {
+            $stat['skip_encrypted']++;
+            continue;
+        }
+        $full = ad_image_to_local_upload_file($img);
+        if ($full === '') {
+            $stat['skip_nonlocal']++;
+            continue;
+        }
+        $plain = @file_get_contents($full);
+        if ($plain === FALSE || $plain === '') {
+            $stat['skip_missing']++;
+            continue;
+        }
+        $pub = ad_image_save_encrypted_upload($plain);
+        if ($pub === FALSE) {
+            $stat['failed']++;
+            continue;
+        }
+        $ok = db_update('ad', array('id' => $id), array('image' => $pub, 'update_date' => $now), $d);
+        if ($ok === FALSE) {
+            $stat['failed']++;
+            continue;
+        }
+        $stat['converted']++;
+    }
+    return $stat;
+}
+
 function ad_admin_list($slot_key, $page, $pagesize = 20)
 {
     $cond = array();
-    if ($slot_key !== '' && $slot_key !== null) {
-        $cond['slot_key'] = $slot_key;
+    if (is_array($slot_key)) {
+        $slot_key = array_values(array_filter(array_map('strval', $slot_key)));
+        if (!empty($slot_key)) {
+            $cond['slot_key'] = $slot_key;
+        }
+    } elseif ($slot_key !== '' && $slot_key !== null) {
+        $cond['slot_key'] = (string) $slot_key;
     }
-    $orderby = array('weight' => -1, 'id' => -1);
+    $orderby = array('slot_key' => 1, 'weight' => -1, 'id' => -1);
     return ad__find($cond, $orderby, $page, $pagesize);
 }
 
 function ad_admin_count($slot_key)
 {
     $cond = array();
-    if ($slot_key !== '' && $slot_key !== null) {
-        $cond['slot_key'] = $slot_key;
+    if (is_array($slot_key)) {
+        $slot_key = array_values(array_filter(array_map('strval', $slot_key)));
+        if (!empty($slot_key)) {
+            $cond['slot_key'] = $slot_key;
+        }
+    } elseif ($slot_key !== '' && $slot_key !== null) {
+        $cond['slot_key'] = (string) $slot_key;
     }
     return ad__count($cond);
 }
@@ -418,14 +630,37 @@ function ad_render_slot_html($slot_key)
             continue;
         }
         $name = ad_escape_attr(array_value($row, 'name', ''));
-        if ($link !== '' && preg_match('#^https?://#i', $link)) {
-            $go = ad_click_url($id);
-            $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '"><a href="' . ad_escape_attr($go) . '" target="_blank" rel="noopener nofollow" title="' . $name . '"><img src="' . ad_escape_attr($img) . '" alt="' . $name . '" loading="lazy" style="max-width:100%;height:auto;display:block;margin:0 auto;"></a></div>';
+        $use_client_decrypt = ad_image_encrypt_on() && ad_image_client_decrypt_on();
+        $tok = $use_client_decrypt ? ad_extract_adimg_token($img) : '';
+        $cipher_abs = ($tok !== '') ? ad_cipher_fetch_url_absolute($tok) : '';
+        $use_client_decrypt = ($cipher_abs !== '');
+        $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        if ($use_client_decrypt) {
+            $inner = '<img src="' . ad_escape_attr($placeholder) . '" data-nn-ad-cipher="' . ad_escape_attr($cipher_abs) . '" data-nn-ad-fallback="' . ad_escape_attr($img) . '" class="nn-ad-cipher-img" alt="' . $name . '" loading="lazy" style="max-width:100%;height:auto;display:block;margin:0 auto;">';
         } else {
-            $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '"><img src="' . ad_escape_attr($img) . '" alt="' . $name . '" loading="lazy" style="max-width:100%;height:auto;display:block;margin:0 auto;"></div>';
+            $inner = '<img src="' . ad_escape_attr($img) . '" alt="' . $name . '" loading="lazy" style="max-width:100%;height:auto;display:block;margin:0 auto;">';
+        }
+        if ($slot_key === 'index_icon_grid' || $slot_key === 'player_icon_grid') {
+            $title = $name !== '' ? $name : '应用推荐';
+            if ($link !== '' && preg_match('#^https?://#i', $link)) {
+                $go = ad_click_url($id);
+                $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '"><a class="nn-ad-icon-link" href="' . ad_escape_attr($go) . '" target="_blank" rel="noopener nofollow" title="' . $title . '"><span class="nn-ad-icon-img">' . $inner . '</span><span class="nn-ad-icon-title">' . $title . '</span></a></div>';
+            } else {
+                $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '"><div class="nn-ad-icon-link" title="' . $title . '"><span class="nn-ad-icon-img">' . $inner . '</span><span class="nn-ad-icon-title">' . $title . '</span></div></div>';
+            }
+        } else {
+            if ($link !== '' && preg_match('#^https?://#i', $link)) {
+                $go = ad_click_url($id);
+                $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '"><a href="' . ad_escape_attr($go) . '" target="_blank" rel="noopener nofollow" title="' . $name . '">' . $inner . '</a></div>';
+            } else {
+                $parts[] = '<div class="nn-ad nn-ad-' . ad_escape_attr($slot_key) . '">' . $inner . '</div>';
+            }
         }
     }
     $html = implode("\n", $parts);
+    if (($slot_key === 'index_icon_grid' || $slot_key === 'player_icon_grid') && $html !== '') {
+        $html = '<div class="nn-ad-icon-grid-wrap">' . $html . '</div>';
+    }
     if ($slot_key === 'float_fab' && $html !== '') {
         $html = '<div id="nnFabAd" class="nn-fab-ad">' . $html . '<button type="button" class="nn-fab-ad-close" aria-label="关闭">×</button></div>';
     }
@@ -441,6 +676,8 @@ function ad_inject_nncms(&$nncms, &$maccms)
             $nncms[$k] = '';
             $maccms[$k] = '';
         }
+        $nncms['ad_client_decrypt_boot'] = '';
+        $maccms['ad_client_decrypt_boot'] = '';
         return;
     }
     foreach ($meta as $key => $_) {
@@ -448,6 +685,19 @@ function ad_inject_nncms(&$nncms, &$maccms)
         $k = 'ad_slot_' . $key;
         $nncms[$k] = $html;
         $maccms[$k] = $html;
+    }
+    if (ad_image_encrypt_on() && ad_image_client_decrypt_on() && function_exists('http_url_path') && function_exists('json_encode')) {
+        $key_b64 = base64_encode(ad_image_aes_key());
+        $cfg = array(
+            'urlMode' => ad_image_client_url_mode(),
+        );
+        $boot = '<script>window.__NN_AD_KEY_B64=' . json_encode($key_b64, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';window.__NN_AD_CLIENT_CFG=' . json_encode($cfg, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';</script>'
+            . '<script src="/static/js/nn_ad_client_decrypt.js?v=20260410" defer></script>';
+        $nncms['ad_client_decrypt_boot'] = $boot;
+        $maccms['ad_client_decrypt_boot'] = $boot;
+    } else {
+        $nncms['ad_client_decrypt_boot'] = '';
+        $maccms['ad_client_decrypt_boot'] = '';
     }
 }
 
@@ -491,6 +741,9 @@ function ad_process_click($id)
         'longip' => (int) $longip,
         'create_date' => $t,
     ));
+    if (function_exists('agent_track_ad_click')) {
+        agent_track_ad_click($id, (string) array_value($row, 'slot_key', ''), (string) $target);
+    }
     return $target !== '' ? $target : http_url_path();
 }
 

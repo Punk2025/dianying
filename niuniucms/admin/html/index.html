@@ -5,6 +5,33 @@
                         <div class="page-header">
                             <h1 class="page-title"><?php echo $header['title'];?></h1>
                         </div>
+                        <div class="card mb-3">
+                            <div class="card-body py-3">
+                                <form method="get" class="row g-2 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-1">开始日期</label>
+                                        <input type="date" name="start_date" class="form-control" value="<?php echo htmlspecialchars((string) $start_date, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-1">结束日期</label>
+                                        <input type="date" name="end_date" class="form-control" value="<?php echo htmlspecialchars((string) $end_date, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label mb-1">地区统计口径</label>
+                                        <select name="region_metric" class="form-select">
+                                            <option value="pv" <?php if ($region_metric === 'pv') echo 'selected';?>>按访问次数(PV)</option>
+                                            <option value="uv" <?php if ($region_metric === 'uv') echo 'selected';?>>按去重IP(UV)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="small text-muted pt-2">趋势/地区按日期统计</div>
+                                    </div>
+                                    <div class="col-md-2 text-md-end">
+                                        <button type="submit" class="btn btn-primary w-100">更新看板</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div class="row ">
                             <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
                                 <div class="card">
@@ -18,7 +45,7 @@
                                         <div class="col-8">
                                             <div class="card-body p-4">
                                                 <h2 class="mb-2 fw-normal mt-2"><?php echo $stat['users'];?></h2>
-                                                <h5 class="fw-normal mb-0">当前在线</h5>
+                                                <h5 class="fw-normal mb-0">用户总数</h5>
                                             </div>
                                         </div>
                                     </div>
@@ -77,6 +104,70 @@
                                                 <h5 class="fw-normal mb-0">标签</h5>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-2">
+                                <div class="card">
+                                    <div class="card-body p-4">
+                                        <h2 class="mb-2 fw-normal mt-2"><?php echo (int) array_value($stat_home, 'online_ip', 0);?></h2>
+                                        <h5 class="fw-normal mb-0">实时在线(IP)</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-2">
+                                <div class="card">
+                                    <div class="card-body p-4">
+                                        <h2 class="mb-2 fw-normal mt-2"><?php echo (int) array_value($stat_home, 'today_uv', 0);?></h2>
+                                        <h5 class="fw-normal mb-0">今日访客(IP)</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-2">
+                                <div class="card">
+                                    <div class="card-body p-4">
+                                        <h2 class="mb-2 fw-normal mt-2"><?php echo (int) array_value($stat_home, 'yesterday_uv', 0);?></h2>
+                                        <h5 class="fw-normal mb-0">昨日访客(IP)</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body p-4">
+                                        <h2 class="mb-2 fw-normal mt-2"><?php echo htmlspecialchars((string) array_value($stat_home, 'avg_visit_hms', '00:00:00'));?></h2>
+                                        <h5 class="fw-normal mb-0">平均访问时长</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-6 col-md-12 col-xl-3">
+                                <div class="card">
+                                    <div class="card-body p-4">
+                                        <h2 class="mb-2 fw-normal mt-2"><?php echo (int) array_value($stat_home, 'today_ad_clicks', 0);?></h2>
+                                        <h5 class="fw-normal mb-0">今日广告点击次数</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-8 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">趋势图</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="admin_trend_chart" style="height: 320px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">地区分布图（<?php echo $region_metric === 'uv' ? '去重IP' : '访问次数';?>）</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="admin_region_map" style="height: 320px;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -152,3 +243,90 @@
             </div>
 </div>
 <?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/map/js/china.js"></script>
+<script>
+(function () {
+    var trendLabels = <?php echo json_encode(array_value($stat_home, 'trend_labels', array()), JSON_UNESCAPED_UNICODE);?>;
+    var trendPv = <?php echo json_encode(array_value($stat_home, 'trend_pv', array()), JSON_UNESCAPED_UNICODE);?>;
+    var trendUv = <?php echo json_encode(array_value($stat_home, 'trend_uv', array()), JSON_UNESCAPED_UNICODE);?>;
+    var trendAd = <?php echo json_encode(array_value($stat_home, 'trend_ad_clicks', array()), JSON_UNESCAPED_UNICODE);?>;
+    var regionMap = <?php echo json_encode(array_value($stat_home, 'region_map', array()), JSON_UNESCAPED_UNICODE);?>;
+    var regionTop = <?php echo json_encode(array_value($stat_home, 'region_top', array()), JSON_UNESCAPED_UNICODE);?>;
+    var regionMetric = <?php echo json_encode((string) $region_metric, JSON_UNESCAPED_UNICODE);?>;
+    function renderRegionFallback(box, reason) {
+        if (!box) return;
+        var unit = regionMetric === 'uv' ? 'IP' : '次';
+        var html = '<div class="small text-muted mb-2">' + reason + '</div>';
+        if (regionTop && regionTop.length) {
+            html += '<ul class="mb-0">';
+            for (var i = 0; i < regionTop.length; i++) {
+                html += '<li>' + regionTop[i].name + '：' + regionTop[i].value + unit + '</li>';
+            }
+            html += '</ul>';
+        } else {
+            html += '<div class="small text-muted">暂无地区分布数据（待解析IP较多时会显示为空）</div>';
+        }
+        box.innerHTML = html;
+    }
+    if (typeof echarts !== 'undefined') {
+        var trendEl = document.getElementById('admin_trend_chart');
+        if (trendEl) {
+            var trendChart = echarts.init(trendEl);
+            trendChart.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['浏览量PV', '访客UV', '广告点击'] },
+                grid: { left: 40, right: 20, top: 35, bottom: 35 },
+                xAxis: { type: 'category', data: trendLabels },
+                yAxis: [
+                    { type: 'value', name: 'PV' },
+                    { type: 'value', name: 'UV/点击' }
+                ],
+                series: [
+                    { name: '浏览量PV', type: 'line', smooth: false, yAxisIndex: 0, data: trendPv },
+                    { name: '访客UV', type: 'line', smooth: false, yAxisIndex: 1, data: trendUv },
+                    { name: '广告点击', type: 'line', smooth: false, yAxisIndex: 1, data: trendAd }
+                ]
+            });
+        }
+        var mapEl = document.getElementById('admin_region_map');
+        if (mapEl) {
+            try {
+                if (typeof echarts.getMap !== 'function' || !echarts.getMap('china')) {
+                    renderRegionFallback(mapEl, '中国地图资源未加载，显示Top地区：');
+                } else if (!regionMap || !regionMap.length) {
+                    renderRegionFallback(mapEl, '暂无地图数据，显示Top地区：');
+                } else {
+                    var mapChart = echarts.init(mapEl);
+                    var maxVal = 0;
+                    for (var mi = 0; mi < regionMap.length; mi++) {
+                        var mv = Number(regionMap[mi].value || 0);
+                        if (mv > maxVal) maxVal = mv;
+                    }
+                    if (maxVal < 10) maxVal = 10;
+                    mapChart.setOption({
+                        tooltip: { trigger: 'item' },
+                        visualMap: { min: 0, max: maxVal, text: ['高', '低'], calculable: true, left: 'left', bottom: 0 },
+                        series: [{
+                            name: '地区访问',
+                            type: 'map',
+                            map: 'china',
+                            roam: true,
+                            data: regionMap
+                        }]
+                    });
+                }
+            } catch (e) {
+                renderRegionFallback(mapEl, '地区图渲染失败，显示Top地区：');
+            }
+        }
+        window.addEventListener('resize', function () {
+            if (trendEl) { echarts.getInstanceByDom(trendEl) && echarts.getInstanceByDom(trendEl).resize(); }
+            if (mapEl) { echarts.getInstanceByDom(mapEl) && echarts.getInstanceByDom(mapEl).resize(); }
+        });
+    } else {
+        var mapBox = document.getElementById('admin_region_map');
+        renderRegionFallback(mapBox, '图表库加载失败，显示Top地区：');
+    }
+})();
+</script>

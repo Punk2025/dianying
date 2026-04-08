@@ -124,6 +124,26 @@ switch ($action) {
             message(0, $msg);
         }
         break;
+    case 'batchencrypt':
+        if ('POST' == $method) {
+            ad_image_encrypt_on() OR message(1, '请先开启 ad_image_encrypt=1 再执行批量转加密');
+            $ids = param('ids', array(), FALSE);
+            if (!is_array($ids)) {
+                $ids = array();
+            }
+            $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+            $r = ad__batch_encrypt_image_refs($ids, empty($ids) ? 500 : count($ids));
+            FALSE === $r && message(-1, '执行失败（请检查广告表与 upload 目录权限）');
+            $msg = '批量转加密完成：成功 ' . (int) $r['converted'] . ' 条';
+            $msg .= '，已是加密 ' . (int) $r['skip_encrypted'] . ' 条';
+            $msg .= '，非本地/空地址 ' . (int) $r['skip_nonlocal'] . ' 条';
+            $msg .= '，源文件缺失 ' . (int) $r['skip_missing'] . ' 条';
+            if (!empty($r['failed'])) {
+                $msg .= '，失败 ' . (int) $r['failed'] . ' 条';
+            }
+            message(0, $msg, $r);
+        }
+        break;
 
     case 'create':
     case 'update':
@@ -202,13 +222,32 @@ switch ($action) {
         if ('GET' == $method) {
             $page = param('page', 1);
             $pagesize = 30;
+            $meta_groups = function_exists('ad_slot_meta_groups') ? ad_slot_meta_groups() : array();
+            $group_key = trim((string) param('group', ''));
             $slot_key = param('slot', '');
+            if ($group_key !== '' && !isset($meta_groups[$group_key])) {
+                $group_key = '';
+            }
             if ($slot_key !== '' && !isset($meta[$slot_key])) {
                 $slot_key = '';
             }
-            $n = ad_admin_count($slot_key);
-            $arrlist = ad_admin_list($slot_key, $page, $pagesize);
+            $slot_filter = $slot_key;
+            if ($slot_filter === '' && $group_key !== '' && isset($meta_groups[$group_key])) {
+                $slot_filter = array_keys((array) $meta_groups[$group_key]);
+            }
+            $ad_encrypt_on = function_exists('ad_image_encrypt_on') ? ad_image_encrypt_on() : !empty($conf['ad_image_encrypt']);
+            $ad_client_decrypt_on = function_exists('ad_image_client_decrypt_on') ? ad_image_client_decrypt_on() : !empty($conf['ad_image_client_decrypt']);
+            $ad_client_url_mode = function_exists('ad_image_client_url_mode') ? ad_image_client_url_mode() : 'blob';
+            $ad_runtime_mode = 'plain';
+            if ($ad_encrypt_on) {
+                $ad_runtime_mode = $ad_client_decrypt_on ? ('client_' . $ad_client_url_mode) : 'server_adimg';
+            }
+            $n = ad_admin_count($slot_filter);
+            $arrlist = ad_admin_list($slot_filter, $page, $pagesize);
             $extra = array('page' => '{page}');
+            if ($group_key !== '') {
+                $extra['group'] = $group_key;
+            }
             if ($slot_key !== '') {
                 $extra['slot'] = $slot_key;
             }
