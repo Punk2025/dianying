@@ -93,6 +93,24 @@ return array(
   'agent_ip_allowlist' => '',     // 白名单（逗号/换行分隔，支持单 IP 与 CIDR，优先放行）
   'agent_ip_blocklist' => '',     // 黑名单（逗号/换行分隔，支持单 IP 与 CIDR）
   'agent_ip_deny_message' => '访问受限', // 命中黑名单时返回提示语
+  'safew_bot_token' => '',
+  'safew_bot_pool' => '',         // JSON: [{"id":"...","name":"...","token":"...","enabled":1}]
+  'safew_base_url' => '',
+  'safew_push_agent_code' => '',
+  'safew_tag_pool' => '',         // 例：#热门电影 #今日推荐，留空不使用
+  'safew_tag_spoiler_on' => 0,    // 1=标签池剧透，仅对#标签词生效
+  'safew_menu_buttons' => '',     // JSON: [{"text":"按钮名","url":"https://..."}]
+  'safew_push_limit' => 10,
+  'safew_sync_limit' => 100,
+  'tg_bot_token' => '',
+  'tg_bot_pool' => '',            // JSON: [{"id":"...","name":"...","token":"...","enabled":1}]
+  'tg_base_url' => '',
+  'tg_push_agent_code' => '',
+  'tg_tag_pool' => '',            // 例：#热门电影 #今日推荐，留空不使用
+  'tg_tag_spoiler_on' => 0,       // 1=标签池剧透，仅对#标签词生效
+  'tg_menu_buttons' => '',        // JSON: [{"text":"按钮名","url":"https://..."}]
+  'tg_push_limit' => 10,
+  'tg_sync_limit' => 100,
   'order_default' => 'lastpid',   // 作为回复排序
   'attach_dir_save_rule' => 'Ymd', // 附件存放规则，附件多用：Ymd，附件少：Ym 
   'user_create_on' => 1,

@@ -1,0 +1,81 @@
+多机器人定时任务教程（SafeW / Telegram）
+
+一、先回答你的问题
+不需要每个机器人单独建一个定时任务。
+
+现在支持“统一任务脚本”：
+- 自动读取后台“启用机器人列表”
+- 按机器人逐个同步/推送
+- 你后台新增机器人后，只要启用并保存，下一次定时任务会自动生效
+
+--------------------------------------------------
+二、准备条件
+1）后台已配置并保存：
+   - SafeW通知：机器人列表（至少1个启用）+ 站点域名
+   - Telegram通知：机器人列表（至少1个启用）+ 站点域名
+
+2）机器人已拉进对应频道/群并有管理员权限（建议）
+3）频道/群里至少发过1条消息（用于自动识别 chat_id）
+
+--------------------------------------------------
+三、统一任务脚本（推荐）
+
+SafeW：
+1）同步频道（每1分钟）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100
+
+2）推送新视频（每5分钟）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10
+
+Telegram：
+1）同步频道（每1分钟）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_sync_all.php 100
+
+2）推送新视频（每5分钟）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php 10
+
+说明：
+- 100 / 10 是可选参数（同步条数 / 推送扫描条数）
+- 不传参数时会使用后台配置的默认值
+
+--------------------------------------------------
+四、推荐 cron.d 配置（避免面板 root 锁问题）
+
+文件：/etc/cron.d/nncms_bot_multi
+
+内容如下：
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# SafeW
+*/1 * * * * root flock -xn /tmp/nncms_safew_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100' >> /www/wwwlogs/safew_sync.log 2>&1
+*/5 * * * * root flock -xn /tmp/nncms_safew_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10' >> /www/wwwlogs/safew_push.log 2>&1
+
+# Telegram
+*/1 * * * * root flock -xn /tmp/nncms_tg_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_sync_all.php 100' >> /www/wwwlogs/tg_sync.log 2>&1
+*/5 * * * * root flock -xn /tmp/nncms_tg_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php 10' >> /www/wwwlogs/tg_push.log 2>&1
+
+保存后执行：
+systemctl restart cron
+
+--------------------------------------------------
+五、验证是否生效
+查看日志：
+tail -n 50 /www/wwwlogs/safew_sync.log
+tail -n 50 /www/wwwlogs/safew_push.log
+tail -n 50 /www/wwwlogs/tg_sync.log
+tail -n 50 /www/wwwlogs/tg_push.log
+
+常见返回说明：
+- sent=0, failed=0：通常是“当前没有新视频”或“该机器人无可推送频道”
+- no enabled bot：后台没有启用机器人
+- *_base_url empty：后台站点域名未填写
+
+--------------------------------------------------
+六、兼容旧方式（可选，不推荐）
+旧脚本仍可用（单 token）：
+- safew_sync_updates.php / safew_push_worker.php
+- tg_sync_updates.php / tg_push_worker.php
+
+但旧方式需要你自己为每个 token 建 cron，不如统一脚本方便。
+

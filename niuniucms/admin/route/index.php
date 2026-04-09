@@ -45,6 +45,145 @@ function admin_home_date_labels($start, $end)
     return $labels;
 }
 
+function admin_home_cate_path_text($cid, $cate_map)
+{
+    $cid = intval($cid);
+    if ($cid <= 0 || empty($cate_map[$cid])) {
+        return '';
+    }
+    $names = array();
+    $guard = 0;
+    while ($cid > 0 && !empty($cate_map[$cid]) && $guard < 10) {
+        $row = $cate_map[$cid];
+        $name = trim((string) array_value($row, 'name', ''));
+        if ($name !== '') {
+            array_unshift($names, $name);
+        }
+        $cid = intval(array_value($row, 'cup', 0));
+        $guard++;
+    }
+    return implode('>', $names);
+}
+
+function admin_home_vod_kind_by_cate($cid, $cate_map)
+{
+    $path = strtolower(admin_home_cate_path_text($cid, $cate_map));
+    if ($path === '') {
+        return 'other';
+    }
+    $movie_words = array('电影', '影片', '院线', 'movie', 'film');
+    $tv_words = array('电视剧', '连续剧', '剧集', '短剧', '美剧', '韩剧', '日剧', '港剧', '泰剧', 'tv', 'drama', 'series');
+    foreach ($movie_words as $w) {
+        if ($w !== '' && strpos($path, $w) !== false) {
+            return 'movie';
+        }
+    }
+    foreach ($tv_words as $w) {
+        if ($w !== '' && strpos($path, $w) !== false) {
+            return 'tv';
+        }
+    }
+    return 'other';
+}
+
+function admin_home_vod_top_rank($limit = 10)
+{
+    global $db;
+    $limit = max(1, min(50, intval($limit)));
+    $ret = array(
+        'movie' => array(),
+        'tv' => array(),
+        'other' => array(),
+    );
+    $catelist = cate_list_cache();
+    $cate_map = array();
+    if (is_array($catelist)) {
+        foreach ($catelist as $cv) {
+            $cid = intval(array_value($cv, 'cid', 0));
+            if ($cid > 0) {
+                $cate_map[$cid] = $cv;
+            }
+        }
+    }
+    $pre = $db->tablepre;
+    $rows = db_sql_find("SELECT vid,cid,name,views,create_date FROM {$pre}vod WHERE views>0 ORDER BY views DESC LIMIT 500");
+    if (!is_array($rows)) {
+        return $ret;
+    }
+    foreach ($rows as $row) {
+        $kind = admin_home_vod_kind_by_cate(intval(array_value($row, 'cid', 0)), $cate_map);
+        if (count($ret[$kind]) >= $limit) {
+            continue;
+        }
+        $ret[$kind][] = array(
+            'vid' => intval(array_value($row, 'vid', 0)),
+            'cid' => intval(array_value($row, 'cid', 0)),
+            'name' => (string) array_value($row, 'name', ''),
+            'views' => intval(array_value($row, 'views', 0)),
+            'cate_path' => admin_home_cate_path_text(intval(array_value($row, 'cid', 0)), $cate_map),
+        );
+        if (count($ret['movie']) >= $limit && count($ret['tv']) >= $limit && count($ret['other']) >= $limit) {
+            break;
+        }
+    }
+    return $ret;
+}
+
+function admin_home_vod_rank_24h($limit = 10)
+{
+    global $db, $time;
+    $limit = max(1, min(50, intval($limit)));
+    $ret = array(
+        'movie' => array(),
+        'tv' => array(),
+        'other' => array(),
+    );
+    $catelist = cate_list_cache();
+    $cate_map = array();
+    if (is_array($catelist)) {
+        foreach ($catelist as $cv) {
+            $cid = intval(array_value($cv, 'cid', 0));
+            if ($cid > 0) {
+                $cate_map[$cid] = $cv;
+            }
+        }
+    }
+    $pre = $db->tablepre;
+    $start = intval($time) - 86400;
+    $sql = "SELECT t.vid, v.cid, v.name, COUNT(*) AS views_24h "
+        . "FROM {$pre}vod_top t "
+        . "LEFT JOIN {$pre}vod v ON v.vid=t.vid "
+        . "WHERE t.create_date>={$start} "
+        . "GROUP BY t.vid,v.cid,v.name "
+        . "ORDER BY views_24h DESC "
+        . "LIMIT 1000";
+    $rows = db_sql_find($sql);
+    if (!is_array($rows)) {
+        return $ret;
+    }
+    foreach ($rows as $row) {
+        $name = trim((string) array_value($row, 'name', ''));
+        if ($name === '') {
+            continue;
+        }
+        $kind = admin_home_vod_kind_by_cate(intval(array_value($row, 'cid', 0)), $cate_map);
+        if (count($ret[$kind]) >= $limit) {
+            continue;
+        }
+        $ret[$kind][] = array(
+            'vid' => intval(array_value($row, 'vid', 0)),
+            'cid' => intval(array_value($row, 'cid', 0)),
+            'name' => $name,
+            'views_24h' => intval(array_value($row, 'views_24h', 0)),
+            'cate_path' => admin_home_cate_path_text(intval(array_value($row, 'cid', 0)), $cate_map),
+        );
+        if (count($ret['movie']) >= $limit && count($ret['tv']) >= $limit && count($ret['other']) >= $limit) {
+            break;
+        }
+    }
+    return $ret;
+}
+
 function admin_home_geo_name($region)
 {
     $region = trim((string) $region);
@@ -144,7 +283,23 @@ switch ($action) {
             'region_top_pv' => array(),
             'region_map_uv' => array(),
             'region_top_uv' => array(),
+            'vod_rank_movie' => array(),
+            'vod_rank_tv' => array(),
+            'vod_rank_other' => array(),
+            'vod_rank_24h_movie' => array(),
+            'vod_rank_24h_tv' => array(),
+            'vod_rank_24h_other' => array(),
         );
+        $vod_rank_limit = max(5, min(30, intval(param('vod_rank_limit', 10))));
+        $stat_home['vod_rank_limit'] = $vod_rank_limit;
+        $vod_rank = admin_home_vod_top_rank($vod_rank_limit);
+        $stat_home['vod_rank_movie'] = array_value($vod_rank, 'movie', array());
+        $stat_home['vod_rank_tv'] = array_value($vod_rank, 'tv', array());
+        $stat_home['vod_rank_other'] = array_value($vod_rank, 'other', array());
+        $vod_rank_24h = admin_home_vod_rank_24h($vod_rank_limit);
+        $stat_home['vod_rank_24h_movie'] = array_value($vod_rank_24h, 'movie', array());
+        $stat_home['vod_rank_24h_tv'] = array_value($vod_rank_24h, 'tv', array());
+        $stat_home['vod_rank_24h_other'] = array_value($vod_rank_24h, 'other', array());
         if (function_exists('ad_table_ready') && ad_table_ready()) {
             $pre = $db->tablepre;
             $today0 = strtotime(date('Y-m-d 00:00:00', (int) $time));

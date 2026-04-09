@@ -6,7 +6,7 @@ return array (
     array (
       'site_name' => '大瓜电影',
       'site_domain' => 'm8ktv.com',
-      'path' => 'dabao',
+      'path' => 'MD17',
       'site_rewrite' => 0,
     ),
   ),

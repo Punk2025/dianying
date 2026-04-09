@@ -24,9 +24,19 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2">
+                                        <label class="form-label mb-1">榜单条数</label>
+                                        <select name="vod_rank_limit" class="form-select">
+                                            <?php $rankLimit = (int) array_value($stat_home, 'vod_rank_limit', 10);?>
+                                            <option value="5" <?php if ($rankLimit === 5) echo 'selected';?>>5</option>
+                                            <option value="10" <?php if ($rankLimit === 10) echo 'selected';?>>10</option>
+                                            <option value="20" <?php if ($rankLimit === 20) echo 'selected';?>>20</option>
+                                            <option value="30" <?php if ($rankLimit === 30) echo 'selected';?>>30</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1">
                                         <div class="small text-muted pt-2">趋势/地区按日期统计</div>
                                     </div>
-                                    <div class="col-md-2 text-md-end">
+                                    <div class="col-md-1 text-md-end">
                                         <button type="submit" class="btn btn-primary w-100">更新看板</button>
                                     </div>
                                 </form>
@@ -168,6 +178,158 @@
                                     </div>
                                     <div class="card-body">
                                         <div id="admin_region_map" style="height: 320px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">电影播放排行榜（累计）</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:72px;">排名</th>
+                                                        <th>电影名称</th>
+                                                        <th style="width:160px;">观看次数</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php $movieRank = array_value($stat_home, 'vod_rank_movie', array());?>
+                                                <?php if (!empty($movieRank)) { foreach ($movieRank as $i => $v) { ?>
+                                                    <tr>
+                                                        <td><?php echo $i + 1;?></td>
+                                                        <td>
+                                                            <?php echo htmlspecialchars((string) array_value($v, 'name', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>
+                                                            <?php $catePath = trim((string) array_value($v, 'cate_path', '')); if ($catePath !== '') { ?>
+                                                                <div class="small text-muted"><?php echo htmlspecialchars($catePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></div>
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td><?php echo number_format((int) array_value($v, 'views', 0));?></td>
+                                                    </tr>
+                                                <?php }} else { ?>
+                                                    <tr><td colspan="3" class="text-muted">暂无电影播放数据</td></tr>
+                                                <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">电视剧播放排行榜（累计）</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:72px;">排名</th>
+                                                        <th>剧集名称</th>
+                                                        <th style="width:160px;">观看次数</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php $tvRank = array_value($stat_home, 'vod_rank_tv', array());?>
+                                                <?php if (!empty($tvRank)) { foreach ($tvRank as $i => $v) { ?>
+                                                    <tr>
+                                                        <td><?php echo $i + 1;?></td>
+                                                        <td>
+                                                            <?php echo htmlspecialchars((string) array_value($v, 'name', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>
+                                                            <?php $catePath = trim((string) array_value($v, 'cate_path', '')); if ($catePath !== '') { ?>
+                                                                <div class="small text-muted"><?php echo htmlspecialchars($catePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></div>
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td><?php echo number_format((int) array_value($v, 'views', 0));?></td>
+                                                    </tr>
+                                                <?php }} else { ?>
+                                                    <tr><td colspan="3" class="text-muted">暂无电视剧播放数据</td></tr>
+                                                <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">电影近24小时新增播放榜</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:72px;">排名</th>
+                                                        <th>电影名称</th>
+                                                        <th style="width:180px;">近24小时新增</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php $movieRank24h = array_value($stat_home, 'vod_rank_24h_movie', array());?>
+                                                <?php if (!empty($movieRank24h)) { foreach ($movieRank24h as $i => $v) { ?>
+                                                    <tr>
+                                                        <td><?php echo $i + 1;?></td>
+                                                        <td>
+                                                            <?php echo htmlspecialchars((string) array_value($v, 'name', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>
+                                                            <?php $catePath = trim((string) array_value($v, 'cate_path', '')); if ($catePath !== '') { ?>
+                                                                <div class="small text-muted"><?php echo htmlspecialchars($catePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></div>
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td><?php echo number_format((int) array_value($v, 'views_24h', 0));?></td>
+                                                    </tr>
+                                                <?php }} else { ?>
+                                                    <tr><td colspan="3" class="text-muted">近24小时暂无电影播放增量</td></tr>
+                                                <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">电视剧近24小时新增播放榜</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:72px;">排名</th>
+                                                        <th>剧集名称</th>
+                                                        <th style="width:180px;">近24小时新增</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php $tvRank24h = array_value($stat_home, 'vod_rank_24h_tv', array());?>
+                                                <?php if (!empty($tvRank24h)) { foreach ($tvRank24h as $i => $v) { ?>
+                                                    <tr>
+                                                        <td><?php echo $i + 1;?></td>
+                                                        <td>
+                                                            <?php echo htmlspecialchars((string) array_value($v, 'name', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>
+                                                            <?php $catePath = trim((string) array_value($v, 'cate_path', '')); if ($catePath !== '') { ?>
+                                                                <div class="small text-muted"><?php echo htmlspecialchars($catePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></div>
+                                                            <?php } ?>
+                                                        </td>
+                                                        <td><?php echo number_format((int) array_value($v, 'views_24h', 0));?></td>
+                                                    </tr>
+                                                <?php }} else { ?>
+                                                    <tr><td colspan="3" class="text-muted">近24小时暂无电视剧播放增量</td></tr>
+                                                <?php } ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -186,6 +186,16 @@
                         </li>
                     </ul>
                 </li>
+                <li class="slide <?php if($route == 'safew') echo 'active';?>">
+                    <a class="side-menu__item has-link <?php if($route == 'safew') echo 'active';?>" href="<?php echo url('safew-list','',TRUE);?>">
+                        <i class="side-menu__icon fe fe-send"></i><span class="side-menu__label">SafeW通知</span>
+                    </a>
+                </li>
+                <li class="slide <?php if($route == 'telegram') echo 'active';?>">
+                    <a class="side-menu__item has-link <?php if($route == 'telegram') echo 'active';?>" href="<?php echo url('telegram-list','',TRUE);?>">
+                        <i class="side-menu__icon fe fe-send"></i><span class="side-menu__label">Telegram通知</span>
+                    </a>
+                </li>
                  <li class="slide <?php if($route == 'set') echo 'is-expanded';?>">
                      <a class="side-menu__item <?php if($route == 'set') echo 'active';?>" data-bs-toggle="slide" href="javascript:void(0)"><i
                              class="side-menu__icon fe fe-settings"></i><span class="side-menu__label"><?php echo lang('setting');?></span><i

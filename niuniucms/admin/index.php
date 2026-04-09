@@ -73,6 +73,12 @@ switch ($route) {
     case 'agent':
         include _include(ADMIN_PATH . 'route/agent.php');
         break;
+    case 'safew':
+        include _include(ADMIN_PATH . 'route/safew.php');
+        break;
+    case 'telegram':
+        include _include(ADMIN_PATH . 'route/telegram.php');
+        break;
     default:
         include _include(ADMIN_PATH . 'route/index.php');
         break;

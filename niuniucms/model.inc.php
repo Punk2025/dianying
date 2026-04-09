@@ -14,6 +14,8 @@ $include_model_files = array(
     APP_PATH . 'model/link.php',
     APP_PATH . 'model/ad.php',
     APP_PATH . 'model/agent.php',
+    APP_PATH . 'model/safew.php',
+    APP_PATH . 'model/telegram.php',
     APP_PATH . 'model/view.php',
     APP_PATH . 'model/block.php',
     APP_PATH . 'model/phpanalysis.php',

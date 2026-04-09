@@ -1,0 +1,94 @@
+<?php include _include(APP_PATH.'admin/html/head.html');?>
+<div class="main-content app-content mt-0">
+    <div class="side-app">
+        <div class="main-container container-fluid">
+            <div class="row row-cards mt-5">
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header"><h3 class="card-title mb-0">SafeW 机器人配置</h3></div>
+                        <div class="card-body">
+                            <form id="safew_conf_form">
+                                <div class="mb-3">
+                                    <label class="form-label">SafeW 机器人列表（可新增多个）</label>
+                                    <div id="safew_bot_box">
+                                        <?php if (!empty($safew_bot_pool)) { foreach ($safew_bot_pool as $bot) { ?>
+                                            <div class="row g-2 mb-2 safew-bot-row">
+                                                <div class="col-md-3"><input type="text" class="form-control" name="safew_bot_name[]" value="<?php echo htmlspecialchars((string) array_value($bot, 'name', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="机器人名称"></div>
+                                                <div class="col-md-7"><input type="text" class="form-control" name="safew_bot_token[]" value="<?php echo htmlspecialchars((string) array_value($bot, 'token', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="BOT_TOKEN"></div>
+                                                <div class="col-md-1 d-flex align-items-center"><label class="mb-0"><input type="checkbox" name="safew_bot_enabled[]" value="1" <?php if (intval(array_value($bot, 'enabled', 1))) echo 'checked';?>> 启用</label></div>
+                                                <div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-bot-del">删</button></div>
+                                            </div>
+                                        <?php } } else { ?>
+                                            <div class="row g-2 mb-2 safew-bot-row">
+                                                <div class="col-md-3"><input type="text" class="form-control" name="safew_bot_name[]" value="默认机器人" placeholder="机器人名称"></div>
+                                                <div class="col-md-7"><input type="text" class="form-control" name="safew_bot_token[]" value="" placeholder="BOT_TOKEN"></div>
+                                                <div class="col-md-1 d-flex align-items-center"><label class="mb-0"><input type="checkbox" name="safew_bot_enabled[]" value="1" checked> 启用</label></div>
+                                                <div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-bot-del">删</button></div>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-1" id="safew_bot_add">+ 新增机器人</button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 mb-3"><label class="form-label">站点域名（用于拼接观看链接）</label><input type="text" class="form-control" name="safew_base_url" value="<?php echo htmlspecialchars((string) array_value($conf, 'safew_base_url', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="https://dnn3.cn" /></div>
+                                    <div class="col-md-3 mb-3"><label class="form-label">固定推送代理码（可空）</label><input type="text" class="form-control" name="safew_push_agent_code" value="<?php echo htmlspecialchars((string) array_value($conf, 'safew_push_agent_code', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="例如 PUSH001" /></div>
+                                    <div class="col-md-12 mb-3"><label class="form-label">#标签池（留空不使用）</label><textarea class="form-control" name="safew_tag_pool" rows="2" placeholder="#热门电影 #今日推荐 #高分剧"><?php echo htmlspecialchars((string) array_value($conf, 'safew_tag_pool', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></textarea><div class="form-text"><label class="mb-0"><input type="checkbox" name="safew_tag_spoiler_on" value="1" <?php if (intval(array_value($conf, 'safew_tag_spoiler_on', 0))) echo 'checked';?>> 标签池剧透（仅作用于 #标签词）</label></div></div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">菜单按钮（留空不使用）</label>
+                                        <div id="safew_menu_box">
+                                            <?php if (!empty($safew_menu_buttons)) { foreach ($safew_menu_buttons as $btn) { ?>
+                                                <div class="row g-2 mb-2 safew-menu-row">
+                                                    <div class="col-md-4"><input type="text" class="form-control" name="safew_menu_name[]" value="<?php echo htmlspecialchars((string) array_value($btn, 'text', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="按钮名称"></div>
+                                                    <div class="col-md-7"><input type="text" class="form-control" name="safew_menu_url[]" value="<?php echo htmlspecialchars((string) array_value($btn, 'url', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?>" placeholder="跳转链接"></div>
+                                                    <div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-menu-del">删</button></div>
+                                                </div>
+                                            <?php } } else { ?>
+                                                <div class="row g-2 mb-2 safew-menu-row"><div class="col-md-4"><input type="text" class="form-control" name="safew_menu_name[]" value="" placeholder="按钮名称"></div><div class="col-md-7"><input type="text" class="form-control" name="safew_menu_url[]" value="" placeholder="跳转链接"></div><div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-menu-del">删</button></div></div>
+                                            <?php } ?>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary mt-1" id="safew_menu_add">+ 新增按钮</button>
+                                    </div>
+                                    <div class="col-md-2 mb-3"><label class="form-label">单次推送条数</label><input type="number" class="form-control" name="safew_push_limit" min="1" max="50" value="<?php echo (int) $push_limit;?>" /></div>
+                                    <div class="col-md-2 mb-3"><label class="form-label">同步抓取条数</label><input type="number" class="form-control" name="safew_sync_limit" min="1" max="100" value="<?php echo (int) $sync_limit;?>" /></div>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="safew_save_btn">保存配置</button>
+                                <button type="button" class="btn btn-info" id="safew_sync_btn">手动同步频道</button>
+                                <button type="button" class="btn btn-success" id="safew_push_btn">手动测试推送</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title mb-0">SafeW 已绑定频道/群</h3></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead><tr><th>ID</th><th>机器人</th><th>chat_id</th><th>类型</th><th>标题</th><th>username</th><th>最后出现</th><th>状态</th><th>操作</th></tr></thead>
+                                    <tbody>
+                                    <?php if (!empty($arrlist)) { foreach ($arrlist as $v) { ?>
+                                    <tr><td><?php echo (int) array_value($v, 'id', 0);?></td><td><code><?php echo htmlspecialchars((string) array_value($v, 'bot_id', 'default'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></code></td><td><code><?php echo htmlspecialchars((string) array_value($v, 'chat_id', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></code></td><td><?php echo htmlspecialchars((string) array_value($v, 'chat_type', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></td><td><?php echo htmlspecialchars((string) array_value($v, 'title', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></td><td><?php echo htmlspecialchars((string) array_value($v, 'username', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');?></td><td><?php echo !empty($v['last_seen_date']) ? date('Y-m-d H:i:s', intval($v['last_seen_date'])) : '-';?></td><td><?php echo intval(array_value($v, 'enabled', 0)) ? '<span class="text-success">启用</span>' : '<span class="text-muted">停用</span>';?></td><td><?php if (intval(array_value($v, 'enabled', 0))) { ?><a href="#" class="btn btn-sm btn-outline-warning safew-toggle" data-id="<?php echo (int) array_value($v, 'id', 0);?>" data-enabled="0">停用</a><?php } else { ?><a href="#" class="btn btn-sm btn-outline-success safew-toggle" data-id="<?php echo (int) array_value($v, 'id', 0);?>" data-enabled="1">启用</a><?php } ?></td></tr>
+                                    <?php } } else { ?><tr><td colspan="9" class="text-center text-muted">暂无频道/群，请先手动同步</td></tr><?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<?php include _include(APP_PATH.'admin/html/foot.html');?>
+<script>
+function formToPostObject($form){var post={};$form.serializeArray().forEach(function(it){var k=it.name;if(k.slice(-2)==='[]'){if(!Array.isArray(post[k]))post[k]=[];post[k].push(it.value);}else{post[k]=it.value;}});return post;}
+function collectBotRows(rowSelector){var rows=[];$(rowSelector).each(function(){rows.push({name:$(this).find('input[name$="_bot_name[]"]').val()||'',token:$(this).find('input[name$="_bot_token[]"]').val()||'',enabled:$(this).find('input[name$="_bot_enabled[]"]').prop('checked')?'1':'0'});});return rows;}
+$('#safew_save_btn').on('click', function(){var post=formToPostObject($('#safew_conf_form'));var bots=collectBotRows('.safew-bot-row');post['safew_bot_name[]']=bots.map(function(b){return b.name;});post['safew_bot_token[]']=bots.map(function(b){return b.token;});post['safew_bot_enabled[]']=bots.map(function(b){return b.enabled;});$.xpost(xn.url('safew-save','',true),post,function(code,msg){alert(msg||(code===0?'保存成功':'保存失败'));if(code===0)location.reload();});});
+$('#safew_sync_btn').on('click', function(){ $.xpost(xn.url('safew-sync','',true),{},function(code,msg){alert(msg||(code===0?'同步完成':'同步失败'));if(code===0)location.reload();});});
+$('#safew_push_btn').on('click', function(){ if(!confirm('立即执行一次手动推送？')) return; $.xpost(xn.url('safew-push','',true),{},function(code,msg){alert(msg||(code===0?'推送完成':'推送失败'));});});
+$('body').on('click','a.safew-toggle',function(e){e.preventDefault();var id=$(this).data('id'),enabled=$(this).data('enabled');$.xpost(xn.url('safew-toggle','',true),{id:id,enabled:enabled},function(code,msg){alert(msg||(code===0?'已更新':'操作失败'));if(code===0)location.reload();});});
+$('#safew_menu_add').on('click', function(){ $('#safew_menu_box').append('<div class="row g-2 mb-2 safew-menu-row"><div class="col-md-4"><input type="text" class="form-control" name="safew_menu_name[]" value="" placeholder="按钮名称"></div><div class="col-md-7"><input type="text" class="form-control" name="safew_menu_url[]" value="" placeholder="跳转链接"></div><div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-menu-del">删</button></div></div>');});
+$('body').on('click','.safew-menu-del',function(){ if($('.safew-menu-row').length<=1){$(this).closest('.safew-menu-row').find('input').val('');return;} $(this).closest('.safew-menu-row').remove();});
+$('#safew_bot_add').on('click', function(){ $('#safew_bot_box').append('<div class="row g-2 mb-2 safew-bot-row"><div class="col-md-3"><input type="text" class="form-control" name="safew_bot_name[]" value="" placeholder="机器人名称"></div><div class="col-md-7"><input type="text" class="form-control" name="safew_bot_token[]" value="" placeholder="BOT_TOKEN"></div><div class="col-md-1 d-flex align-items-center"><label class="mb-0"><input type="checkbox" name="safew_bot_enabled[]" value="1" checked> 启用</label></div><div class="col-md-1"><button type="button" class="btn btn-outline-danger w-100 safew-bot-del">删</button></div></div>');});
+$('body').on('click','.safew-bot-del',function(){ if($('.safew-bot-row').length<=1){$(this).closest('.safew-bot-row').find('input[type=text]').val('');return;} $(this).closest('.safew-bot-row').remove();});
+</script>
+
