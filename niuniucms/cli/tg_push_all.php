@@ -3,7 +3,7 @@
  * Telegram 多机器人推送 worker（读取后台启用机器人池）
  *
  * 用法：
- * php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php [limit]
+ * php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php [limit] [--force]
  */
 if (PHP_SAPI !== 'cli') {
     exit("CLI only\n");
@@ -44,8 +44,39 @@ function tg_decode_bot_pool($raw, $legacy_token = '')
     return $ret;
 }
 
-$limit = isset($argv[1]) ? intval($argv[1]) : intval(array_value($conf, 'tg_push_limit', 10));
+$force = false;
+$limit = intval(array_value($conf, 'tg_push_limit', 10));
+for ($i = 1; $i < count($argv); $i++) {
+    $arg = trim((string) $argv[$i]);
+    if ($arg === '--force') {
+        $force = true;
+        continue;
+    }
+    if (preg_match('/^\d+$/', $arg)) {
+        $limit = intval($arg);
+    }
+}
 $limit = max(1, min(50, $limit));
+$manual_force = intval(kv_get('job_manual_tg_push_force'));
+$manual_limit = intval(kv_get('job_manual_tg_push_limit'));
+if ($manual_force === 1) {
+    $force = true;
+    if ($manual_limit > 0) {
+        $limit = max(1, min(50, $manual_limit));
+    }
+    kv_set('job_manual_tg_push_force', '0');
+    kv_set('job_manual_tg_push_limit', '0');
+    kv_set('job_manual_tg_push_enqueue_ts', '0');
+}
+$interval_min = max(1, min(1440, intval(array_value($conf, 'tg_push_interval_min', 5))));
+if (!$force) {
+    $now = time();
+    $last = intval(kv_get('job_last_tg_push_all_ts'));
+    if ($last > 0 && ($now - $last) < ($interval_min * 60)) {
+        echo json_encode(array('ok' => true, 'skipped' => true, 'message' => 'interval not reached', 'interval_min' => $interval_min), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+        exit(0);
+    }
+}
 $base_url = trim((string) array_value($conf, 'tg_base_url', ''));
 if ($base_url === '') {
     echo json_encode(array('ok' => false, 'message' => 'tg_base_url empty'), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
@@ -83,5 +114,8 @@ if (!empty($summary['errors']) && $summary['sent'] === 0) {
     $summary['ok'] = false;
 }
 echo json_encode($summary, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+if ($summary['ok']) {
+    kv_set('job_last_tg_push_all_ts', strval(time()));
+}
 exit($summary['ok'] ? 0 : 1);
 

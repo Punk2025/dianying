@@ -50,6 +50,8 @@
                                     </div>
                                     <div class="col-md-2 mb-3"><label class="form-label">单次推送条数</label><input type="number" class="form-control" name="safew_push_limit" min="1" max="50" value="<?php echo (int) $push_limit;?>" /></div>
                                     <div class="col-md-2 mb-3"><label class="form-label">同步抓取条数</label><input type="number" class="form-control" name="safew_sync_limit" min="1" max="100" value="<?php echo (int) $sync_limit;?>" /></div>
+                                    <div class="col-md-2 mb-3"><label class="form-label">同步间隔(分钟)</label><input type="number" class="form-control" name="safew_sync_interval_min" min="1" max="1440" value="<?php echo isset($sync_interval_min) ? (int) $sync_interval_min : 1;?>" /></div>
+                                    <div class="col-md-2 mb-3"><label class="form-label">推送间隔(分钟)</label><input type="number" class="form-control" name="safew_push_interval_min" min="1" max="1440" value="<?php echo isset($push_interval_min) ? (int) $push_interval_min : 5;?>" /></div>
                                 </div>
                                 <button type="button" class="btn btn-primary" id="safew_save_btn">保存配置</button>
                                 <button type="button" class="btn btn-info" id="safew_sync_btn">手动同步频道</button>

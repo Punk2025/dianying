@@ -3,10 +3,11 @@
 一、先回答你的问题
 不需要每个机器人单独建一个定时任务。
 
-现在支持“统一任务脚本”：
+现在支持“统一任务脚本” + “后台改时间”：
 - 自动读取后台“启用机器人列表”
 - 按机器人逐个同步/推送
 - 你后台新增机器人后，只要启用并保存，下一次定时任务会自动生效
+- 同步/推送间隔分钟可在后台直接改，不用改 cron
 
 --------------------------------------------------
 二、准备条件
@@ -47,13 +48,13 @@ php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php 10
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# SafeW
-*/1 * * * * root flock -xn /tmp/nncms_safew_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100' >> /www/wwwlogs/safew_sync.log 2>&1
-*/5 * * * * root flock -xn /tmp/nncms_safew_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10' >> /www/wwwlogs/safew_push.log 2>&1
+# SafeW（固定每分钟触发，实际执行频率由后台“同步间隔/推送间隔”决定）
+* * * * * root flock -xn /tmp/nncms_safew_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100' >> /www/wwwlogs/safew_sync.log 2>&1
+* * * * * root flock -xn /tmp/nncms_safew_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10' >> /www/wwwlogs/safew_push.log 2>&1
 
-# Telegram
-*/1 * * * * root flock -xn /tmp/nncms_tg_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_sync_all.php 100' >> /www/wwwlogs/tg_sync.log 2>&1
-*/5 * * * * root flock -xn /tmp/nncms_tg_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php 10' >> /www/wwwlogs/tg_push.log 2>&1
+# Telegram（固定每分钟触发，实际执行频率由后台“同步间隔/推送间隔”决定）
+* * * * * root flock -xn /tmp/nncms_tg_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_sync_all.php 100' >> /www/wwwlogs/tg_sync.log 2>&1
+* * * * * root flock -xn /tmp/nncms_tg_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/tg_push_all.php 10' >> /www/wwwlogs/tg_push.log 2>&1
 
 保存后执行：
 systemctl restart cron
@@ -72,10 +73,22 @@ tail -n 50 /www/wwwlogs/tg_push.log
 - *_base_url empty：后台站点域名未填写
 
 --------------------------------------------------
-六、兼容旧方式（可选，不推荐）
+六、后台改时间在哪里
+1）SafeW通知 页面：
+- 同步间隔(分钟)
+- 推送间隔(分钟)
+
+2）Telegram通知 页面：
+- 同步间隔(分钟)
+- 推送间隔(分钟)
+
+修改后点“保存配置”即可，下一个分钟周期自动生效。
+
+--------------------------------------------------
+七、兼容旧方式（可选，不推荐）
 旧脚本仍可用（单 token）：
 - safew_sync_updates.php / safew_push_worker.php
 - tg_sync_updates.php / tg_push_worker.php
 
-但旧方式需要你自己为每个 token 建 cron，不如统一脚本方便。
+但旧方式需要你自己为每个 token 建 cron，也无法后台改间隔，不如统一脚本方便。
 

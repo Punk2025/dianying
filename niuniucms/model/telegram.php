@@ -408,7 +408,7 @@ function telegram_push_new_vod($token, $base_url, $limit = 10, $bot_id = 'defaul
         $last_ts = (int) $time - 3600;
     }
     $pre = $db->tablepre;
-    $sql = "SELECT vid,cid,name,pic,remarks,views,blurb,content,create_date FROM `{$pre}vod` "
+    $sql = "SELECT vid,cid,name,pic,remarks,views,actor,area,lang,year,blurb,content,create_date FROM `{$pre}vod` "
         . "WHERE create_date>{$last_ts} ORDER BY create_date ASC LIMIT {$limit}";
     $rows = db_sql_find($sql);
     if (!is_array($rows) || empty($rows)) {
@@ -443,6 +443,22 @@ function telegram_push_new_vod($token, $base_url, $limit = 10, $bot_id = 'defaul
             $intro_raw = trim((string) array_value($v, 'content', ''));
         }
         $intro = function_exists('safew_brief_text') ? safew_brief_text($intro_raw, 90) : strip_tags($intro_raw);
+        if ($intro === '') {
+            $actor = trim((string) array_value($v, 'actor', ''));
+            $area = trim((string) array_value($v, 'area', ''));
+            $year = trim((string) array_value($v, 'year', ''));
+            $parts = array();
+            if ($actor !== '') $parts[] = '主演：' . $actor;
+            if ($area !== '') $parts[] = '地区：' . $area;
+            if ($year !== '') $parts[] = '年份：' . $year;
+            if ($remarks !== '') $parts[] = '状态：' . $remarks;
+            $intro = !empty($parts)
+                ? '《' . $title . '》' . implode('，', $parts) . '。点击观看页查看完整剧情介绍。'
+                : '《' . $title . '》暂无详细简介，请点击观看页查看完整信息。';
+            if (function_exists('safew_brief_text')) {
+                $intro = safew_brief_text($intro, 90);
+            }
+        }
         $msg_key = 'vod:' . $vid . ':' . $create_date;
         $caption = "【视频更新】{$title}\n";
         if ($remarks !== '') {

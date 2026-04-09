@@ -102,6 +102,8 @@ return array(
   'safew_menu_buttons' => '',     // JSON: [{"text":"按钮名","url":"https://..."}]
   'safew_push_limit' => 10,
   'safew_sync_limit' => 100,
+  'safew_sync_interval_min' => 1,  // 定时任务最小执行间隔（分钟）
+  'safew_push_interval_min' => 5,  // 定时任务最小执行间隔（分钟）
   'tg_bot_token' => '',
   'tg_bot_pool' => '',            // JSON: [{"id":"...","name":"...","token":"...","enabled":1}]
   'tg_base_url' => '',
@@ -111,6 +113,8 @@ return array(
   'tg_menu_buttons' => '',        // JSON: [{"text":"按钮名","url":"https://..."}]
   'tg_push_limit' => 10,
   'tg_sync_limit' => 100,
+  'tg_sync_interval_min' => 1,     // 定时任务最小执行间隔（分钟）
+  'tg_push_interval_min' => 5,     // 定时任务最小执行间隔（分钟）
   'order_default' => 'lastpid',   // 作为回复排序
   'attach_dir_save_rule' => 'Ymd', // 附件存放规则，附件多用：Ymd，附件少：Ym 
   'user_create_on' => 1,

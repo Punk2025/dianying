@@ -184,6 +184,8 @@ switch ($action) {
             $menu_buttons = admin_push_menu_normalize($menu_names, $menu_urls, 8);
             $push_limit = max(1, min(50, intval(param('safew_push_limit', 10))));
             $sync_limit = max(1, min(100, intval(param('safew_sync_limit', 100))));
+            $sync_interval_min = max(1, min(1440, intval(param('safew_sync_interval_min', 1))));
+            $push_interval_min = max(1, min(1440, intval(param('safew_push_interval_min', 5))));
             if ($base_url !== '' && !preg_match('#^https?://#i', $base_url)) {
                 $base_url = 'https://' . ltrim($base_url, '/');
             }
@@ -200,6 +202,8 @@ switch ($action) {
                 'safew_menu_buttons' => json_encode($menu_buttons, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'safew_push_limit' => $push_limit,
                 'safew_sync_limit' => $sync_limit,
+                'safew_sync_interval_min' => $sync_interval_min,
+                'safew_push_interval_min' => $push_interval_min,
             );
             file_replace_var(APP_PATH . 'config/config.php', $replace);
             message(0, lang('modify_successfully'));
@@ -447,6 +451,8 @@ switch ($action) {
             $tg_bot_pool = admin_bot_pool_decode((string) array_value($conf, 'tg_bot_pool', ''), (string) array_value($conf, 'tg_bot_token', ''));
             $sync_limit = max(1, min(100, intval(array_value($conf, 'safew_sync_limit', 100))));
             $push_limit = max(1, min(50, intval(array_value($conf, 'safew_push_limit', 10))));
+            $sync_interval_min = max(1, min(1440, intval(array_value($conf, 'safew_sync_interval_min', 1))));
+            $push_interval_min = max(1, min(1440, intval(array_value($conf, 'safew_push_interval_min', 5))));
             $safew_menu_buttons = admin_push_menu_decode((string) array_value($conf, 'safew_menu_buttons', ''));
             $tg_sync_limit = max(1, min(100, intval(array_value($conf, 'tg_sync_limit', 100))));
             $tg_push_limit = max(1, min(50, intval(array_value($conf, 'tg_push_limit', 10))));

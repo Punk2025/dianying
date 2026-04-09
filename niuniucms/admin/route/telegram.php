@@ -117,6 +117,43 @@ function admin_bot_pool_enabled_tg($pool)
     return $ret;
 }
 
+function admin_tg_dispatch_cli_job($script_name, $limit = 10, $force = true)
+{
+    $disabled = ',' . str_replace(' ', '', strtolower((string) ini_get('disable_functions'))) . ',';
+    if (!function_exists('shell_exec') || strpos($disabled, ',shell_exec,') !== false) {
+        return array('ok' => false, 'message' => 'shell_exec disabled');
+    }
+    $script_name = trim((string) $script_name);
+    if ($script_name === '') {
+        return array('ok' => false, 'message' => '脚本名为空');
+    }
+    $cli_file = APP_PATH . 'cli/' . $script_name;
+    if (!is_file($cli_file)) {
+        return array('ok' => false, 'message' => 'CLI脚本不存在：' . $script_name);
+    }
+    $php_bin = '/usr/bin/php';
+    if (!is_file($php_bin)) {
+        $php_bin = PHP_BINARY;
+    }
+    $limit = max(1, intval($limit));
+    $log_file = '/www/wwwlogs/tg_jobs.log';
+    if (strpos($script_name, 'push') !== false) {
+        $log_file = '/www/wwwlogs/tg_push.log';
+    } elseif (strpos($script_name, 'sync') !== false) {
+        $log_file = '/www/wwwlogs/tg_sync.log';
+    }
+    $cmd = 'nohup ' . escapeshellarg($php_bin) . ' ' . escapeshellarg($cli_file) . ' ' . $limit;
+    if ($force) {
+        $cmd .= ' --force';
+    }
+    $cmd .= ' >> ' . escapeshellarg($log_file) . ' 2>&1 & echo $!';
+    $pid = trim((string) @shell_exec($cmd));
+    if ($pid === '' || !preg_match('/^\d+$/', $pid)) {
+        return array('ok' => false, 'message' => '启动后台任务失败');
+    }
+    return array('ok' => true, 'pid' => $pid, 'log' => $log_file);
+}
+
 switch ($action) {
     case 'save':
         if ('POST' == $method) {
@@ -133,6 +170,8 @@ switch ($action) {
             $menu_buttons = admin_push_menu_normalize_tg($menu_names, $menu_urls, 8);
             $push_limit = max(1, min(50, intval(param('tg_push_limit', 10))));
             $sync_limit = max(1, min(100, intval(param('tg_sync_limit', 100))));
+            $sync_interval_min = max(1, min(1440, intval(param('tg_sync_interval_min', 1))));
+            $push_interval_min = max(1, min(1440, intval(param('tg_push_interval_min', 5))));
             if ($base_url !== '' && !preg_match('#^https?://#i', $base_url)) {
                 $base_url = 'https://' . ltrim($base_url, '/');
             }
@@ -149,6 +188,8 @@ switch ($action) {
                 'tg_menu_buttons' => json_encode($menu_buttons, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'tg_push_limit' => $push_limit,
                 'tg_sync_limit' => $sync_limit,
+                'tg_sync_interval_min' => $sync_interval_min,
+                'tg_push_interval_min' => $push_interval_min,
             );
             file_replace_var(APP_PATH . 'config/config.php', $replace);
             message(0, lang('modify_successfully'));
@@ -160,22 +201,16 @@ switch ($action) {
             $enabled_bots = admin_bot_pool_enabled_tg($bot_pool);
             $limit = max(1, min(100, intval(array_value($conf, 'tg_sync_limit', 100))));
             if (empty($enabled_bots)) message(1, '请先新增并启用 Telegram 机器人');
-            $total_updates = 0; $total_saved = 0; $failed_msgs = array();
-            foreach ($enabled_bots as $bot) {
-                $token = (string) array_value($bot, 'token', '');
-                $bot_id = (string) array_value($bot, 'id', admin_bot_id_from_token_tg($token));
-                $ret = telegram_sync_updates($token, $limit, $bot_id);
-                if (!array_value($ret, 'ok', false)) {
-                    $failed_msgs[] = (string) array_value($bot, 'name', $bot_id) . ':' . (string) array_value($ret, 'message', 'sync fail');
-                    continue;
-                }
-                $total_updates += intval(array_value($ret, 'updates', 0));
-                $total_saved += intval(array_value($ret, 'saved_chats', 0));
+            $job = admin_tg_dispatch_cli_job('tg_sync_all.php', $limit, true);
+            if (array_value($job, 'ok', false)) {
+                $msg = '已启动后台同步任务（PID:' . (string) array_value($job, 'pid', '-') . '），请稍后刷新频道列表查看结果';
+                message(0, $msg);
             }
-            if (!empty($failed_msgs) && $total_saved === 0) message(1, '同步失败：' . implode('；', $failed_msgs));
-            $msg = '同步完成：拉取 ' . $total_updates . ' 条，保存频道/群 ' . $total_saved . ' 条';
-            if (!empty($failed_msgs)) $msg .= '；部分失败：' . implode('；', $failed_msgs);
-            message(0, $msg);
+            // 兼容禁用 shell_exec 的环境：入队后由每分钟 cron 拉起 tg_sync_all.php 执行
+            kv_set('job_manual_tg_sync_force', '1');
+            kv_set('job_manual_tg_sync_limit', strval($limit));
+            kv_set('job_manual_tg_sync_enqueue_ts', strval(time()));
+            message(0, '已加入同步队列，约1分钟内由定时任务执行（服务器禁用后台拉起）');
         }
         break;
     case 'push':
@@ -190,32 +225,16 @@ switch ($action) {
                 if ($base_url === '') $missing[] = '站点域名';
                 message(1, '请先配置：' . implode('、', $missing) . '（保存配置后再试）');
             }
-            $total_sent = 0; $total_failed = 0; $failed_msgs = array();
-            $info_msgs = array();
-            foreach ($enabled_bots as $bot) {
-                $token = (string) array_value($bot, 'token', '');
-                $bot_id = (string) array_value($bot, 'id', admin_bot_id_from_token_tg($token));
-                $bot_name = (string) array_value($bot, 'name', $bot_id);
-                $ret = telegram_push_new_vod($token, $base_url, $limit, $bot_id);
-                if (!array_value($ret, 'ok', false)) {
-                    $failed_msgs[] = $bot_name . ':' . (string) array_value($ret, 'message', 'push fail');
-                    continue;
-                }
-                $bot_sent = intval(array_value($ret, 'sent', 0));
-                $bot_failed = intval(array_value($ret, 'failed', 0));
-                $total_sent += $bot_sent;
-                $total_failed += $bot_failed;
-                if ($bot_sent === 0 && $bot_failed === 0) {
-                    $reason = trim((string) array_value($ret, 'message', ''));
-                    if ($reason === '') $reason = '无可推送数据';
-                    $info_msgs[] = $bot_name . ':' . $reason;
-                }
+            $job = admin_tg_dispatch_cli_job('tg_push_all.php', $limit, true);
+            if (array_value($job, 'ok', false)) {
+                $msg = '已启动后台推送任务（PID:' . (string) array_value($job, 'pid', '-') . '），请稍后查看频道消息';
+                message(0, $msg);
             }
-            if (!empty($failed_msgs) && $total_sent === 0) message(1, '推送失败：' . implode('；', $failed_msgs));
-            $msg = '推送完成：成功 ' . $total_sent . '，失败 ' . $total_failed;
-            if (!empty($failed_msgs)) $msg .= '；部分失败：' . implode('；', $failed_msgs);
-            if (!empty($info_msgs)) $msg .= '；说明：' . implode('；', $info_msgs);
-            message(0, $msg);
+            // 兼容禁用 shell_exec 的环境：入队后由每分钟 cron 拉起 tg_push_all.php 执行
+            kv_set('job_manual_tg_push_force', '1');
+            kv_set('job_manual_tg_push_limit', strval($limit));
+            kv_set('job_manual_tg_push_enqueue_ts', strval(time()));
+            message(0, '已加入推送队列，约1分钟内由定时任务执行（服务器禁用后台拉起）');
         }
         break;
     case 'toggle':
@@ -238,6 +257,8 @@ switch ($action) {
             $tg_bot_pool = admin_bot_pool_decode_tg((string) array_value($conf, 'tg_bot_pool', ''), (string) array_value($conf, 'tg_bot_token', ''));
             $tg_sync_limit = max(1, min(100, intval(array_value($conf, 'tg_sync_limit', 100))));
             $tg_push_limit = max(1, min(50, intval(array_value($conf, 'tg_push_limit', 10))));
+            $tg_sync_interval_min = max(1, min(1440, intval(array_value($conf, 'tg_sync_interval_min', 1))));
+            $tg_push_interval_min = max(1, min(1440, intval(array_value($conf, 'tg_push_interval_min', 5))));
             $tg_menu_buttons = admin_push_menu_decode_tg((string) array_value($conf, 'tg_menu_buttons', ''));
             $header['title'] = 'Telegram机器人';
             include _include(APP_PATH . 'admin/html/telegram_list.html');

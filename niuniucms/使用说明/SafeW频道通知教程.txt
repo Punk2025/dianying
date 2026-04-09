@@ -3,7 +3,9 @@ SafeW频道通知教程（一步一步照做）
 一、功能说明
 1）把机器人拉进频道/群后，系统会自动识别 chat_id 并保存
 2）网站有新视频时，定时自动推送到已绑定频道/群
-3）默认消息包含：标题、状态、热度、封面地址、观看地址
+3）支持多机器人（机器人池），可按启用状态统一调度
+4）后台可设置同步/推送间隔分钟，无需每次改 cron
+5）消息支持：标题、状态、热度、简介、观看地址、标签池、菜单按钮
 
 --------------------------------------------------
 二、准备工作
@@ -16,7 +18,10 @@ https://docs.safew.org/bot-api/
 
 --------------------------------------------------
 三、首次绑定（自动获取频道ID）
-执行命令：
+推荐执行命令（多机器人统一脚本）：
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100 --force
+
+兼容旧命令（单机器人）：
 php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_updates.php "你的BOT_TOKEN" 100
 
 返回示例：
@@ -28,7 +33,10 @@ php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_updates.php "你的BOT_T
 
 --------------------------------------------------
 四、手动测试推送
-执行命令：
+推荐执行命令（多机器人统一脚本）：
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10 --force
+
+兼容旧命令（单机器人）：
 php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_worker.php "你的BOT_TOKEN" "https://你的域名" 10
 
 返回示例：
@@ -41,13 +49,16 @@ php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_worker.php "你的BOT_TO
 
 --------------------------------------------------
 五、正式定时任务（推荐）
-推荐两个任务：
+推荐两个任务（统一多机器人）：
 
-任务A：每1分钟同步频道/群更新（自动发现新 chat_id）
-php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_updates.php "你的BOT_TOKEN" 100 >> /www/wwwlogs/safew_sync.log 2>&1
+任务A：每分钟触发同步脚本（实际执行频率由后台“同步间隔(分钟)”控制）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100 >> /www/wwwlogs/safew_sync.log 2>&1
 
-任务B：每5分钟推送新视频
-php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_worker.php "你的BOT_TOKEN" "https://你的域名" 10 >> /www/wwwlogs/safew_push.log 2>&1
+任务B：每分钟触发推送脚本（实际执行频率由后台“推送间隔(分钟)”控制）
+php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10 >> /www/wwwlogs/safew_push.log 2>&1
+
+后台间隔配置位置：
+SafeW通知 -> 同步间隔(分钟) / 推送间隔(分钟)
 
 --------------------------------------------------
 六、宝塔计划任务报“root被加锁”怎么办
@@ -61,8 +72,8 @@ php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_worker.php "你的BOT_TO
 内容：
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-*/1 * * * * root php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_updates.php "你的BOT_TOKEN" 100 >> /www/wwwlogs/safew_sync.log 2>&1
-*/5 * * * * root php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_worker.php "你的BOT_TOKEN" "https://你的域名" 10 >> /www/wwwlogs/safew_push.log 2>&1
+* * * * * root flock -xn /tmp/nncms_safew_sync_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_sync_all.php 100' >> /www/wwwlogs/safew_sync.log 2>&1
+* * * * * root flock -xn /tmp/nncms_safew_push_all.lock -c '/usr/bin/php /www/wwwroot/sesewu3.eu.cc/niuniucms/cli/safew_push_all.php 10' >> /www/wwwlogs/safew_push.log 2>&1
 
 2）重启 cron
 systemctl restart cron
@@ -75,7 +86,7 @@ tail -n 50 /www/wwwlogs/safew_sync.log
 推送日志：
 tail -n 50 /www/wwwlogs/safew_push.log
 
-如果 sent=0 且 rows=0，多半是当前时间段没有新视频，不是故障。
+如果 sent=0 且 failed=0，多半是当前时间段没有新视频，不是故障。
 
 --------------------------------------------------
 八、常见问题
@@ -87,6 +98,9 @@ A：确认机器人已在频道里，且是管理员；频道里先发一条消�
 
 Q3：推送重复
 A：系统已按 vid+时间做去重。若你手动改库时间或清日志，可能重新推送。
+
+Q4：新增机器人后要不要再加 cron？
+A：不用。后台新增并启用机器人后，统一脚本会自动按机器人池执行。
 
 --------------------------------------------------
 九、安全建议（非常重要）
