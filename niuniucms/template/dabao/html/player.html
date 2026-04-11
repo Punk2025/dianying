@@ -32,6 +32,13 @@
     </ul>
 
   </div>
+  <div class="episode-toolbar mb clearfix">
+    <div class="episode-current" id="episodeCurrentText">正在播放：定位中...</div>
+    <div class="episode-nav-btns">
+      <a href="javascript:;" id="episodePrevBtn" class="episode-nav-btn disabled" aria-disabled="true">上一集</a>
+      <a href="javascript:;" id="episodeNextBtn" class="episode-nav-btn disabled" aria-disabled="true">下一集</a>
+    </div>
+  </div>
 
   <!--/播放地址-->
 
@@ -122,3 +129,118 @@
 <script type="text/javascript"> document.body.oncontextmenu=document.body.ondragstart= document.body.onselectstart=document.body.onbeforecopy=function(){return false;};
 
 document.body.onselect=document.body.oncopy=document.body.onmouseup=function(){document.selection.empty();}; </script>
+<script>
+(function () {
+  function normalizeUrl(url) {
+    try {
+      var u = new URL(url, window.location.href);
+      return u.pathname.replace(/\/+$/, '') + u.search;
+    } catch (e) {
+      return String(url || '').replace(window.location.origin, '').replace(/\/+$/, '');
+    }
+  }
+
+  function setBtnState(btn, href, disabled) {
+    if (!btn) return;
+    if (disabled || !href) {
+      btn.setAttribute('href', 'javascript:;');
+      btn.classList.add('disabled');
+      btn.setAttribute('aria-disabled', 'true');
+      return;
+    }
+    btn.setAttribute('href', href);
+    btn.classList.remove('disabled');
+    btn.setAttribute('aria-disabled', 'false');
+  }
+
+  var allLinks = Array.prototype.slice.call(document.querySelectorAll('.videourl a'));
+  if (!allLinks.length) return;
+
+  var current = normalizeUrl(window.location.href);
+  var hitIndex = -1;
+  for (var i = 0; i < allLinks.length; i++) {
+    if (normalizeUrl(allLinks[i].href) === current) {
+      hitIndex = i;
+      break;
+    }
+  }
+  if (hitIndex < 0) {
+    var currentPath = window.location.pathname.replace(/\/+$/, '');
+    for (var j = 0; j < allLinks.length; j++) {
+      var lp = new URL(allLinks[j].href, window.location.href).pathname.replace(/\/+$/, '');
+      if (lp === currentPath) {
+        hitIndex = j;
+        break;
+      }
+    }
+  }
+  if (hitIndex < 0) hitIndex = 0;
+
+  var activeLink = allLinks[hitIndex];
+  var activeLi = activeLink && activeLink.parentNode ? activeLink.parentNode : null;
+  if (activeLi) activeLi.classList.add('current');
+
+  var activePlaylist = activeLink ? activeLink.closest('.playlist') : null;
+  var activePlayfromName = '';
+  if (activePlaylist && activePlaylist.id) {
+    var sourceNum = activePlaylist.id.replace('stab8', '');
+    var sourceTab = document.getElementById('tab8' + sourceNum);
+    if (sourceTab) {
+      activePlayfromName = sourceTab.textContent.replace(/\s+/g, ' ').trim();
+      sourceTab.className = 'on';
+    }
+    var allTabs = document.querySelectorAll('.playfrom li[id^="tab8"]');
+    for (var t = 0; t < allTabs.length; t++) {
+      if (allTabs[t].id !== 'tab8' + sourceNum) {
+        allTabs[t].className = '';
+      }
+    }
+    var allPlaylists = document.querySelectorAll('.playlist[id^="stab8"]');
+    for (var p = 0; p < allPlaylists.length; p++) {
+      allPlaylists[p].style.display = (allPlaylists[p].id === activePlaylist.id) ? 'block' : 'none';
+    }
+  }
+
+  if (activeLi && typeof activeLi.scrollIntoView === 'function') {
+    activeLi.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  var status = document.getElementById('episodeCurrentText');
+  if (status && activeLink) {
+    var epName = activeLink.textContent.replace(/\s+/g, ' ').trim();
+    status.textContent = activePlayfromName ? ('正在播放：' + epName + '（' + activePlayfromName + '）') : ('正在播放：' + epName);
+  }
+
+  var prevBtn = document.getElementById('episodePrevBtn');
+  var nextBtn = document.getElementById('episodeNextBtn');
+  var currentList = activePlaylist ? Array.prototype.slice.call(activePlaylist.querySelectorAll('.videourl a')) : allLinks;
+  var currentListIndex = currentList.indexOf(activeLink);
+  if (currentListIndex < 0) currentListIndex = 0;
+  var prevHref = currentListIndex > 0 ? currentList[currentListIndex - 1].href : '';
+  var nextHref = currentListIndex < currentList.length - 1 ? currentList[currentListIndex + 1].href : '';
+
+  setBtnState(prevBtn, prevHref, !prevHref);
+  setBtnState(nextBtn, nextHref, !nextHref);
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function (e) {
+      if (prevBtn.classList.contains('disabled')) e.preventDefault();
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function (e) {
+      if (nextBtn.classList.contains('disabled')) e.preventDefault();
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    if (e.key === 'ArrowLeft' && prevHref) {
+      window.location.href = prevHref;
+    } else if (e.key === 'ArrowRight' && nextHref) {
+      window.location.href = nextHref;
+    }
+  });
+})();
+</script>

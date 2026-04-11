@@ -23,9 +23,9 @@
 
 	    <ul class="search so">
 
-<form id="search_form" onsubmit="return handleSearch()">
+<form id="search_form_pc" onsubmit="return handleSearch(this)">
 
-        <input type="text" name="keyword" id='keyword' autocomplete="off"  class="input" onblur="if(this.value==''){ this.value='请输入影片或演员名';this.style.color='#cfcdcd';}" onfocus="if(this.value=='请输入影片或演员名'){this.value='';this.style.color='';}" value="请输入影片或演员名" />
+        <input type="text" name="keyword" id="keyword_pc" autocomplete="off"  class="input" onblur="if(this.value==''){ this.value='请输入影片或演员名';this.style.color='#cfcdcd';}" onfocus="if(this.value=='请输入影片或演员名'){this.value='';this.style.color='';}" value="请输入影片或演员名" />
 
 		  <div class="so-key">	
 
@@ -62,11 +62,13 @@
 <!--<li class="bb member"><strong class="ma"><i class="mbbg"></i></strong><div class="cc mbp"></div> </li>-->
 </ul>
 
-<ul class="sj-search"><li class="sbtn2"><i class="sjbg-search"></i></li></ul>
+<div class="m-mobile-top-actions">
+<ul class="sj-navhome"><li><a href="{$nncms.site_url}" class="m-mobile-top-pill-link" title="首页"><span class="m-mobile-top-pill"><span class="m-mobile-top-pill-txt">首页</span></span></a></li></ul>
 
-<ul class="sj-nav"><li class="sbtn1"><i class="sjbg-nav"></i></li></ul>
+<ul class="sj-nav"><li class="sbtn1 m-nav-trigger" title="分类导航"><span class="m-mobile-top-pill"><span class="m-mobile-top-pill-txt">导航</span></span></li></ul>
 
-<ul class="sj-navhome"><li><a href="/"><i class="sjbg-home"></i></a></li></ul>  </div>
+<ul class="sj-search"><li class="sbtn2 m-search-trigger" title="全站搜索"><span class="m-mobile-top-pill"><span class="m-mobile-top-pill-txt">搜索</span></span></li></ul>
+</div>  </div>
 
   <!--分类子目录-->
 
@@ -111,15 +113,22 @@
 
   </div>
 
-  <div id="sj-nav-search" class="nav-down-1 sy2 sj-noover" style="display:none;" _t_nav1="sj-nav-search">
+  <div id="sj-nav-search" class="nav-down-1 sy2 sj-noover m-search-dropdown" style="display:none;" _t_nav1="sj-nav-search">
 
-    <div class="nav-down-2 sj-nav-down-search clearfix">
+    <div class="nav-down-2 sj-nav-down-search m-search-panel clearfix">
 
-<form id="search_form" onsubmit="return handleSearch()">
+      <div class="m-search-panel-head">
+        <strong class="m-search-panel-title">全站搜索</strong>
+        <span class="m-search-panel-sub">输入影片名、演员或关键词</span>
+      </div>
 
-        <input type="text" name="keyword" id='keyword' autocomplete="off"  class="input" onblur="if(this.value==''){ this.value='输入关键词';this.style.color='#cfcdcd';}" onfocus="if(this.value=='输入关键词'){this.value='';this.style.color='';}" value="输入关键词" />
+<form id="search_form_m" onsubmit="return handleSearch(this)">
 
-        <input type="submit" class="imgbt" value="搜 索" />
+        <div class="m-search-row">
+        <input type="text" name="keyword" id="keyword_m" inputmode="search" enterkeyhint="search" autocomplete="off"  class="input m-search-field" onblur="if(this.value==''){ this.value='输入关键词';this.style.color='#cfcdcd';}" onfocus="if(this.value=='输入关键词'){this.value='';this.style.color='';}" value="输入关键词" />
+
+        <input type="submit" class="imgbt m-search-submit" value="立即搜索" />
+        </div>
 
       </form> </div>
       </div>
@@ -134,11 +143,21 @@
 
 </div>
 <script>
-function handleSearch() {
-var keyword = document.getElementById('keyword').value;
-var url = '{$search_url}&keyword=' + encodeURIComponent(keyword);
-window.location.href = url;
-return false; 
+function handleSearch(form) {
+  if (!form || !form.querySelector) {
+    form = document.getElementById('search_form_pc');
+  }
+  var input = form ? form.querySelector('input[name="keyword"]') : null;
+  if (!input) return false;
+  var keyword = String(input.value || '').replace(/^\s+|\s+$/g, '');
+  var ph = ['请输入影片或演员名', '输入关键词'];
+  if (!keyword || ph.indexOf(keyword) !== -1) {
+    try { input.focus(); } catch (e) {}
+    return false;
+  }
+  var url = '{$search_url}&keyword=' + encodeURIComponent(keyword);
+  window.location.href = url;
+  return false;
 }
 </script>
 <div class="main">
