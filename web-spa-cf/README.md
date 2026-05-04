@@ -71,3 +71,9 @@ Vite 已配置 **开发代理**：请求 `/legacy-api` 会转发到 `VITE_API_OR
 5. **客户端路由**：当前几乎只有 `/`；若以后加 `react-router` 且需「刷新子路径可用」，需在 Cloudflare 侧配置 **SPA 回退**（见官方 [Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/) / Functions），本仓库未内置 `200` 伪静态规则以免与平台行为冲突。
 
 部署命令示例：`npx wrangler pages deploy dist --project-name=你的项目名`（需已登录 Cloudflare CLI）。
+
+### 若使用控制台「直接上传 / 已上传资产」
+
+- **错误**：把 `web-spa-cf` 整个文件夹（含 `src/`、`package.json`、`node_modules` 等）打成包上传。根目录会出现大量源码文件（例如两千多个文件），**站点根没有可用的静态资源结构**，页面会打不开或行为异常。  
+- **正确**：在本机先执行 `npm ci && npm run build`，**只上传 `dist/` 目录里的内容**（根下应是 `index.html`、`assets/`、`template/` 等，通常只有几十个文件量级），**不要**包含 `node_modules`。  
+- **更推荐**：用 **Git 连接 Pages** + 填写构建命令与输出目录（见上文），由云端构建，避免手工打包错目录。
