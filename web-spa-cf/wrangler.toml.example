@@ -1,0 +1,9 @@
+# Cloudflare Pages 示例：在项目根执行
+#   npm run build
+#   npx wrangler pages deploy dist --project-name=你的项目名
+#
+# 复制为 wrangler.toml 并按官方文档调整（本文件仅为占位说明，非必须）。
+
+name = "web-spa-cf"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-01-01"
