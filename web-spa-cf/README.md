@@ -5,6 +5,7 @@
 ## dabao 模版
 
 - 已将 `niuniucms/template/dabao` 下的 **`css/`**、**`Images/`** 复制到 **`public/template/dabao/`**，与 PHP 里 `{$path_tpl}`（通常为 `/template/dabao/`）路径一致，便于复用原样式。
+- **务必把 `public/` 提交进 Git**：Cloudflare Pages 只根据仓库构建；若未提交，`dist` 里不会有 `/template/dabao/`，浏览器会拿到 HTML 回退页，控制台表现为 **CSS MIME 为 text/html**、**JS 模块 MIME 为 null**。
 - 布局参考 `html/public/nva.html`、`index_top.html`、`foot.html`，用 React 重写交互（下拉导航、移动搜索等），**未引入** dabao 自带的 jQuery / superslide（首页大图轮播改为静态占位 + 说明）。
 - 业务数据仍走 `?json=1` 等现有接口；分类导航、随机榜等需后续对接接口再在 `App.tsx` 里传入 `categories` 等 props。
 
