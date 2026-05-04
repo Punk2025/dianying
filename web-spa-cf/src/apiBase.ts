@@ -7,9 +7,11 @@ export function legacyApiUrl(pathWithQuery: string): string {
   if (import.meta.env.DEV) {
     return `/legacy-api${pathWithQuery}${q}`;
   }
-  const origin = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/$/, '');
+  const origin = (import.meta.env.VITE_API_ORIGIN || '').trim().replace(/\/$/, '');
   if (!origin) {
-    console.warn('[web-spa-cf] 生产构建未设置 VITE_API_ORIGIN，接口请求地址可能错误。');
+    throw new Error(
+      '生产包未配置 VITE_API_ORIGIN：在 web-spa-cf 目录创建 .env 写入 VITE_API_ORIGIN=https://你的PHP站点根（无尾斜杠），执行 npm run build 后重新上传 dist。',
+    );
   }
   return `${origin}${pathWithQuery}${q}`;
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchLegacyHomeJson } from '../api/legacyHome';
 import { dabaoAsset } from '../publicUrls';
 
@@ -44,6 +44,16 @@ export function HomeDabao() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      void fetchHome();
+      return;
+    }
+    if ((import.meta.env.VITE_API_ORIGIN || '').trim()) {
+      void fetchHome();
+    }
+  }, [fetchHome]);
 
   const videolist = payload?.videolist;
   const linklist = payload?.linklist;
@@ -103,8 +113,18 @@ export function HomeDabao() {
     );
   }, [videolist]);
 
+  const missingApiOrigin =
+    import.meta.env.PROD && !(import.meta.env.VITE_API_ORIGIN || '').trim();
+
   return (
     <>
+      {missingApiOrigin ? (
+        <div className="main" style={{ padding: '12px 0', color: '#721c24', background: '#f8d7da' }}>
+          <strong>未配置接口域名：</strong>
+          在 <code>web-spa-cf/.env</code> 中设置 <code>VITE_API_ORIGIN=https://你的PHP站点</code>，重新执行{' '}
+          <code>npm run build</code> 后再上传 <code>dist</code>。仅上传 dist 而不带正确环境变量打包，无法拉取数据。
+        </div>
+      ) : null}
       <div className="channel-focus">
         <div className="channel-silder layout">
           <ul className="channel-silder-cnt">
@@ -129,7 +149,10 @@ export function HomeDabao() {
                   </li>
                 </ul>
                 <p className="channel-silder-desc">
-                  剧情：<span>点击下方按钮从 PHP 拉取首页 JSON 后，会按 dabao 栅格渲染 videolist。</span>
+                  剧情：
+                  <span>
+                    已配置 VITE_API_ORIGIN 的生产环境会自动请求首页 JSON；也可点按钮重试。列表按 dabao 栅格渲染。
+                  </span>
                 </p>
                 <a
                   className="channel-silder-play"

@@ -66,7 +66,7 @@ Vite 已配置 **开发代理**：请求 `/legacy-api` 会转发到 `VITE_API_OR
 **可以部署静态产物 `dist/`，但不是「零配置开箱即用」。**
 
 1. **构建**（在 `web-spa-cf` 目录）：`npm ci && npm run build`  
-2. **生产环境变量（构建时注入）**：至少配置 **`VITE_API_ORIGIN`** = 你的 PHP 站点根（如 `https://www.example.com`），否则接口会请求到 Pages 自己的域名而失败。其余见 `.env.example`。  
+2. **生产环境变量（构建时注入，必做）**：在 **`web-spa-cf/.env`**（或 Cloudflare **Build** 环境变量）里配置 **`VITE_API_ORIGIN`** = 你的 PHP 站点根（如 `https://www.example.com`，无尾斜杠），**再执行 build**。Vite 会把该值写进 JS；若未配置，请求会打到 Pages 自身域名，只能拿到 HTML，**永远拉不到 JSON**。手工上传 **dist** 前必须在本地先带好 `.env` 打一次包。其余见 `.env.example`。  
 3. **跨域**：SPA 与 PHP 不同源时，PHP 或网关需放行 **CORS**（若 `fetch` 带 `credentials: 'include'` 还需 `Access-Control-Allow-Credentials` 与具体 Origin）。  
 4. **搜索跳转**：生产环境建议设置 **`VITE_SEARCH_PREFIX`** 为完整带 `keyword=` 的前缀（见 `.env.example`）。  
 5. **客户端路由**：当前几乎只有 `/`；若以后加 `react-router` 且需「刷新子路径可用」，需在 Cloudflare 侧配置 **SPA 回退**（见官方 [Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/) / Functions），本仓库未内置 `200` 伪静态规则以免与平台行为冲突。
