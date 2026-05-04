@@ -4,10 +4,11 @@
 
 ## dabao 模版
 
-- 已将 `niuniucms/template/dabao` 下的 **`css/`**、**`Images/`** 复制到 **`public/template/dabao/`**，与 PHP 里 `{$path_tpl}`（通常为 `/template/dabao/`）路径一致，便于复用原样式。
-- **务必把 `public/` 提交进 Git**：Cloudflare Pages 只根据仓库构建；若未提交，`dist` 里不会有 `/template/dabao/`，浏览器会拿到 HTML 回退页，控制台表现为 **CSS MIME 为 text/html**、**JS 模块 MIME 为 null**。
-- 布局参考 `html/public/nva.html`、`index_top.html`、`foot.html`，用 React 重写交互（下拉导航、移动搜索等），**未引入** dabao 自带的 jQuery / superslide（首页大图轮播改为静态占位 + 说明）。
-- 业务数据仍走 `?json=1` 等现有接口；分类导航、随机榜等需后续对接接口再在 `App.tsx` 里传入 `categories` 等 props。
+- **构建时自动同步**：`npm run build` 前会执行 `npm run sync:dabao`（`scripts/sync-dabao.mjs`），从 **`../niuniucms/template/dabao`** 拷贝 **`css/`、`Images/`、`js/`** 与 **`conf.json`** 到 **`public/template/dabao/`**。在仓库根与 `niuniucms` 同级的布局下，Cloudflare 构建也会拿到最新二开样式与图片。若单独克隆本目录且无上级 `niuniucms`，脚本会跳过并沿用仓库里已有 `public`。
+- **可选：样式与图走主站**：设置 **`VITE_TEMPLATE_ASSET_ORIGIN=https://你的PHP主站`** 后，`index.html` 里的 dabao CSS 与 React 内的 `dabaoAsset()` 会生成 **主站绝对 URL**，改 CMS 里 dabao 资源后 **无需重新上传 dist 大图**（仍须处理跨域与 HTTPS）。
+- **务必把 `public/` 提交进 Git**（或完全依赖上面主站 origin）：否则在无 `niuniucms` 的构建环境里可能缺静态文件，表现为 **CSS MIME 为 text/html** 等。
+- 布局参考 `html/public/nva.html`、`index_top.html`、`foot.html`，用 React 重写交互；**影片/广告数据**仍以 PHP JSON 为准，见 `src/api/legacyHome.ts`。
+- 分类导航、随机榜等需后续对接接口再在 `App.tsx` 里传入 `categories` 等 props。
 
 ## 可行性结论（摘要）
 

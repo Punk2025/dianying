@@ -4,7 +4,10 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "predev": "npm run sync:dabao",
     "dev": "vite",
+    "sync:dabao": "node ./scripts/sync-dabao.mjs",
+    "prebuild": "npm run sync:dabao",
     "build": "vite build",
     "preview": "vite preview"
   },

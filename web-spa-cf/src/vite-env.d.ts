@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_SEARCH_PREFIX?: string;
   readonly VITE_LOGO_URL?: string;
   readonly VITE_MOBILE_QR_URL?: string;
+  /** 非空时 CSS/图片走主站绝对 URL，与 niuniucms 二开 dabao 同步 */
+  readonly VITE_TEMPLATE_ASSET_ORIGIN?: string;
 }
 
 interface ImportMeta {

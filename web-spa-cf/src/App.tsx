@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
 import { DabaoLayout } from './layout/DabaoLayout';
 import { HomeDabao } from './pages/HomeDabao';
-
-function tplAsset(path: string): string {
-  return `/template/dabao/${path}`;
-}
+import { dabaoAsset } from './publicUrls';
 
 function resolveSearchPrefix(): string {
   const explicit = import.meta.env.VITE_SEARCH_PREFIX;
@@ -24,8 +21,8 @@ function resolveSearchPrefix(): string {
 export function App() {
   const siteName = import.meta.env.VITE_SITE_NAME || '站点';
   const siteUrl = import.meta.env.VITE_SITE_URL || '/';
-  const logoUrl = import.meta.env.VITE_LOGO_URL || tplAsset('Images/logo.png');
-  const mobileQrUrl = import.meta.env.VITE_MOBILE_QR_URL || tplAsset('Images/erweima.png');
+  const logoUrl = import.meta.env.VITE_LOGO_URL || dabaoAsset('Images/logo.png');
+  const mobileQrUrl = import.meta.env.VITE_MOBILE_QR_URL || dabaoAsset('Images/erweima.png');
   const searchPrefix = useMemo(() => resolveSearchPrefix(), []);
 
   return (

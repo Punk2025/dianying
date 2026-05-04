@@ -1,10 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import { legacyApiUrl } from '../apiBase';
-
-type LegacyMessage<T> = {
-  code: number;
-  message: T;
-};
+import { fetchLegacyHomeJson } from '../api/legacyHome';
+import { dabaoAsset } from '../publicUrls';
 
 type HomePayload = {
   videolist?: VideoItem[];
@@ -24,10 +20,6 @@ type VideoItem = {
   i?: number;
 };
 
-function tpl(path: string): string {
-  return `/template/dabao/${path}`;
-}
-
 export function HomeDabao() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,26 +29,13 @@ export function HomeDabao() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(legacyApiUrl('/'), {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        credentials: 'include',
-      });
-      const text = await res.text();
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(text) as LegacyMessage<HomePayload>;
-      } catch {
-        setError('返回不是 JSON（检查 api_on、路径或代理）。');
-        setPayload(null);
-        return;
-      }
-      const body = parsed as LegacyMessage<HomePayload>;
+      const body = await fetchLegacyHomeJson();
       if (body.code !== 0) {
         setError(`接口 code=${body.code}`);
         setPayload(null);
         return;
       }
-      const msg = body.message;
+      const msg = body.message as HomePayload | string | undefined;
       setPayload(typeof msg === 'object' && msg !== null ? msg : {});
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -88,7 +67,7 @@ export function HomeDabao() {
                   <a className="link-hover" href={v.url || '#'} title={v.name || ''}>
                     <img
                       className="lazy"
-                      src={v.pic || tpl('Images/load.gif')}
+                      src={v.pic || dabaoAsset('Images/load.gif')}
                       alt={v.name || ''}
                       loading="lazy"
                     />
@@ -131,7 +110,7 @@ export function HomeDabao() {
           <ul className="channel-silder-cnt">
             <li className="channel-silder-panel">
               <span className="channel-silder-img" style={{ cursor: 'default' }}>
-                <img src={tpl('Images/background.png')} alt="" style={{ maxHeight: 280, objectFit: 'cover' }} />
+                <img src={dabaoAsset('Images/background.png')} alt="" style={{ maxHeight: 280, objectFit: 'cover' }} />
               </span>
               <div className="channel-silder-intro">
                 <div className="channel-silder-title">
@@ -172,7 +151,7 @@ export function HomeDabao() {
           <ul className="channel-silder-nav">
             <li>
               <span>
-                <img className="lazy" src={tpl('Images/logo.png')} alt="" width={120} height={67} />
+                <img className="lazy" src={dabaoAsset('Images/logo.png')} alt="" width={120} height={67} />
               </span>
             </li>
           </ul>
