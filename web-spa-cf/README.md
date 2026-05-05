@@ -1,80 +1,208 @@
-# CF 版前端（讨论稿 / 骨架）
+# web-spa-cf · Cloudflare Pages 前端说明与使用教程
 
-本目录与 `niuniucms/` **完全独立**，用于评估：**用 React SPA 部署在 Cloudflare Pages**，业务接口仍由现有 **PHP 源站**提供。
+本目录与 **`niuniucms/`** 并列存放，**不修改 CMS 源码**。它是一个基于 **Vite + React** 的静态站点，用于部署到 **Cloudflare Pages**（或其它静态托管）；**影片、分类、广告等数据仍由现有 PHP（niuniucms）提供**，通过浏览器 `fetch` 拉 JSON。
 
-## dabao 模版
+视觉沿用 **`template/dabao`** 样式（构建前可从 CMS 目录同步 `css` / `Images` / `js`）。
 
-- **构建时自动同步**：`npm run build` 前会执行 `npm run sync:dabao`（`scripts/sync-dabao.mjs`），从 **`../niuniucms/template/dabao`** 拷贝 **`css/`、`Images/`、`js/`** 与 **`conf.json`** 到 **`public/template/dabao/`**。在仓库根与 `niuniucms` 同级的布局下，Cloudflare 构建也会拿到最新二开样式与图片。若单独克隆本目录且无上级 `niuniucms`，脚本会跳过并沿用仓库里已有 `public`。
-- **可选：样式与图走主站**：设置 **`VITE_TEMPLATE_ASSET_ORIGIN=https://你的PHP主站`** 后，`index.html` 里的 dabao CSS 与 React 内的 `dabaoAsset()` 会生成 **主站绝对 URL**，改 CMS 里 dabao 资源后 **无需重新上传 dist 大图**（仍须处理跨域与 HTTPS）。
-- **务必把 `public/` 提交进 Git**（或完全依赖上面主站 origin）：否则在无 `niuniucms` 的构建环境里可能缺静态文件，表现为 **CSS MIME 为 text/html** 等。
-- 布局参考 `html/public/nva.html`、`index_top.html`、`foot.html`，用 React 重写交互；**影片/广告数据**仍以 PHP JSON 为准，见 `src/api/legacyHome.ts`。
-- 分类导航、随机榜等需后续对接接口再在 `App.tsx` 里传入 `categories` 等 props。
+---
 
-## 可行性结论（摘要）
+## 目录
 
-| 维度 | 结论 |
-|------|------|
-| **技术可行** | 是。前端用 Vite/React 构建静态资源，由 Pages 托管；数据通过 `fetch` 调 PHP。 |
-| **现成接口** | 部分有。路由里在 `$json` 为真且 **`api_on` 开启** 时，首页/分类等会通过 `message(0, $api_json)` 返回 JSON（见 `route/index.php`、`route/type.php` 等）。**并非**完整 REST，列表/详情/播放/会员等需逐项对接或新增专用 API。 |
-| **CORS** | SPA 与 API **不同源**时，必须在 **PHP 侧或 Nginx** 增加 `Access-Control-Allow-Origin`（及 `OPTIONS` 预检）。本仓库**未改** PHP，上线前需自行加。 |
-| **Cookie / 登录** | 跨子域（如 `app.xxx.pages.dev` → `api.xxx.com`）时浏览器 Cookie 策略严格，通常要 **Token 放 Header** 或 **同站反向代理**（见下「推荐架构」）。 |
-| **SEO** | 纯 CSR SPA 对爬虫不友好；若要强 SEO，需 **SSR（如 Next on CF）** 或 **关键页仍走 PHP**。 |
-| **与「CF 部署」关系** | Pages 只托管 **构建后的 JS/CSS/HTML**；**不能**在 Workers/Pages 上跑 PHP；数据库仍在源站。 |
+1. [适用场景与局限](#1-适用场景与局限)  
+2. [仓库目录结构](#2-仓库目录结构)  
+3. [环境要求](#3-环境要求)  
+4. [环境变量说明](#4-环境变量说明)  
+5. [本地开发教程](#5-本地开发教程)  
+6. [生产构建与上传](#6-生产构建与上传)  
+7. [Cloudflare Pages 配置示例](#7-cloudflare-pages-配置示例)  
+8. [dabao 静态资源同步](#8-dabao-静态资源同步)  
+9. [与 PHP 接口的约定](#9-与-php-接口的约定)  
+10. [常见问题排查](#10-常见问题排查)
 
-## 推荐架构（生产向）
+---
 
-1. **同一主域**（减轻跨站问题）  
-   - 例：`www.example.com` → Pages（或 Workers 反代静态）  
-   - `www.example.com/api/*` → 反代到 PHP（Workers 或源站 Nginx location）  
-   这样浏览器视为**同源**或仅路径区分，Cookie 与 CORS 简单很多。
+## 1. 适用场景与局限
 
-2. **拆 API 层（中长期）**  
-   - 新建 `api/v1/` 下稳定 JSON 契约（列表分页、详情、播放地址策略、用户态），避免直接依赖各 `route/*.php` 的 URL 形态与 `message` 结构。
+| 适合 | 不适合（需另行方案） |
+|------|----------------------|
+| CF 上托管轻量 H5、落地页壳 | 在 Pages 上运行 PHP |
+| 数据实时来自同一套 niuniucms 后端 | 指望上传源码文件夹就当网站发布 |
+| 与 dabao 视觉大致一致（CSS 同源或同步） | 不做任何接口改造就 100% 复刻所有模版页 |
 
-3. **Cloudflare**  
-   - **Pages**：`npm run build` 产出 `dist/`，`wrangler pages deploy dist` 或接 Git。  
-   - **Workers**：可做 BFF、鉴权、缓存、把 `/api` 转发到源站 PHP。
+纯前端 SPA **SEO 弱于 PHP 整页输出**；要强 SEO 需 SSR 或重点页面仍走 CMS。
 
-## 本地开发
+---
+
+## 2. 仓库目录结构（概要）
+
+```
+web-spa-cf/
+├── public/template/dabao/   # 构建前由 sync-dabao 从 niuniucms 拷贝；打进 dist
+├── scripts/sync-dabao.mjs   # 同步 dabao 静态资源
+├── src/                     # React 源码
+├── index.html
+├── vite.config.ts
+├── package.json
+├── .env.example             # 变量模板（可复制为 .env）
+├── .env                     # 本地私密配置（已在 .gitignore，勿提交）
+└── dist/                    # npm run build 产出；上传 CF 只用这里面的内容
+```
+
+---
+
+## 3. 环境要求
+
+- **Node.js**：建议 18+（与当前 Vite 5 兼容即可）  
+- **磁盘布局**：若使用 **`npm run sync:dabao`**，仓库根目录下需能访问 **`../niuniucms/template/dabao`**（即 `web-spa-cf` 与 `niuniucms` 同级）。  
+- **PHP 站**：需开启后台 **`api_on`**，否则 JSON 接口不可用。
+
+---
+
+## 4. 环境变量说明
+
+所有 **`VITE_*`** 变量在 **`npm run build` 时写入 JS**，改完后必须 **重新 build** 再上传 **dist**。
+
+| 变量 | 是否必填 | 说明 |
+|------|----------|------|
+| **`VITE_API_ORIGIN`** | **生产强烈建议必填** | PHP 站点根 URL，无尾斜杠，如 `https://www.example.com`。未配置时生产包会请求当前 Pages 域名，拿不到 JSON。 |
+| **`VITE_TEMPLATE_ASSET_ORIGIN`** | 可选 | 非空时 dabao 的 CSS/图片走该域名绝对路径，可与主站资源完全一致、减小 dist 体积；需处理跨域与 HTTPS。 |
+| **`VITE_SEARCH_PREFIX`** | 可选 | 搜索跳转完整前缀（一般以 `keyword=` 结尾）。不配则按 `VITE_API_ORIGIN` 推导默认搜索 URL。 |
+| **`VITE_SITE_NAME` / `VITE_SITE_URL`** | 可选 | 页头展示名、首页链接。 |
+| **`VITE_LOGO_URL` / `VITE_MOBILE_QR_URL`** | 可选 | 覆盖默认 dabao 内 logo、二维码图。 |
+
+复制模板：
+
+```bash
+cp .env.example .env
+# 编辑 .env 后切勿提交到公开仓库（.env 已在 .gitignore）
+```
+
+---
+
+## 5. 本地开发教程
 
 ```bash
 cd web-spa-cf
-npm install
-cp .env.example .env
-# 编辑 .env：VITE_API_ORIGIN 指向本地或线上 PHP 根（含协议与域名）
+npm ci                    # 或 npm install
+cp .env.example .env      # 首次：复制后编辑
+```
+
+在 **`.env`** 中至少设置：
+
+```env
+VITE_API_ORIGIN=https://你的PHP站点根
+```
+
+启动开发服务：
+
+```bash
 npm run dev
 ```
 
-Vite 已配置 **开发代理**：请求 `/legacy-api` 会转发到 `VITE_API_ORIGIN`，避免浏览器直连时的 CORS（仅开发环境）。
+浏览器访问终端里提示的本地地址（一般为 `http://127.0.0.1:5173`）。
 
-## 与现有 PHP 联调的最小约定
+**说明：**
 
-- 请求需触发 JSON 分支：`?json=1` **或** 请求头 `X-Requested-With: XMLHttpRequest`（见 `core/core.php`）。  
-- 后台 **`api_on`** 需为开启状态，否则接口返回「关闭」类提示。  
-- 响应体一般为：`{ "code": 0, "message": { ...业务字段 } }`（`code !== 0` 为错误）。
+- 开发模式下请求接口走 **`/legacy-api`**，由 Vite 代理到 **`VITE_API_ORIGIN`**，减轻浏览器跨域问题。  
+- 启动前会自动执行 **`sync:dabao`**（若存在上级 `niuniucms/template/dabao`）。
 
-具体字段以各 `route` 里组装的 `$api_json` 为准。
+---
 
-## 本骨架不包含
+## 6. 生产构建与上传
 
-- 未修改 `niuniucms` 内任何文件。  
-- 未实现完整站业务页（只做演示组件 + 文档）。  
-- 未配置生产 CORS / 域名 / Worker，需你方运维补充。
+### 6.1 构建
 
-## 能否「直接」部署到 Cloudflare Pages？
+```bash
+cd web-spa-cf
+# 确认 .env 中 VITE_API_ORIGIN 等已正确
+npm ci
+npm run build
+```
 
-**可以部署静态产物 `dist/`，但不是「零配置开箱即用」。**
+成功后产物在 **`dist/`**：应包含 **`index.html`**、**`assets/`**、**`template/`**（dabao 静态文件）。
 
-1. **构建**（在 `web-spa-cf` 目录）：`npm ci && npm run build`  
-2. **生产环境变量（构建时注入，必做）**：在 **`web-spa-cf/.env`**（或 Cloudflare **Build** 环境变量）里配置 **`VITE_API_ORIGIN`** = 你的 PHP 站点根（如 `https://www.example.com`，无尾斜杠），**再执行 build**。Vite 会把该值写进 JS；若未配置，请求会打到 Pages 自身域名，只能拿到 HTML，**永远拉不到 JSON**。手工上传 **dist** 前必须在本地先带好 `.env` 打一次包。其余见 `.env.example`。  
-3. **跨域**：SPA 与 PHP 不同源时，PHP 或网关需放行 **CORS**（若 `fetch` 带 `credentials: 'include'` 还需 `Access-Control-Allow-Credentials` 与具体 Origin）。  
-4. **搜索跳转**：生产环境建议设置 **`VITE_SEARCH_PREFIX`** 为完整带 `keyword=` 的前缀（见 `.env.example`）。  
-5. **客户端路由**：当前几乎只有 `/`；若以后加 `react-router` 且需「刷新子路径可用」，需在 Cloudflare 侧配置 **SPA 回退**（见官方 [Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/) / Functions），本仓库未内置 `200` 伪静态规则以免与平台行为冲突。
+### 6.2 上传到 Cloudflare（手工）
 
-部署命令示例：`npx wrangler pages deploy dist --project-name=你的项目名`（需已登录 Cloudflare CLI）。
+**只上传 `dist/` 目录内的所有文件**，不要上传：
 
-### 若使用控制台「直接上传 / 已上传资产」
+- `src/`、`node_modules/`、`package.json` 等源码目录  
+- 不要把整个 `dist` 文件夹名当成网站根（解压后根目录应直接是 `index.html`）
 
-- **错误**：把 `web-spa-cf` 整个文件夹（含 `src/`、`package.json`、`node_modules` 等）打成包上传。根目录会出现大量源码文件（例如两千多个文件），**站点根没有可用的静态资源结构**，页面会打不开或行为异常。  
-- **正确**：在本机先执行 `npm ci && npm run build`，**只上传 `dist/` 目录里的内容**（根下应是 `index.html`、`assets/`、`template/` 等，通常只有几十个文件量级），**不要**包含 `node_modules`。  
-- **更推荐**：用 **Git 连接 Pages** + 填写构建命令与输出目录（见上文），由云端构建，避免手工打包错目录。
+文件数量一般为 **几十～一两百**，若出现 **两千多个文件**，多半是误传了 **`node_modules`**。
+
+### 6.3 更换接口域名后
+
+修改 **`.env`** → 再执行 **`npm run build`** → 再上传新的 **`dist`**。
+
+---
+
+## 7. Cloudflare Pages 配置示例
+
+### 方式 A：连接 Git（推荐）
+
+在 Pages 项目 **Settings → Builds & deployments**：
+
+| 配置项 | 填写 |
+|--------|------|
+| **Root directory（构建根目录）** | `web-spa-cf` |
+| **Build command** | `npm ci && npm run build` |
+| **Build output directory** | `dist` |
+
+在 **Environment variables（构建环境）** 中添加与本地一致的 **`VITE_API_ORIGIN`**（以及其它需要的 **`VITE_*`**）。保存后重新部署。
+
+### 方式 B：Wrangler CLI
+
+```bash
+cd web-spa-cf
+npm run build
+npx wrangler pages deploy dist --project-name=你的项目名
+```
+
+（需本机已登录 Cloudflare，且构建时已加载 `.env` 或使用 CLI 传入变量。）
+
+---
+
+## 8. dabao 静态资源同步
+
+- **`npm run build`** / **`npm run dev`** 前会执行 **`npm run sync:dabao`**，从 **`../niuniucms/template/dabao`** 拷贝 **`css/`、`Images/`、`js/`、`conf.json`** 到 **`public/template/dabao/`**。  
+- 你在 CMS 里二改 dabao 后，重新构建即可把新样式打进 **dist**。  
+- 若构建环境 **没有** 上级 `niuniucms`，脚本会跳过同步，使用仓库里已有 **`public`**（因此 **`public/template/dabao` 建议纳入 Git**）。
+
+可选 **`VITE_TEMPLATE_ASSET_ORIGIN`**：让 CSS/图片直接指向主站 URL，减少 dist 体积（需浏览器能访问该域名资源）。
+
+---
+
+## 9. 与 PHP 接口的约定
+
+- 触发 JSON：URL 带 **`?json=1`** 或请求头 **`X-Requested-With: XMLHttpRequest`**（与 niuniucms `core/core.php` 一致）。  
+- 后台 **`api_on`** 必须开启。  
+- 典型响应：`{ "code": 0, "message": { ... } }`；`code !== 0` 表示业务错误。  
+
+首页演示使用 **`src/api/legacyHome.ts`** 请求根路径 JSON；更多页面需自行扩展接口与组件。
+
+**跨域：** SPA 域名与 PHP 域名不一致时，必须在 **PHP 或 Nginx** 配置 **CORS**；若使用 **`credentials: 'include'`**，需精确 **`Access-Control-Allow-Origin`**，不能用 `*`。
+
+---
+
+## 10. 常见问题排查
+
+| 现象 | 可能原因 |
+|------|----------|
+| 页面空白，控制台 CSS MIME 为 `text/html` | 上传的不是 **dist** 内容，或 **`template`** 未打进包；检查构建日志与 **dist** 内是否有 **`template/dabao/css`**。 |
+| 拉不到数据 / 「返回不是 JSON」 | **构建未带 `VITE_API_ORIGIN`**；**api_on** 关闭；请求打到错误域名；**CORS** 拦截。 |
+| 更换 `.env` 后线上仍旧 | 必须 **重新 `npm run build` 并重新上传 dist**；浏览器 **强刷** 或无痕。 |
+| Cloudflare 显示部署成功但 404 | **Output directory** 填错（应为 **`dist`**）；或构建根目录未设为 **`web-spa-cf`**。 |
+
+---
+
+## 附录：可行性摘要
+
+| 维度 | 结论 |
+|------|------|
+| 技术栈 | Vite 5 + React 18，产物为静态文件。 |
+| 数据 | 来自 niuniucms PHP；非完整 REST，需按需扩展 JSON。 |
+| SEO | 纯 CSR；要强 SEO 需 SSR 或保留 PHP 页面。 |
+
+---
+
+如需扩展「分类页 / 详情 / 播放」等，建议在 PHP 侧逐步约定稳定 JSON，再在 `src/` 增加路由与页面组件。
